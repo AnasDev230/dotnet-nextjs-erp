@@ -48,6 +48,7 @@ public class ProductRepository : IProductRepository
                 CategoryName = p.Category != null ? p.Category.Name : null,
                 UnitOfMeasure = p.UnitOfMeasure,
                 ReorderLevel = p.ReorderLevel,
+                SalePrice = p.SalePrice,
                 IsActive = p.IsActive,
                 CreatedAt = p.CreatedAt
             })
@@ -79,6 +80,7 @@ public class ProductRepository : IProductRepository
                 UnitOfMeasure = p.UnitOfMeasure,
                 ReorderLevel = p.ReorderLevel,
                 ReorderQty = p.ReorderQty,
+                SalePrice = p.SalePrice,
                 IsActive = p.IsActive,
                 CreatedAt = p.CreatedAt
             })

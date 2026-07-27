@@ -8,6 +8,7 @@ public class ProductListItemResponse
     public string? CategoryName { get; set; }
     public string UnitOfMeasure { get; set; } = string.Empty;
     public decimal ReorderLevel { get; set; }
+    public decimal SalePrice { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
 }

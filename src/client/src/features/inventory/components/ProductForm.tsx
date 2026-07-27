@@ -67,6 +67,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
       unitOfMeasure: product?.unitOfMeasure ?? "",
       reorderLevel: product?.reorderLevel ?? 0,
       reorderQty: product?.reorderQty ?? 0,
+      salePrice: product?.salePrice ?? 0,
       isActive: product?.isActive ?? true,
     },
   });
@@ -86,6 +87,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
           unitOfMeasure: payload.unitOfMeasure,
           reorderLevel: payload.reorderLevel,
           reorderQty: payload.reorderQty,
+          salePrice: payload.salePrice ?? 0,
           isActive: payload.isActive ?? true,
         });
       } else {
@@ -97,6 +99,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
           unitOfMeasure: payload.unitOfMeasure,
           reorderLevel: payload.reorderLevel,
           reorderQty: payload.reorderQty,
+          salePrice: payload.salePrice ?? 0,
         });
       }
       router.push("/inventory/products");
@@ -222,6 +225,24 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
               {form.formState.errors.reorderQty && (
                 <p className="text-sm text-destructive">
                   {form.formState.errors.reorderQty.message}
+                </p>
+              )}
+            </div>
+
+            {/* Sale Price */}
+            <div className="space-y-2">
+              <Label htmlFor="salePrice">سعر البيع *</Label>
+              <Input
+                id="salePrice"
+                type="number"
+                step="0.01"
+                {...form.register("salePrice", { valueAsNumber: true })}
+                placeholder="0.00"
+                className="h-10"
+              />
+              {form.formState.errors.salePrice && (
+                <p className="text-sm text-destructive">
+                  {form.formState.errors.salePrice.message}
                 </p>
               )}
             </div>
