@@ -14,6 +14,7 @@ export const createProductSchema = z.object({
   unitOfMeasure: z.string().min(1, "وحدة القياس مطلوبة"),
   reorderLevel: z.number().min(0, "يجب أن يكون مستوى إعادة الطلب 0 أو أكثر"),
   reorderQty: z.number().min(0, "يجب أن تكون كمية إعادة الطلب 0 أو أكثر"),
+  salePrice: z.number().min(0, "سعر البيع يجب أن يكون 0 أو أكثر"),
 });
 
 export const updateProductSchema = z.object({
@@ -26,6 +27,7 @@ export const updateProductSchema = z.object({
   unitOfMeasure: z.string().min(1, "وحدة القياس مطلوبة"),
   reorderLevel: z.number().min(0, "يجب أن يكون مستوى إعادة الطلب 0 أو أكثر"),
   reorderQty: z.number().min(0, "يجب أن تكون كمية إعادة الطلب 0 أو أكثر"),
+  salePrice: z.number().min(0, "سعر البيع يجب أن يكون 0 أو أكثر"),
   isActive: z.boolean(),
 });
 
@@ -40,6 +42,7 @@ export const productFormSchema = z.object({
   unitOfMeasure: z.string().min(1, "وحدة القياس مطلوبة"),
   reorderLevel: z.number().min(0, "يجب أن يكون مستوى إعادة الطلب 0 أو أكثر"),
   reorderQty: z.number().min(0, "يجب أن تكون كمية إعادة الطلب 0 أو أكثر"),
+  salePrice: z.number().min(0, "سعر البيع يجب أن يكون 0 أو أكثر").optional(),
   isActive: z.boolean().optional(),
 });
 

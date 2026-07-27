@@ -27,5 +27,9 @@ public class CreateProductValidator : AbstractValidator<CreateProductRequest>
 
         RuleFor(x => x.ReorderQty)
             .GreaterThanOrEqualTo(0);
+
+        RuleFor(x => x.SalePrice)
+            .GreaterThanOrEqualTo(0)
+            .WithMessage("سعر البيع يجب أن يكون 0 أو أكثر");
     }
 }

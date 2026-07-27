@@ -12,5 +12,6 @@ public class Product : BaseEntity
     public string UnitOfMeasure { get; set; } = string.Empty;
     public decimal ReorderLevel { get; set; }
     public decimal ReorderQty { get; set; }
+    public decimal SalePrice { get; set; }
     public bool IsActive { get; set; } = true;
 }

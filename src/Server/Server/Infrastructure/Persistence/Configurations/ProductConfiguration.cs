@@ -38,6 +38,10 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasPrecision(12, 3)
             .HasDefaultValue(0);
 
+        builder.Property(e => e.SalePrice)
+            .HasPrecision(15, 2)
+            .HasDefaultValue(0);
+
         builder.Property(e => e.IsActive)
             .HasDefaultValue(true);
 

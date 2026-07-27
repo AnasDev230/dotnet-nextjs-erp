@@ -23,5 +23,9 @@ public class UpdateProductValidator : AbstractValidator<UpdateProductRequest>
 
         RuleFor(x => x.IsActive)
             .NotNull();
+
+        RuleFor(x => x.SalePrice)
+            .GreaterThanOrEqualTo(0)
+            .WithMessage("سعر البيع يجب أن يكون 0 أو أكثر");
     }
 }

@@ -51,6 +51,7 @@ public class ProductService : IProductService
             UnitOfMeasure = request.UnitOfMeasure,
             ReorderLevel = request.ReorderLevel,
             ReorderQty = request.ReorderQty,
+            SalePrice = request.SalePrice,
             IsActive = true,
             CreatedBy = _currentUserService.UserId
         };
@@ -73,6 +74,7 @@ public class ProductService : IProductService
         product.UnitOfMeasure = request.UnitOfMeasure;
         product.ReorderLevel = request.ReorderLevel;
         product.ReorderQty = request.ReorderQty;
+        product.SalePrice = request.SalePrice;
         product.IsActive = request.IsActive;
         product.UpdatedBy = _currentUserService.UserId;
 

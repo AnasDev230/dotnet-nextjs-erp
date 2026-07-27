@@ -5,6 +5,7 @@ export interface ProductListItem {
   categoryName: string | null;
   unitOfMeasure: string;
   reorderLevel: number;
+  salePrice: number;
   isActive: boolean;
   createdAt: string;
 }
@@ -19,6 +20,7 @@ export interface ProductDetail {
   unitOfMeasure: string;
   reorderLevel: number;
   reorderQty: number;
+  salePrice: number;
   isActive: boolean;
   createdAt: string;
 }
@@ -31,6 +33,7 @@ export interface CreateProductRequest {
   unitOfMeasure: string;
   reorderLevel: number;
   reorderQty: number;
+  salePrice: number;
 }
 
 export interface UpdateProductRequest {
@@ -40,6 +43,7 @@ export interface UpdateProductRequest {
   unitOfMeasure: string;
   reorderLevel: number;
   reorderQty: number;
+  salePrice: number;
   isActive: boolean;
 }
 

@@ -55,6 +55,7 @@ export default function ProductsTable({
               <TableHead>التصنيف</TableHead>
               <TableHead>الوحدة</TableHead>
               <TableHead>مستوى الطلب</TableHead>
+              <TableHead className="text-left">السعر</TableHead>
               <TableHead>الحالة</TableHead>
               <TableHead className="text-left">الإجراءات</TableHead>
             </TableRow>
@@ -62,7 +63,7 @@ export default function ProductsTable({
           <TableBody>
             {Array.from({ length: 5 }).map((_, i) => (
               <TableRow key={i}>
-                {Array.from({ length: 7 }).map((_, j) => (
+                {Array.from({ length: 8 }).map((_, j) => (
                   <TableCell key={j}>
                     <div className="h-4 w-full animate-pulse rounded bg-muted" />
                   </TableCell>
@@ -104,6 +105,7 @@ export default function ProductsTable({
               <TableHead>التصنيف</TableHead>
               <TableHead>الوحدة</TableHead>
               <TableHead>مستوى الطلب</TableHead>
+              <TableHead className="text-left">السعر</TableHead>
               <TableHead>الحالة</TableHead>
               <TableHead className="text-left">الإجراءات</TableHead>
             </TableRow>
@@ -118,6 +120,9 @@ export default function ProductsTable({
                 </TableCell>
                 <TableCell>{product.unitOfMeasure}</TableCell>
                 <TableCell>{product.reorderLevel}</TableCell>
+                <TableCell className="text-left font-mono text-xs">
+                  {product.salePrice.toFixed(2)}
+                </TableCell>
                 <TableCell>
                   <Badge variant={product.isActive ? "success" : "neutral"}>
                     {product.isActive ? "نشط" : "غير نشط"}
