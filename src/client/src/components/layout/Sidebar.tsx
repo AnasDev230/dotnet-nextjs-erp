@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import {
@@ -9,6 +10,7 @@ import {
   Warehouse,
   Layers,
   ClipboardCheck,
+  ChevronDown,
   ShoppingCart,
   Settings,
   LogOut,
@@ -24,21 +26,32 @@ interface NavItem {
   disabled?: boolean;
 }
 
+interface SubNavItem {
+  label: string;
+  href: string;
+  icon: typeof LayoutDashboard;
+}
+
 const navItems: NavItem[] = [
   { label: "لوحة المعلومات", href: "/", icon: LayoutDashboard },
+  { label: "المبيعات", href: "/sales", icon: ShoppingCart, disabled: true },
+  { label: "الإعدادات", href: "/settings", icon: Settings, disabled: true },
+];
+
+const inventoryItems: SubNavItem[] = [
   { label: "المنتجات", href: "/inventory/products", icon: Package },
   { label: "التصنيفات", href: "/inventory/categories", icon: Tags },
   { label: "المستودعات", href: "/inventory/warehouses", icon: Warehouse },
-  { label: "المخزون", href: "/inventory/levels", icon: Layers },
+  { label: "مستويات المخزون", href: "/inventory/levels", icon: Layers },
   { label: "التسويات", href: "/inventory/adjustments", icon: ClipboardCheck },
-  { label: "المبيعات", href: "/sales", icon: ShoppingCart, disabled: true },
-  { label: "الإعدادات", href: "/settings", icon: Settings, disabled: true },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const logout = useAuthStore((state) => state.logout);
+  const isInventoryActive = pathname.startsWith("/inventory");
+  const [inventoryOpen, setInventoryOpen] = useState(isInventoryActive);
 
   const handleLogout = async () => {
     await logout();
@@ -90,6 +103,55 @@ export default function Sidebar() {
             </Link>
           );
         })}
+
+        {/* Inventory group */}
+        <div>
+          <button
+            type="button"
+            onClick={() => setInventoryOpen((prev) => !prev)}
+            aria-expanded={inventoryOpen}
+            className={cn(
+              "flex h-10 w-full items-center gap-2 rounded-md px-3 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              isInventoryActive
+                ? "bg-primary/10 text-primary font-medium"
+                : "text-foreground"
+            )}
+          >
+            <Layers className="h-5 w-5 shrink-0" />
+            <span className="flex-1 text-right">المخزون</span>
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 transition-transform",
+                inventoryOpen && "rotate-180"
+              )}
+            />
+          </button>
+
+          {inventoryOpen && (
+            <div className="mt-1 space-y-1 pr-3">
+              {inventoryItems.map((item) => {
+                const isActive = pathname === item.href;
+                const Icon = item.icon;
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "flex h-9 items-center gap-2 rounded-md px-3 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      isActive
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </nav>
 
       <div className="border-t border-border p-3">
