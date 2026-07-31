@@ -2,6 +2,8 @@ using FluentValidation;
 using Server.Core.Common;
 using Server.Features.Inventory.Repositories;
 using Server.Features.Inventory.Services;
+using Server.Features.Sales.Repositories;
+using Server.Features.Sales.Services;
 using Server.Features.Security.Repositories;
 using Server.Features.Security.Services;
 using Server.Infrastructure.Services;
@@ -33,6 +35,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IInventoryLevelService, InventoryLevelService>();
         services.AddScoped<IStockAdjustmentRepository, StockAdjustmentRepository>();
         services.AddScoped<IStockAdjustmentService, StockAdjustmentService>();
+
+        // Sales
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<ICustomerService, CustomerService>();
 
         return services;
     }

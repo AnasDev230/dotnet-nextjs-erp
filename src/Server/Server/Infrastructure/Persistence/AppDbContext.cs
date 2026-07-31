@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Server.Core.Common;
 using Server.Features.Inventory;
+using Server.Features.Sales;
 using Server.Features.Security;
 
 namespace Server.Infrastructure.Persistence;
@@ -14,6 +15,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     public DbSet<Warehouse> Warehouses => Set<Warehouse>();
     public DbSet<InventoryLevel> InventoryLevels => Set<InventoryLevel>();
     public DbSet<StockAdjustment> StockAdjustments => Set<StockAdjustment>();
+    public DbSet<Customer> Customers => Set<Customer>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
