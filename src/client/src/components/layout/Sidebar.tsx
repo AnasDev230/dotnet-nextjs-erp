@@ -39,6 +39,7 @@ const navItems: NavItem[] = [
 ];
 
 const salesItems: SubNavItem[] = [
+  { label: "أوامر البيع", href: "/sales/orders", icon: ShoppingCart },
   { label: "العملاء", href: "/sales/customers", icon: Users },
 ];
 
