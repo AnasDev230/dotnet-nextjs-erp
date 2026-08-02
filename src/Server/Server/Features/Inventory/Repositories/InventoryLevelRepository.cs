@@ -98,6 +98,11 @@ public class InventoryLevelRepository : IInventoryLevelRepository
             .Include(l => l.Warehouse)
             .FirstOrDefaultAsync(l => l.ProductId == productId && l.WarehouseId == warehouseId);
 
+    public async Task<InventoryLevel?> FindByProductIdAsync(Guid productId)
+        => await _context.InventoryLevels
+            .Include(l => l.Product)
+            .FirstOrDefaultAsync(l => l.ProductId == productId);
+
     public async Task<InventoryLevel> AddAsync(InventoryLevel level)
     {
         await _context.InventoryLevels.AddAsync(level);
