@@ -102,7 +102,6 @@ public class SalesOrderService : ISalesOrderService
         var order = await _repository.GetByIdWithItemsAsync(id)
             ?? throw new NotFoundException(nameof(SalesOrder), id);
 
-        // Only Draft orders are editable
         if (order.Status != SalesOrderStatus.Draft)
             throw new BusinessException("لا يمكن تعديل أمر البيع بعد تأكيده أو إلغائه");
 
@@ -114,7 +113,7 @@ public class SalesOrderService : ISalesOrderService
 
         await EnsureAvailabilityAsync(request.Items);
 
-        // Update master fields
+
         order.CustomerId = request.CustomerId;
         order.OrderDate = request.OrderDate;
         order.DeliveryDate = request.DeliveryDate;
@@ -122,25 +121,44 @@ public class SalesOrderService : ISalesOrderService
         order.Notes = request.Notes;
         order.UpdatedBy = _currentUserService.UserId;
 
-        // Replace items strategy: remove existing, add new
-        foreach (var existing in order.Items.ToList())
-            order.Items.Remove(existing);
 
-        foreach (var item in request.Items)
+        var existingItems = order.Items.ToList();
+
+        foreach (var existing in existingItems)
         {
-            order.Items.Add(new SalesOrderItem
+            if (!request.Items.Any(r => r.ProductId == existing.ProductId))
             {
-                ProductId = item.ProductId,
-                Quantity = item.Quantity,
-                UnitPrice = item.UnitPrice,
-                LineTotal = item.Quantity * item.UnitPrice,
-                CreatedBy = _currentUserService.UserId
-            });
+                order.Items.Remove(existing);
+            }
+        }
+
+        foreach (var reqItem in request.Items)
+        {
+            var existing = existingItems.FirstOrDefault(e => e.ProductId == reqItem.ProductId);
+
+            if (existing != null)
+            {
+
+                existing.Quantity = reqItem.Quantity;
+                existing.UnitPrice = reqItem.UnitPrice;
+                existing.LineTotal = reqItem.Quantity * reqItem.UnitPrice;
+            }
+            else
+            {
+
+                order.Items.Add(new SalesOrderItem
+                {
+                    ProductId = reqItem.ProductId,
+                    Quantity = reqItem.Quantity,
+                    UnitPrice = reqItem.UnitPrice,
+                    LineTotal = reqItem.Quantity * reqItem.UnitPrice,
+                    CreatedBy = _currentUserService.UserId
+                });
+            }
         }
 
         order.TotalAmount = order.Items.Sum(i => i.LineTotal);
 
-        await _repository.UpdateAsync(order);
         await _context.SaveChangesAsync();
 
         return await GetByIdAsync(id);
