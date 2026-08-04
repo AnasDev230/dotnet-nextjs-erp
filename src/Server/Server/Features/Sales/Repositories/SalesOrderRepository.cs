@@ -139,12 +139,7 @@ public class SalesOrderRepository : ISalesOrderRepository
         return order;
     }
 
-    public Task UpdateAsync(SalesOrder order)
-    {
-        _context.SalesOrders.Update(order);
-        return Task.CompletedTask;
-    }
-
+   
     public async Task SoftDeleteAsync(Guid id, Guid userId)
     {
         var order = await _context.SalesOrders

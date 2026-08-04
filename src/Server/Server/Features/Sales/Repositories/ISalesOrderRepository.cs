@@ -13,6 +13,5 @@ public interface ISalesOrderRepository
     Task<SalesOrder?> GetByIdWithItemsAsync(Guid id);
     Task<string> GenerateOrderNumberAsync();
     Task<SalesOrder> AddAsync(SalesOrder order);
-    Task UpdateAsync(SalesOrder order);
     Task SoftDeleteAsync(Guid id, Guid userId);
 }
