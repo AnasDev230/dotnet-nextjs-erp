@@ -1,4 +1,5 @@
 import Sidebar from "@/components/layout/Sidebar";
+import Header from "@/components/layout/Header";
 
 export default function DashboardLayout({
   children,
@@ -8,9 +9,10 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen" dir="rtl">
       <Sidebar />
-      <main className="flex-1 p-6 lg:mr-64">
-        {children}
-      </main>
+      <div className="flex flex-1 flex-col lg:mr-64">
+        <Header />
+        <main className="flex-1 p-6">{children}</main>
+      </div>
     </div>
   );
 }

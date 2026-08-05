@@ -1,6 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
+/* Enable class-based dark mode (equivalent of `darkMode: "class"` in Tailwind v4) */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: 0 0% 100%;
   --foreground: 222 47% 11%;
@@ -74,14 +77,14 @@
   --popover: 222 47% 8%;
   --popover-foreground: 210 40% 98%;
   --primary: 217 91% 60%;
-  --primary-foreground: 222 47% 6%;
+  --primary-foreground: 222 47% 11%;
   --secondary: 217 33% 17%;
   --secondary-foreground: 210 40% 98%;
   --muted: 217 33% 17%;
   --muted-foreground: 215 20% 65%;
   --accent: 217 33% 17%;
   --accent-foreground: 210 40% 98%;
-  --destructive: 0 62% 50%;
+  --destructive: 0 63% 31%;
   --destructive-foreground: 210 40% 98%;
   --border: 217 33% 17%;
   --input: 217 33% 17%;
@@ -104,4 +107,9 @@ body {
 
 * {
   border-color: hsl(var(--border));
+}
+
+/* Smooth theme transition */
+html {
+  transition: color 0.2s ease, background-color 0.2s ease;
 }
