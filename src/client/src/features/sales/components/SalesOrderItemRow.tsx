@@ -28,6 +28,9 @@ interface SalesOrderItemRowProps {
   productOptions: { value: string; label: string }[];
   productById: (id: string) => ProductListItem | undefined;
   allItems: SalesOrderItemFormData[];
+  availableStockByProduct: Map<string, number>;
+  warehouseSelected: boolean;
+  isStockLoading: boolean;
   onRemove: () => void;
   canRemove: boolean;
 }
@@ -43,6 +46,9 @@ export default function SalesOrderItemRow({
   productOptions,
   productById,
   allItems,
+  availableStockByProduct,
+  warehouseSelected,
+  isStockLoading,
   onRemove,
   canRemove,
 }: SalesOrderItemRowProps) {
@@ -51,11 +57,24 @@ export default function SalesOrderItemRow({
     name: `items.${index}`,
   });
 
+  const productId = watchedItem?.productId ?? "";
   const quantity = Number(watchedItem?.quantity ?? 0);
   const unitPrice = Number(watchedItem?.unitPrice ?? 0);
   const discountPct = Number(watchedItem?.discountPct ?? 0);
   const lineTotal = quantity * unitPrice * (1 - discountPct / 100);
   const itemErrors = errors.items?.[index];
+
+  const availableStock = productId
+    ? availableStockByProduct.get(productId)
+    : undefined;
+
+  const stockHint = !warehouseSelected
+    ? "اختر المستودع أولاً لعرض المخزون"
+    : isStockLoading
+      ? "جاري تحميل المخزون..."
+      : availableStock !== undefined
+        ? `المتاح في المستودع: ${availableStock}`
+        : "غير متوفر في المستودع المحدد";
 
   const handleProductChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const productId = event.target.value;
@@ -111,6 +130,9 @@ export default function SalesOrderItemRow({
           <p className="text-sm text-destructive">
             {itemErrors.productId.message}
           </p>
+        )}
+        {productId && (
+          <p className="text-muted-foreground text-xs">{stockHint}</p>
         )}
       </div>
 

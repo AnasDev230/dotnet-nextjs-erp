@@ -15,6 +15,7 @@ export interface SalesOrderItemRequest {
 
 export interface CreateSalesOrderRequest {
   customerId: string;
+  warehouseId: string;
   orderDate: string;
   deliveryDate?: string;
   notes?: string;
@@ -25,6 +26,7 @@ export interface CreateSalesOrderRequest {
 
 export interface UpdateSalesOrderRequest {
   customerId: string;
+  warehouseId: string;
   orderDate: string;
   deliveryDate?: string;
   status: SalesOrderStatus;
@@ -50,6 +52,8 @@ export interface SalesOrderResponse {
   orderNumber: string;
   customerId: string;
   customerName: string;
+  warehouseId: string;
+  warehouseName: string;
   orderDate: string;
   deliveryDate: string | null;
   status: SalesOrderStatus;
@@ -71,6 +75,7 @@ export interface SalesOrderListItem {
   id: string;
   orderNumber: string;
   customerName: string;
+  warehouseName: string;
   orderDate: string;
   status: SalesOrderStatus;
   totalAmount: number;

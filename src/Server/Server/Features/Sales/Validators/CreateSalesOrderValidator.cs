@@ -10,12 +10,24 @@ public class CreateSalesOrderValidator : AbstractValidator<CreateSalesOrderReque
     public CreateSalesOrderValidator(
         ICustomerRepository customerRepository,
         IProductRepository productRepository,
+        IWarehouseRepository warehouseRepository,
         ITaxRateRepository taxRateRepository)
     {
         RuleFor(x => x.CustomerId)
             .NotEmpty().WithMessage("العميل مطلوب")
             .MustAsync(async (id, _) => await customerRepository.ExistsByIdAsync(id))
             .WithMessage("العميل غير موجود");
+
+        RuleFor(x => x.WarehouseId)
+            .NotEmpty().WithMessage("المستودع مطلوب")
+            .MustAsync(async (id, _) => await warehouseRepository.ExistsByIdAsync(id))
+            .WithMessage("المستودع غير موجود")
+            .MustAsync(async (id, _) =>
+            {
+                var warehouse = await warehouseRepository.GetEntityByIdAsync(id);
+                return warehouse is not null && warehouse.IsActive;
+            })
+            .WithMessage("المستودع غير نشط");
 
         RuleFor(x => x.OrderDate)
             .NotEmpty().WithMessage("تاريخ الأمر مطلوب")

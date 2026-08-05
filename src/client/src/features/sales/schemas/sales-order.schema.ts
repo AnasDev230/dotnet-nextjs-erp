@@ -14,9 +14,10 @@ export const salesOrderItemSchema = z.object({
     .default(0),
 });
 
-export const salesOrderFormSchema = z
+const salesOrderFormSchemaBase = z
   .object({
     customerId: z.string().min(1, "العميل مطلوب"),
+    warehouseId: z.string().min(1, "المستودع مطلوب"),
     orderDate: z.string().min(1, "تاريخ الأمر مطلوب"),
     deliveryDate: z.string().optional().or(z.literal("")),
     notes: z
@@ -73,6 +74,32 @@ export const salesOrderFormSchema = z
       });
     }
   });
+
+/**
+ * Factory that extends the base schema with stock validation against the
+ * selected warehouse. The resolver is re-created by the form whenever the
+ * warehouse (and therefore the available-stock map) changes.
+ */
+export function createSalesOrderFormSchema(
+  getAvailableStock: (productId: string) => number | undefined
+) {
+  return salesOrderFormSchemaBase.superRefine((data, ctx) => {
+    data.items.forEach((item, index) => {
+      if (!item.productId) return;
+      const available = getAvailableStock(item.productId);
+      if (available === undefined) return;
+      if (item.quantity > available) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["items", index, "quantity"],
+          message: `الكمية المطلوبة أكبر من المتاح في المستودع (المتاح: ${available})`,
+        });
+      }
+    });
+  });
+}
+
+export const salesOrderFormSchema = createSalesOrderFormSchema(() => undefined);
 
 export type SalesOrderItemFormData = z.infer<typeof salesOrderItemSchema>;
 export type SalesOrderFormData = z.infer<typeof salesOrderFormSchema>;

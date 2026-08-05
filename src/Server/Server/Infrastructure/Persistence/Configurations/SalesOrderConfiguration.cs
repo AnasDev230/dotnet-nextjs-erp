@@ -21,6 +21,9 @@ public class SalesOrderConfiguration : IEntityTypeConfiguration<SalesOrder>
         builder.Property(o => o.CustomerId)
             .IsRequired();
 
+        builder.Property(o => o.WarehouseId)
+            .IsRequired();
+
         builder.Property(o => o.OrderDate)
             .IsRequired();
 
@@ -62,12 +65,18 @@ public class SalesOrderConfiguration : IEntityTypeConfiguration<SalesOrder>
             .HasForeignKey(o => o.CustomerId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(o => o.Warehouse)
+            .WithMany()
+            .HasForeignKey(o => o.WarehouseId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasOne(o => o.TaxRate)
             .WithMany()
             .HasForeignKey(o => o.TaxRateId)
             .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasIndex(o => o.CustomerId);
+        builder.HasIndex(o => o.WarehouseId);
         builder.HasIndex(o => o.TaxRateId);
         builder.HasIndex(o => o.OrderDate);
         builder.HasIndex(o => o.Status);

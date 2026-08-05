@@ -9,6 +9,11 @@ export function useUpdateSalesOrder(id: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sales-orders"] });
       queryClient.invalidateQueries({ queryKey: ["sales-order", id] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-levels"] });
+    },
+    onError: () => {
+      // Backend BusinessException (e.g. insufficient stock) is exposed through
+      // mutation.error and rendered by the form's destructive Alert.
     },
   });
 }
