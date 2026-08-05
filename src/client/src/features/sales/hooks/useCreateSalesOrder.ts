@@ -8,6 +8,11 @@ export function useCreateSalesOrder() {
     mutationFn: (data: CreateSalesOrderRequest) => createSalesOrder(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sales-orders"] });
+      queryClient.invalidateQueries({ queryKey: ["inventory-levels"] });
+    },
+    onError: () => {
+      // Backend BusinessException (e.g. insufficient stock) is exposed through
+      // mutation.error and rendered by the form's destructive Alert.
     },
   });
 }

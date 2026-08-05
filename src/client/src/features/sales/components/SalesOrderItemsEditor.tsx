@@ -29,6 +29,9 @@ interface SalesOrderItemsEditorProps {
   errors: FieldErrors<SalesOrderFormData>;
   productOptions: { value: string; label: string }[];
   productById: (id: string) => ProductListItem | undefined;
+  availableStockByProduct: Map<string, number>;
+  warehouseSelected: boolean;
+  isStockLoading: boolean;
 }
 
 export default function SalesOrderItemsEditor({
@@ -40,6 +43,9 @@ export default function SalesOrderItemsEditor({
   errors,
   productOptions,
   productById,
+  availableStockByProduct,
+  warehouseSelected,
+  isStockLoading,
 }: SalesOrderItemsEditorProps) {
   const { fields, append, remove } = useFieldArray({
     control,
@@ -101,6 +107,9 @@ export default function SalesOrderItemsEditor({
             productOptions={productOptions}
             productById={productById}
             allItems={items}
+            availableStockByProduct={availableStockByProduct}
+            warehouseSelected={warehouseSelected}
+            isStockLoading={isStockLoading}
             onRemove={() => handleRemove(index)}
             canRemove={fields.length > 1}
           />

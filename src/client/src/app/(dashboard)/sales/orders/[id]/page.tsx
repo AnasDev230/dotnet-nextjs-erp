@@ -123,6 +123,7 @@ export default function SalesOrderDetailPage() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <InfoRow label="رقم الأمر" value={order.orderNumber} />
             <InfoRow label="العميل" value={order.customerName} />
+            <InfoRow label="المستودع" value={order.warehouseName || "—"} />
             <InfoRow label="تاريخ الأمر" value={formatDate(order.orderDate)} />
             <InfoRow
               label="تاريخ التسليم"

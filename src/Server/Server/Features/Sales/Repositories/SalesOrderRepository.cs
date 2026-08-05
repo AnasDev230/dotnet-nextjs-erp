@@ -55,6 +55,7 @@ public class SalesOrderRepository : ISalesOrderRepository
                 Id = o.Id,
                 OrderNumber = o.OrderNumber,
                 CustomerName = o.Customer.Name,
+                WarehouseName = o.Warehouse.Name,
                 OrderDate = o.OrderDate,
                 Status = o.Status,
                 TotalAmount = o.TotalAmount,
@@ -77,6 +78,7 @@ public class SalesOrderRepository : ISalesOrderRepository
         return await _context.SalesOrders
             .AsNoTracking()
             .Include(o => o.Customer)
+            .Include(o => o.Warehouse)
             .Include(o => o.Items)
             .ThenInclude(i => i.Product)
             .Include(o => o.TaxRate)
@@ -87,6 +89,8 @@ public class SalesOrderRepository : ISalesOrderRepository
                 OrderNumber = o.OrderNumber,
                 CustomerId = o.CustomerId,
                 CustomerName = o.Customer.Name,
+                WarehouseId = o.WarehouseId,
+                WarehouseName = o.Warehouse.Name,
                 OrderDate = o.OrderDate,
                 DeliveryDate = o.DeliveryDate,
                 Status = o.Status,

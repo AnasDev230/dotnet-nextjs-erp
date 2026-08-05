@@ -1,4 +1,5 @@
 using Server.Core.Common;
+using Server.Features.Inventory;
 
 namespace Server.Features.Sales;
 
@@ -6,6 +7,7 @@ public class SalesOrder : BaseEntity
 {
     public string OrderNumber { get; set; } = string.Empty;
     public Guid CustomerId { get; set; }
+    public Guid WarehouseId { get; set; }
     public DateOnly OrderDate { get; set; }
     public DateOnly? DeliveryDate { get; set; }
     public SalesOrderStatus Status { get; set; } = SalesOrderStatus.Draft;
@@ -22,6 +24,7 @@ public class SalesOrder : BaseEntity
 
     // Navigation
     public Customer Customer { get; set; } = null!;
+    public Warehouse Warehouse { get; set; } = null!;
     public TaxRate? TaxRate { get; set; }
     public ICollection<SalesOrderItem> Items { get; set; } = new List<SalesOrderItem>();
 }

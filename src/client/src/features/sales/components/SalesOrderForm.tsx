@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +18,7 @@ import {
   Alert,
 } from "@/components/ui";
 import {
-  salesOrderFormSchema,
+  createSalesOrderFormSchema,
   type SalesOrderFormData,
   type SalesOrderItemFormData,
 } from "../schemas/sales-order.schema";
@@ -27,6 +27,8 @@ import { useUpdateSalesOrder } from "../hooks/useUpdateSalesOrder";
 import { useCustomersForDropdown } from "../hooks/useCustomersForDropdown";
 import { useTaxRates } from "../hooks/useTaxRates";
 import { useProducts } from "@/features/inventory/hooks/useProducts";
+import { useWarehousesForDropdown } from "@/features/inventory/hooks/useWarehousesForDropdown";
+import { useInventoryLevels } from "@/features/inventory/hooks/useInventoryLevels";
 import SalesOrderItemsEditor from "./SalesOrderItemsEditor";
 import SalesOrderSummary from "./SalesOrderSummary";
 import type { SalesOrderResponse } from "../types/sales-order.types";
@@ -68,6 +70,7 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
     isActive: true,
   });
   const { data: taxRatesData } = useTaxRates();
+  const { data: warehouses } = useWarehousesForDropdown();
 
   const products = productsData?.items ?? [];
   const taxRates = taxRatesData ?? [];
@@ -79,6 +82,15 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
         label: `${customer.code} — ${customer.name}`,
       })),
     [customers]
+  );
+
+  const warehouseOptions = useMemo(
+    () =>
+      (warehouses ?? []).map((warehouse) => ({
+        value: warehouse.id,
+        label: `${warehouse.code} — ${warehouse.name}`,
+      })),
+    [warehouses]
   );
 
   const taxRateOptions = useMemo(
@@ -107,7 +119,19 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
     return map;
   }, [products]);
 
-  const zodResolverTyped = zodResolver(salesOrderFormSchema) as Resolver<SalesOrderFormData>;
+  // Stock availability is read lazily by the zod resolver at validation time.
+  const stockRef = useRef({ map: new Map<string, number>(), enabled: false });
+
+  const resolver = useMemo(
+    () =>
+      zodResolver(
+        createSalesOrderFormSchema((productId) => {
+          const current = stockRef.current;
+          return current.enabled ? current.map.get(productId) : undefined;
+        })
+      ) as Resolver<SalesOrderFormData>,
+    []
+  );
 
   const buildDefaultItems = (): SalesOrderItemFormData[] => {
     if (isEdit && order) {
@@ -122,9 +146,10 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
   };
 
   const form = useForm<SalesOrderFormData>({
-    resolver: zodResolverTyped,
+    resolver,
     defaultValues: {
       customerId: order?.customerId ?? "",
+      warehouseId: order?.warehouseId ?? "",
       orderDate: order?.orderDate ?? todayString(),
       deliveryDate: order?.deliveryDate ?? "",
       notes: order?.notes ?? "",
@@ -136,6 +161,31 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
   });
 
   const watchedStatus = form.watch("status");
+  const watchedWarehouseId = form.watch("warehouseId");
+
+  const { data: stockData, isLoading: isStockLoading } = useInventoryLevels(
+    {
+      warehouseId: watchedWarehouseId || undefined,
+      page: 1,
+      pageSize: 1000,
+    },
+    { enabled: !!watchedWarehouseId }
+  );
+
+  const availableStockByProduct = useMemo(() => {
+    const map = new Map<string, number>();
+    (stockData?.items ?? []).forEach((level) =>
+      map.set(level.productId, level.quantityAvailable)
+    );
+    return map;
+  }, [stockData]);
+
+  useEffect(() => {
+    stockRef.current = {
+      map: availableStockByProduct,
+      enabled: !!watchedWarehouseId,
+    };
+  }, [availableStockByProduct, watchedWarehouseId]);
 
   const getErrorMessage = (): string | null => {
     if (!error) return null;
@@ -153,6 +203,7 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
 
     const base = {
       customerId: data.customerId,
+      warehouseId: data.warehouseId,
       orderDate: data.orderDate,
       deliveryDate: data.deliveryDate || undefined,
       notes: data.notes || undefined,
@@ -193,6 +244,26 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2">
+            {/* Warehouse */}
+            <div className="space-y-2">
+              <Label htmlFor="warehouseId">المستودع *</Label>
+              <Select
+                id="warehouseId"
+                {...form.register("warehouseId")}
+                options={warehouseOptions}
+                placeholder="اختر المستودع"
+                className="h-10"
+              />
+              {form.formState.errors.warehouseId && (
+                <p className="text-sm text-destructive">
+                  {form.formState.errors.warehouseId.message}
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                اختر المستودع أولاً لعرض الكميات المتاحة للمنتجات
+              </p>
+            </div>
+
             {/* Customer */}
             <div className="space-y-2">
               <Label htmlFor="customerId">العميل *</Label>
@@ -300,6 +371,9 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
                 errors={form.formState.errors}
                 productOptions={productOptions}
                 productById={(id) => productsById.get(id)}
+                availableStockByProduct={availableStockByProduct}
+                warehouseSelected={!!watchedWarehouseId}
+                isStockLoading={isStockLoading}
               />
 
               {/* Discount & Tax */}

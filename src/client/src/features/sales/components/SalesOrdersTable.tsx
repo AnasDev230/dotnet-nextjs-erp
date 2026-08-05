@@ -77,6 +77,7 @@ export default function SalesOrdersTable({
             <TableRow>
               <TableHead>رقم الأمر</TableHead>
               <TableHead>العميل</TableHead>
+              <TableHead>المستودع</TableHead>
               <TableHead>تاريخ الأمر</TableHead>
               <TableHead>عدد المنتجات</TableHead>
               <TableHead>صافي المبلغ</TableHead>
@@ -87,7 +88,7 @@ export default function SalesOrdersTable({
           <TableBody>
             {Array.from({ length: 5 }).map((_, i) => (
               <TableRow key={i}>
-                {Array.from({ length: 7 }).map((_, j) => (
+                {Array.from({ length: 8 }).map((_, j) => (
                   <TableCell key={j}>
                     <div className="h-4 w-full animate-pulse rounded bg-muted" />
                   </TableCell>
@@ -128,6 +129,7 @@ export default function SalesOrdersTable({
             <TableRow>
               <TableHead>رقم الأمر</TableHead>
               <TableHead>العميل</TableHead>
+              <TableHead>المستودع</TableHead>
               <TableHead>تاريخ الأمر</TableHead>
               <TableHead>عدد المنتجات</TableHead>
               <TableHead>صافي المبلغ</TableHead>
@@ -142,6 +144,9 @@ export default function SalesOrdersTable({
                   {order.orderNumber}
                 </TableCell>
                 <TableCell>{order.customerName}</TableCell>
+                <TableCell className="text-muted-foreground text-xs">
+                  {order.warehouseName}
+                </TableCell>
                 <TableCell className="text-muted-foreground text-xs">
                   {new Date(`${order.orderDate}T00:00:00`).toLocaleDateString(
                     "ar-SA"

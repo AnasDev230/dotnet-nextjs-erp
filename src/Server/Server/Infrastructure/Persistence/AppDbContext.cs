@@ -15,6 +15,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     public DbSet<Warehouse> Warehouses => Set<Warehouse>();
     public DbSet<InventoryLevel> InventoryLevels => Set<InventoryLevel>();
     public DbSet<StockAdjustment> StockAdjustments => Set<StockAdjustment>();
+    public DbSet<StockMovement> StockMovements => Set<StockMovement>();
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<SalesOrder> SalesOrders => Set<SalesOrder>();
     public DbSet<SalesOrderItem> SalesOrderItems => Set<SalesOrderItem>();

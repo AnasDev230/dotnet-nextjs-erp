@@ -6,6 +6,8 @@ public class SalesOrderResponse
     public string OrderNumber { get; set; } = string.Empty;
     public Guid CustomerId { get; set; }
     public string CustomerName { get; set; } = string.Empty;
+    public Guid WarehouseId { get; set; }
+    public string WarehouseName { get; set; } = string.Empty;
     public DateOnly OrderDate { get; set; }
     public DateOnly? DeliveryDate { get; set; }
     public SalesOrderStatus Status { get; set; }

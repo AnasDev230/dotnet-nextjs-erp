@@ -1,4 +1,5 @@
 using Server.Core.Common;
+using Server.Core.Common.Contracts;
 using Server.Core.Exceptions;
 using Server.Features.Inventory;
 using Server.Features.Inventory.Repositories;
@@ -14,7 +15,9 @@ public class SalesOrderService : ISalesOrderService
     private readonly ICustomerRepository _customerRepository;
     private readonly IProductRepository _productRepository;
     private readonly IInventoryLevelRepository _inventoryLevelRepository;
+    private readonly IWarehouseRepository _warehouseRepository;
     private readonly ITaxRateRepository _taxRateRepository;
+    private readonly IInventoryReservationService _inventoryReservationService;
     private readonly AppDbContext _context;
     private readonly ICurrentUserService _currentUserService;
 
@@ -23,7 +26,9 @@ public class SalesOrderService : ISalesOrderService
         ICustomerRepository customerRepository,
         IProductRepository productRepository,
         IInventoryLevelRepository inventoryLevelRepository,
+        IWarehouseRepository warehouseRepository,
         ITaxRateRepository taxRateRepository,
+        IInventoryReservationService inventoryReservationService,
         AppDbContext context,
         ICurrentUserService currentUserService)
     {
@@ -31,7 +36,9 @@ public class SalesOrderService : ISalesOrderService
         _customerRepository = customerRepository;
         _productRepository = productRepository;
         _inventoryLevelRepository = inventoryLevelRepository;
+        _warehouseRepository = warehouseRepository;
         _taxRateRepository = taxRateRepository;
+        _inventoryReservationService = inventoryReservationService;
         _context = context;
         _currentUserService = currentUserService;
     }
@@ -61,19 +68,27 @@ public class SalesOrderService : ISalesOrderService
         if (customer.Status != CustomerStatus.Active)
             throw new BusinessException("لا يمكن إنشاء أمر بيع لعميل موقوف");
 
-        // 3 + 4. Validate products and check availability (READ-ONLY, no reservation in Phase 1)
-        await EnsureAvailabilityAsync(request.Items);
+        // 3. Validate warehouse exists and is active
+        var warehouse = await _warehouseRepository.GetEntityByIdAsync(request.WarehouseId)
+            ?? throw new NotFoundException(nameof(Warehouse), request.WarehouseId);
 
-        // 4.5. Fetch tax rate snapshot if provided
+        if (!warehouse.IsActive)
+            throw new BusinessException("لا يمكن إنشاء أمر بيع لمستودع غير نشط");
+
+        // 4. Read-only availability pre-check against the selected warehouse
+        await EnsureAvailabilityAsync(request.WarehouseId, request.Items);
+
+        // 5. Fetch tax rate snapshot if provided
         var taxRate = request.TaxRateId.HasValue
             ? await _taxRateRepository.GetRateAsync(request.TaxRateId.Value)
             : null;
 
-        // 5. Create SalesOrder entity
+        // 6. Create SalesOrder entity
         var order = new SalesOrder
         {
             OrderNumber = orderNumber,
             CustomerId = request.CustomerId,
+            WarehouseId = request.WarehouseId,
             OrderDate = request.OrderDate,
             DeliveryDate = request.DeliveryDate,
             Notes = request.Notes,
@@ -84,7 +99,7 @@ public class SalesOrderService : ISalesOrderService
             Items = new List<SalesOrderItem>()
         };
 
-        // 6. Create SalesOrderItem entities
+        // 7. Create SalesOrderItem entities
         foreach (var item in request.Items)
         {
             order.Items.Add(new SalesOrderItem
@@ -97,12 +112,33 @@ public class SalesOrderService : ISalesOrderService
             });
         }
 
-        // 7. Calculate all amounts (line totals -> subtotal -> discount -> tax -> net)
+        // 8. Calculate all amounts (line totals -> subtotal -> discount -> tax -> net)
         CalculateAmounts(order, taxRate);
 
-        // 8 + 9. Save (single aggregate — no transaction needed)
-        await _repository.AddAsync(order);
-        await _context.SaveChangesAsync();
+        // 9. Phase 3: Order + inventory reservation MUST be committed together,
+        //    so wrap both writes in a single database transaction.
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            await _repository.AddAsync(order);
+            await _context.SaveChangesAsync();
+
+            await _inventoryReservationService.ReserveStockAsync(
+                order.WarehouseId,
+                order.Id,
+                request.Items.Select(i => new StockReservationItem
+                {
+                    ProductId = i.ProductId,
+                    Quantity = i.Quantity
+                }).ToList());
+
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
 
         return await GetByIdAsync(order.Id);
     }
@@ -121,13 +157,20 @@ public class SalesOrderService : ISalesOrderService
         if (customer.Status != CustomerStatus.Active)
             throw new BusinessException("لا يمكن تعديل أمر البيع لعميل موقوف");
 
-        await EnsureAvailabilityAsync(request.Items);
+        var warehouse = await _warehouseRepository.GetEntityByIdAsync(request.WarehouseId)
+            ?? throw new NotFoundException(nameof(Warehouse), request.WarehouseId);
+
+        if (!warehouse.IsActive)
+            throw new BusinessException("لا يمكن تعديل أمر البيع لمستودع غير نشط");
+
+        await EnsureAvailabilityAsync(request.WarehouseId, request.Items);
 
         var taxRate = request.TaxRateId.HasValue
             ? await _taxRateRepository.GetRateAsync(request.TaxRateId.Value)
             : null;
 
         order.CustomerId = request.CustomerId;
+        order.WarehouseId = request.WarehouseId;
         order.OrderDate = request.OrderDate;
         order.DeliveryDate = request.DeliveryDate;
         order.Status = request.Status;
@@ -135,7 +178,6 @@ public class SalesOrderService : ISalesOrderService
         order.DiscountPct = request.DiscountPct;
         order.TaxRateId = request.TaxRateId;
         order.UpdatedBy = _currentUserService.UserId;
-
 
         var existingItems = order.Items.ToList();
 
@@ -153,7 +195,6 @@ public class SalesOrderService : ISalesOrderService
 
             if (existing != null)
             {
-
                 existing.Quantity = reqItem.Quantity;
                 existing.UnitPrice = reqItem.UnitPrice;
                 existing.DiscountPct = reqItem.DiscountPct;
@@ -161,7 +202,6 @@ public class SalesOrderService : ISalesOrderService
             }
             else
             {
-
                 order.Items.Add(new SalesOrderItem
                 {
                     ProductId = reqItem.ProductId,
@@ -175,7 +215,40 @@ public class SalesOrderService : ISalesOrderService
 
         CalculateAmounts(order, taxRate);
 
-        await _context.SaveChangesAsync();
+        var reservationItems = request.Items
+            .Select(i => new StockReservationItem
+            {
+                ProductId = i.ProductId,
+                Quantity = i.Quantity
+            })
+            .ToList();
+
+        // Phase 3: Reservation changes MUST be committed with the order update.
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            if (request.Status == SalesOrderStatus.Cancelled)
+            {
+                // Cancellation reverses the previous reservation.
+                await _context.SaveChangesAsync();
+                await _inventoryReservationService.ReleaseStockAsync(order.Id);
+            }
+            else
+            {
+                // Draft/Confirmed edit: persist the order changes, release the old
+                // reservation, then re-reserve against the new items/warehouse.
+                await _context.SaveChangesAsync();
+                await _inventoryReservationService.ReleaseStockAsync(order.Id);
+                await _inventoryReservationService.ReserveStockAsync(order.WarehouseId, order.Id, reservationItems);
+            }
+
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
 
         return await GetByIdAsync(id);
     }
@@ -189,8 +262,20 @@ public class SalesOrderService : ISalesOrderService
         if (order.Status != SalesOrderStatus.Draft)
             throw new BusinessException("لا يمكن حذف أمر البيع بعد تأكيده أو إلغائه");
 
-        await _repository.SoftDeleteAsync(id, _currentUserService.UserId!.Value);
-        await _context.SaveChangesAsync();
+        // Phase 3: Deleting a draft that already reserved stock must release it.
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            await _repository.SoftDeleteAsync(id, _currentUserService.UserId!.Value);
+            await _context.SaveChangesAsync();
+            await _inventoryReservationService.ReleaseStockAsync(order.Id);
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     /// <summary>
@@ -231,10 +316,11 @@ public class SalesOrderService : ISalesOrderService
     }
 
     /// <summary>
-    /// Phase 1: READ-ONLY availability check. Inventory is NOT reserved here —
-    /// reservation will be added in Phase 3.
+    /// Phase 3: Read-only availability check against a specific warehouse.
+    /// The authoritative reservation + rollback is performed by
+    /// InventoryReservationService inside the database transaction.
     /// </summary>
-    private async Task EnsureAvailabilityAsync(List<SalesOrderItemRequest> items)
+    private async Task EnsureAvailabilityAsync(Guid warehouseId, List<SalesOrderItemRequest> items)
     {
         foreach (var item in items)
         {
@@ -245,12 +331,11 @@ public class SalesOrderService : ISalesOrderService
             if (!product.IsActive)
                 throw new BusinessException($"المنتج '{product.Name}' غير نشط");
 
-            // Get first warehouse that has this product (simplest logic for Phase 1)
-            var level = await _inventoryLevelRepository.FindByProductIdAsync(item.ProductId);
+            var level = await _inventoryLevelRepository.FindByProductAndWarehouseAsync(item.ProductId, warehouseId);
             if (level is null || level.QuantityAvailable < item.Quantity)
             {
                 throw new BusinessException(
-                    $"الكمية المطلوبة من المنتج '{product.Name}' غير متوفرة. " +
+                    $"الكمية المطلوبة من المنتج '{product.Name}' غير متوفرة في المستودع المحدد. " +
                     $"المتاح: {level?.QuantityAvailable ?? 0}");
             }
         }
