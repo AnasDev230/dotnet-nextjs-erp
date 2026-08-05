@@ -14,6 +14,7 @@ public class SalesOrderService : ISalesOrderService
     private readonly ICustomerRepository _customerRepository;
     private readonly IProductRepository _productRepository;
     private readonly IInventoryLevelRepository _inventoryLevelRepository;
+    private readonly ITaxRateRepository _taxRateRepository;
     private readonly AppDbContext _context;
     private readonly ICurrentUserService _currentUserService;
 
@@ -22,6 +23,7 @@ public class SalesOrderService : ISalesOrderService
         ICustomerRepository customerRepository,
         IProductRepository productRepository,
         IInventoryLevelRepository inventoryLevelRepository,
+        ITaxRateRepository taxRateRepository,
         AppDbContext context,
         ICurrentUserService currentUserService)
     {
@@ -29,6 +31,7 @@ public class SalesOrderService : ISalesOrderService
         _customerRepository = customerRepository;
         _productRepository = productRepository;
         _inventoryLevelRepository = inventoryLevelRepository;
+        _taxRateRepository = taxRateRepository;
         _context = context;
         _currentUserService = currentUserService;
     }
@@ -61,6 +64,11 @@ public class SalesOrderService : ISalesOrderService
         // 3 + 4. Validate products and check availability (READ-ONLY, no reservation in Phase 1)
         await EnsureAvailabilityAsync(request.Items);
 
+        // 4.5. Fetch tax rate snapshot if provided
+        var taxRate = request.TaxRateId.HasValue
+            ? await _taxRateRepository.GetRateAsync(request.TaxRateId.Value)
+            : null;
+
         // 5. Create SalesOrder entity
         var order = new SalesOrder
         {
@@ -70,11 +78,13 @@ public class SalesOrderService : ISalesOrderService
             DeliveryDate = request.DeliveryDate,
             Notes = request.Notes,
             Status = SalesOrderStatus.Draft,
+            DiscountPct = request.DiscountPct,
+            TaxRateId = request.TaxRateId,
             CreatedBy = _currentUserService.UserId,
             Items = new List<SalesOrderItem>()
         };
 
-        // 6. Create SalesOrderItem entities and calculate LineTotal
+        // 6. Create SalesOrderItem entities
         foreach (var item in request.Items)
         {
             order.Items.Add(new SalesOrderItem
@@ -82,13 +92,13 @@ public class SalesOrderService : ISalesOrderService
                 ProductId = item.ProductId,
                 Quantity = item.Quantity,
                 UnitPrice = item.UnitPrice,
-                LineTotal = item.Quantity * item.UnitPrice,
+                DiscountPct = item.DiscountPct,
                 CreatedBy = _currentUserService.UserId
             });
         }
 
-        // 7. Calculate TotalAmount
-        order.TotalAmount = order.Items.Sum(i => i.LineTotal);
+        // 7. Calculate all amounts (line totals -> subtotal -> discount -> tax -> net)
+        CalculateAmounts(order, taxRate);
 
         // 8 + 9. Save (single aggregate — no transaction needed)
         await _repository.AddAsync(order);
@@ -113,12 +123,17 @@ public class SalesOrderService : ISalesOrderService
 
         await EnsureAvailabilityAsync(request.Items);
 
+        var taxRate = request.TaxRateId.HasValue
+            ? await _taxRateRepository.GetRateAsync(request.TaxRateId.Value)
+            : null;
 
         order.CustomerId = request.CustomerId;
         order.OrderDate = request.OrderDate;
         order.DeliveryDate = request.DeliveryDate;
         order.Status = request.Status;
         order.Notes = request.Notes;
+        order.DiscountPct = request.DiscountPct;
+        order.TaxRateId = request.TaxRateId;
         order.UpdatedBy = _currentUserService.UserId;
 
 
@@ -141,7 +156,8 @@ public class SalesOrderService : ISalesOrderService
 
                 existing.Quantity = reqItem.Quantity;
                 existing.UnitPrice = reqItem.UnitPrice;
-                existing.LineTotal = reqItem.Quantity * reqItem.UnitPrice;
+                existing.DiscountPct = reqItem.DiscountPct;
+                existing.UpdatedBy = _currentUserService.UserId;
             }
             else
             {
@@ -151,13 +167,13 @@ public class SalesOrderService : ISalesOrderService
                     ProductId = reqItem.ProductId,
                     Quantity = reqItem.Quantity,
                     UnitPrice = reqItem.UnitPrice,
-                    LineTotal = reqItem.Quantity * reqItem.UnitPrice,
+                    DiscountPct = reqItem.DiscountPct,
                     CreatedBy = _currentUserService.UserId
                 });
             }
         }
 
-        order.TotalAmount = order.Items.Sum(i => i.LineTotal);
+        CalculateAmounts(order, taxRate);
 
         await _context.SaveChangesAsync();
 
@@ -175,6 +191,43 @@ public class SalesOrderService : ISalesOrderService
 
         await _repository.SoftDeleteAsync(id, _currentUserService.UserId!.Value);
         await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Phase 2: Core pricing calculation. Order of operations is critical:
+    /// line totals -> subtotal -> order discount -> tax -> net.
+    /// Discount is applied BEFORE tax. All money math uses decimal with
+    /// MidpointRounding.AwayFromZero at 2 decimal places.
+    /// </summary>
+    private void CalculateAmounts(SalesOrder order, decimal? taxRate)
+    {
+        // 1. Calculate each line total (round each line)
+        foreach (var item in order.Items)
+        {
+            var lineGross = item.Quantity * item.UnitPrice;
+            var lineDiscount = lineGross * (item.DiscountPct / 100m);
+            item.LineTotal = Math.Round(lineGross - lineDiscount, 2, MidpointRounding.AwayFromZero);
+        }
+
+        // 2. Subtotal = sum of line totals
+        var subtotal = order.Items.Sum(i => i.LineTotal);
+
+        // 3. Order discount
+        order.DiscountAmount = Math.Round(subtotal * (order.DiscountPct / 100m), 2, MidpointRounding.AwayFromZero);
+
+        // 4. Taxable amount
+        var taxableAmount = subtotal - order.DiscountAmount;
+
+        // 5. Tax (snapshot the rate on the order)
+        var taxPct = taxRate ?? 0m;
+        order.TaxPct = taxPct;
+        order.TaxAmount = Math.Round(taxableAmount * (taxPct / 100m), 2, MidpointRounding.AwayFromZero);
+
+        // 6. Net amount
+        order.NetAmount = taxableAmount + order.TaxAmount;
+
+        // 7. Keep TotalAmount = NetAmount for backward compatibility
+        order.TotalAmount = order.NetAmount;
     }
 
     /// <summary>

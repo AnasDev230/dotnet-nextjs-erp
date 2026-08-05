@@ -52,7 +52,7 @@ export default function SalesOrderItemsEditor({
   const [showCannotRemove, setShowCannotRemove] = useState(false);
 
   const handleAdd = () => {
-    append({ productId: "", quantity: 1, unitPrice: 0 });
+    append({ productId: "", quantity: 1, unitPrice: 0, discountPct: 0 });
   };
 
   const handleRemove = (index: number) => {

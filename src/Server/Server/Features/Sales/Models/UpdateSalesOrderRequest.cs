@@ -7,5 +7,7 @@ public class UpdateSalesOrderRequest
     public DateOnly? DeliveryDate { get; set; }
     public SalesOrderStatus Status { get; set; }
     public string? Notes { get; set; }
+    public decimal DiscountPct { get; set; }
+    public Guid? TaxRateId { get; set; }
     public List<SalesOrderItemRequest> Items { get; set; } = new();
 }

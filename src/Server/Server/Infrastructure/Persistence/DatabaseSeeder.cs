@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Server.Core.Constants;
+using Server.Features.Sales;
 
 namespace Server.Infrastructure.Persistence;
 
@@ -18,6 +19,7 @@ public static class DatabaseSeeder
             await context.Database.MigrateAsync();
             await SeedRolesAsync(roleManager, logger);
             await SeedSuperAdminAsync(userManager, logger);
+            await SeedTaxRatesAsync(context, logger);
 
             logger.LogInformation("Database seeding completed successfully.");
         }
@@ -106,5 +108,31 @@ public static class DatabaseSeeder
             logger.LogError("Failed to create SuperAdmin. Errors: {Errors}",
                 string.Join(", ", result.Errors.Select(e => e.Description)));
         }
+    }
+
+    private static async Task SeedTaxRatesAsync(AppDbContext context, ILogger logger)
+    {
+        var taxRates = new[]
+        {
+            new TaxRate { Name = "معفى من الضريبة", Rate = 0m, IsActive = true },
+            new TaxRate { Name = "ضريبة مخفضة", Rate = 5m, IsActive = true },
+            new TaxRate { Name = "ضريبة المبيعات", Rate = 11m, IsActive = true }
+        };
+
+        foreach (var rate in taxRates)
+        {
+            var exists = await context.TaxRates.AnyAsync(t => t.Name == rate.Name);
+            if (!exists)
+            {
+                context.TaxRates.Add(rate);
+                logger.LogInformation("Created tax rate: {Name} ({Rate}%)", rate.Name, rate.Rate);
+            }
+            else
+            {
+                logger.LogInformation("Tax rate already exists: {Name}", rate.Name);
+            }
+        }
+
+        await context.SaveChangesAsync();
     }
 }

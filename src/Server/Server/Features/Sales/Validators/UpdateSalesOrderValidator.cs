@@ -9,7 +9,8 @@ public class UpdateSalesOrderValidator : AbstractValidator<UpdateSalesOrderReque
 {
     public UpdateSalesOrderValidator(
         ICustomerRepository customerRepository,
-        IProductRepository productRepository)
+        IProductRepository productRepository,
+        ITaxRateRepository taxRateRepository)
     {
         RuleFor(x => x.CustomerId)
             .NotEmpty().WithMessage("العميل مطلوب")
@@ -31,6 +32,14 @@ public class UpdateSalesOrderValidator : AbstractValidator<UpdateSalesOrderReque
 
         RuleFor(x => x.Status)
             .IsInEnum().WithMessage("حالة الأمر غير صحيحة");
+
+        RuleFor(x => x.DiscountPct)
+            .InclusiveBetween(0, 100).WithMessage("نسبة الخصم يجب أن تكون بين 0 و 100");
+
+        RuleFor(x => x.TaxRateId)
+            .MustAsync(async (taxRateId, _) =>
+                taxRateId == null || await taxRateRepository.ExistsAsync(taxRateId.Value))
+            .WithMessage("نسبة الضريبة غير موجودة");
 
         RuleFor(x => x.Items)
             .Must(items => items.Any()).WithMessage("يجب إضافة منتج واحد على الأقل")
@@ -55,6 +64,9 @@ public class UpdateSalesOrderValidator : AbstractValidator<UpdateSalesOrderReque
 
             item.RuleFor(i => i.UnitPrice)
                 .GreaterThanOrEqualTo(0).WithMessage("سعر الوحدة يجب أن يكون 0 أو أكثر");
+
+            item.RuleFor(i => i.DiscountPct)
+                .InclusiveBetween(0, 100).WithMessage("نسبة خصم السطر يجب أن تكون بين 0 و 100");
         });
     }
 }

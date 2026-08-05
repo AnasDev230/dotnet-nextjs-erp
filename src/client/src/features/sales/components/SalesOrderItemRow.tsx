@@ -53,7 +53,8 @@ export default function SalesOrderItemRow({
 
   const quantity = Number(watchedItem?.quantity ?? 0);
   const unitPrice = Number(watchedItem?.unitPrice ?? 0);
-  const lineTotal = quantity * unitPrice;
+  const discountPct = Number(watchedItem?.discountPct ?? 0);
+  const lineTotal = quantity * unitPrice * (1 - discountPct / 100);
   const itemErrors = errors.items?.[index];
 
   const handleProductChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -88,7 +89,7 @@ export default function SalesOrderItemRow({
   };
 
   return (
-    <div className="grid gap-3 rounded-lg border border-border bg-background p-3 md:grid-cols-[minmax(0,2fr)_1fr_1fr_1fr_auto]">
+    <div className="grid gap-3 rounded-lg border border-border bg-background p-3 md:grid-cols-[minmax(0,2fr)_1fr_1fr_1fr_1fr_auto]">
       <div className="space-y-2">
         <Label htmlFor={`items.${index}.productId`} className="text-xs">
           المنتج
@@ -147,6 +148,26 @@ export default function SalesOrderItemRow({
         {itemErrors?.unitPrice && (
           <p className="text-sm text-destructive">
             {itemErrors.unitPrice.message}
+          </p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor={`items.${index}.discountPct`} className="text-xs">
+          الخصم %
+        </Label>
+        <Input
+          id={`items.${index}.discountPct`}
+          type="number"
+          min={0}
+          max={100}
+          step={1}
+          {...register(`items.${index}.discountPct`, { valueAsNumber: true })}
+          className="h-10"
+        />
+        {itemErrors?.discountPct && (
+          <p className="text-sm text-destructive">
+            {itemErrors.discountPct.message}
           </p>
         )}
       </div>

@@ -58,6 +58,7 @@ public class SalesOrderRepository : ISalesOrderRepository
                 OrderDate = o.OrderDate,
                 Status = o.Status,
                 TotalAmount = o.TotalAmount,
+                NetAmount = o.NetAmount,
                 ItemsCount = o.Items.Count
             })
             .ToListAsync();
@@ -78,6 +79,7 @@ public class SalesOrderRepository : ISalesOrderRepository
             .Include(o => o.Customer)
             .Include(o => o.Items)
             .ThenInclude(i => i.Product)
+            .Include(o => o.TaxRate)
             .Where(o => o.Id == id)
             .Select(o => new SalesOrderResponse
             {
@@ -90,6 +92,14 @@ public class SalesOrderRepository : ISalesOrderRepository
                 Status = o.Status,
                 TotalAmount = o.TotalAmount,
                 Notes = o.Notes,
+                DiscountPct = o.DiscountPct,
+                DiscountAmount = o.DiscountAmount,
+                TaxRateId = o.TaxRateId,
+                TaxRateName = o.TaxRate != null ? o.TaxRate.Name : null,
+                TaxPct = o.TaxPct,
+                TaxAmount = o.TaxAmount,
+                NetAmount = o.NetAmount,
+                Subtotal = o.Items.Sum(i => i.LineTotal),
                 CreatedAt = o.CreatedAt,
                 Items = o.Items.Select(i => new SalesOrderItemResponse
                 {
@@ -99,6 +109,7 @@ public class SalesOrderRepository : ISalesOrderRepository
                     ProductSku = i.Product.Sku,
                     Quantity = i.Quantity,
                     UnitPrice = i.UnitPrice,
+                    DiscountPct = i.DiscountPct,
                     LineTotal = i.LineTotal
                 }).ToList()
             })
