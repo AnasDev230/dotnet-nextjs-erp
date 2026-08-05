@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Server.Core.Common;
+using Server.Features.Finance;
 using Server.Features.Inventory;
 using Server.Features.Sales;
 using Server.Features.Security;
@@ -20,6 +21,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     public DbSet<SalesOrder> SalesOrders => Set<SalesOrder>();
     public DbSet<SalesOrderItem> SalesOrderItems => Set<SalesOrderItem>();
     public DbSet<TaxRate> TaxRates => Set<TaxRate>();
+    public DbSet<Invoice> Invoices => Set<Invoice>();
+    public DbSet<Payment> Payments => Set<Payment>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {

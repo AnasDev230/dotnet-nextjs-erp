@@ -1,6 +1,8 @@
 using FluentValidation;
 using Server.Core.Common;
 using Server.Core.Common.Contracts;
+using Server.Features.Finance.Repositories;
+using Server.Features.Finance.Services;
 using Server.Features.Inventory.Repositories;
 using Server.Features.Inventory.Services;
 using Server.Features.Sales.Repositories;
@@ -44,6 +46,12 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISalesOrderRepository, SalesOrderRepository>();
         services.AddScoped<ISalesOrderService, SalesOrderService>();
         services.AddScoped<ITaxRateRepository, TaxRateRepository>();
+
+        // Finance
+        services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+        services.AddScoped<IInvoiceService, InvoiceService>();
+        services.AddScoped<IPaymentRepository, PaymentRepository>();
+        services.AddScoped<IPaymentService, PaymentService>();
 
         return services;
     }

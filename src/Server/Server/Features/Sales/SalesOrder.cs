@@ -1,4 +1,5 @@
 using Server.Core.Common;
+using Server.Features.Finance;
 using Server.Features.Inventory;
 
 namespace Server.Features.Sales;
@@ -27,4 +28,7 @@ public class SalesOrder : BaseEntity
     public Warehouse Warehouse { get; set; } = null!;
     public TaxRate? TaxRate { get; set; }
     public ICollection<SalesOrderItem> Items { get; set; } = new List<SalesOrderItem>();
+
+    // Navigation — one-to-one with the invoice generated from this order
+    public Invoice? Invoice { get; set; }
 }
