@@ -1,4 +1,4 @@
-namespace Server.Features.Finance;
+namespace Server.Features.Finance.Enums;
 
 public enum PaymentMethod
 {

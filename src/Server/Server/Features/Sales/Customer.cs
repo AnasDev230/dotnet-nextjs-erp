@@ -1,4 +1,5 @@
 using Server.Core.Common;
+using Server.Features.Sales.Enums;
 
 namespace Server.Features.Sales;
 

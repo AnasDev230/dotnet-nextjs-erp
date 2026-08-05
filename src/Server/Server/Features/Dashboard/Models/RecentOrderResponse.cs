@@ -1,4 +1,5 @@
 using Server.Features.Sales;
+using Server.Features.Sales.Enums;
 
 namespace Server.Features.Dashboard.Models;
 

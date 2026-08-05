@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Server.Features.Finance;
+using Server.Features.Finance.Enums;
 using Server.Features.Sales;
 
 namespace Server.Infrastructure.Persistence.Configurations;

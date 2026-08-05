@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Server.Core.Common;
+using Server.Features.Sales.Enums;
 using Server.Features.Sales.Models;
 using Server.Infrastructure.Persistence;
 

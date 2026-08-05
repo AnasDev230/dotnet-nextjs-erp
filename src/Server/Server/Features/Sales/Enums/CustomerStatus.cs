@@ -1,4 +1,4 @@
-namespace Server.Features.Sales;
+namespace Server.Features.Sales.Enums;
 
 public enum CustomerStatus
 {

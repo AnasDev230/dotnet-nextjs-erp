@@ -1,5 +1,6 @@
 using Server.Core.Common;
 using Server.Core.Exceptions;
+using Server.Features.Sales.Enums;
 using Server.Features.Sales.Models;
 using Server.Features.Sales.Repositories;
 using Server.Infrastructure.Persistence;

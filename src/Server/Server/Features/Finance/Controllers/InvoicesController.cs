@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Core.Common;
 using Server.Core.Constants;
+using Server.Features.Finance.Enums;
 using Server.Features.Finance.Models;
 using Server.Features.Finance.Services;
 

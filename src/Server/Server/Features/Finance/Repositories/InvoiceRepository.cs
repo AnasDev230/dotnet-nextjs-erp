@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Server.Core.Common;
+using Server.Features.Finance.Enums;
 using Server.Features.Finance.Models;
 using Server.Infrastructure.Persistence;
 

@@ -1,3 +1,5 @@
+using Server.Features.Sales.Enums;
+
 namespace Server.Features.Sales.Models;
 
 public class SalesOrderResponse

@@ -1,4 +1,5 @@
 using Server.Features.Finance;
+using Server.Features.Finance.Enums;
 
 namespace Server.Features.Dashboard.Models;
 
