@@ -140,6 +140,14 @@ export default function SalesOrderDetailPage() {
               label="تاريخ الإنشاء"
               value={formatDate(order.createdAt)}
             />
+            <InfoRow
+              label="نسبة الضريبة"
+              value={
+                order.taxRateName
+                  ? `${order.taxRateName} (${order.taxPct}%)`
+                  : "—"
+              }
+            />
           </div>
           {order.notes && (
             <div className="mt-4 space-y-1">
@@ -161,6 +169,7 @@ export default function SalesOrderDetailPage() {
                 <TableHead>المنتج</TableHead>
                 <TableHead>الكمية</TableHead>
                 <TableHead>سعر الوحدة</TableHead>
+                <TableHead>الخصم %</TableHead>
                 <TableHead className="text-left">الإجمالي</TableHead>
               </TableRow>
             </TableHeader>
@@ -177,6 +186,9 @@ export default function SalesOrderDetailPage() {
                   <TableCell className="text-muted-foreground">
                     {formatCurrency(item.unitPrice)}
                   </TableCell>
+                  <TableCell>
+                    {item.discountPct > 0 ? `${item.discountPct}%` : "—"}
+                  </TableCell>
                   <TableCell className="text-left font-medium">
                     {formatCurrency(item.lineTotal)}
                   </TableCell>
@@ -191,10 +203,50 @@ export default function SalesOrderDetailPage() {
                 <span className="text-muted-foreground">عدد المنتجات</span>
                 <span>{order.items.length}</span>
               </div>
+              <div className="flex items-center justify-between text-sm">
+                <span>المجموع الفرعي</span>
+                <span>{formatCurrency(order.subtotal)}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span>
+                  الخصم
+                  {order.discountPct > 0 && (
+                    <span className="text-muted-foreground">
+                      {" "}
+                      ({order.discountPct}%)
+                    </span>
+                  )}
+                </span>
+                <span className="text-destructive">
+                  {order.discountAmount > 0
+                    ? `-${formatCurrency(order.discountAmount)}`
+                    : formatCurrency(order.discountAmount)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span>الخاضع للضريبة</span>
+                <span>{formatCurrency(order.subtotal - order.discountAmount)}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span>
+                  الضريبة
+                  {order.taxRateName && order.taxPct > 0 && (
+                    <span className="text-muted-foreground">
+                      {" "}
+                      ({order.taxRateName} {order.taxPct}%)
+                    </span>
+                  )}
+                </span>
+                <span>
+                  {order.taxAmount > 0
+                    ? `+${formatCurrency(order.taxAmount)}`
+                    : formatCurrency(order.taxAmount)}
+                </span>
+              </div>
               <div className="flex items-center justify-between border-t border-border pt-2 text-base font-semibold">
                 <span>الإجمالي النهائي</span>
                 <span className="text-primary">
-                  {formatCurrency(order.totalAmount)}
+                  {formatCurrency(order.netAmount)}
                 </span>
               </div>
             </div>

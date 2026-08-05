@@ -26,6 +26,10 @@ public class SalesOrderItemConfiguration : IEntityTypeConfiguration<SalesOrderIt
         builder.Property(i => i.LineTotal)
             .HasPrecision(15, 2);
 
+        builder.Property(i => i.DiscountPct)
+            .HasPrecision(5, 2)
+            .HasDefaultValue(0m);
+
         builder.HasOne(i => i.Order)
             .WithMany(o => o.Items)
             .HasForeignKey(i => i.OrderId)

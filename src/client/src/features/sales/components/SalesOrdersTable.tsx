@@ -79,7 +79,7 @@ export default function SalesOrdersTable({
               <TableHead>العميل</TableHead>
               <TableHead>تاريخ الأمر</TableHead>
               <TableHead>عدد المنتجات</TableHead>
-              <TableHead>الإجمالي</TableHead>
+              <TableHead>صافي المبلغ</TableHead>
               <TableHead>الحالة</TableHead>
               <TableHead className="text-left">الإجراءات</TableHead>
             </TableRow>
@@ -130,7 +130,7 @@ export default function SalesOrdersTable({
               <TableHead>العميل</TableHead>
               <TableHead>تاريخ الأمر</TableHead>
               <TableHead>عدد المنتجات</TableHead>
-              <TableHead>الإجمالي</TableHead>
+              <TableHead>صافي المبلغ</TableHead>
               <TableHead>الحالة</TableHead>
               <TableHead className="text-left">الإجراءات</TableHead>
             </TableRow>
@@ -149,7 +149,7 @@ export default function SalesOrdersTable({
                 </TableCell>
                 <TableCell>{order.itemsCount}</TableCell>
                 <TableCell className="text-muted-foreground">
-                  {formatCurrency(order.totalAmount)}
+                  {formatCurrency(order.netAmount)}
                 </TableCell>
                 <TableCell>
                   <Badge variant={statusBadgeVariant[order.status]}>

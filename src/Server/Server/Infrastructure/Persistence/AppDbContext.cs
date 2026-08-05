@@ -18,6 +18,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<SalesOrder> SalesOrders => Set<SalesOrder>();
     public DbSet<SalesOrderItem> SalesOrderItems => Set<SalesOrderItem>();
+    public DbSet<TaxRate> TaxRates => Set<TaxRate>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {

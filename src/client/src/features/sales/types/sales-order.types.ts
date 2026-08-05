@@ -1,9 +1,16 @@
 export type SalesOrderStatus = "Draft" | "Confirmed" | "Cancelled";
 
+export interface TaxRate {
+  id: string;
+  name: string;
+  rate: number;
+}
+
 export interface SalesOrderItemRequest {
   productId: string;
   quantity: number;
   unitPrice: number;
+  discountPct: number;
 }
 
 export interface CreateSalesOrderRequest {
@@ -11,6 +18,8 @@ export interface CreateSalesOrderRequest {
   orderDate: string;
   deliveryDate?: string;
   notes?: string;
+  discountPct: number;
+  taxRateId?: string;
   items: SalesOrderItemRequest[];
 }
 
@@ -20,6 +29,8 @@ export interface UpdateSalesOrderRequest {
   deliveryDate?: string;
   status: SalesOrderStatus;
   notes?: string;
+  discountPct: number;
+  taxRateId?: string;
   items: SalesOrderItemRequest[];
 }
 
@@ -30,6 +41,7 @@ export interface SalesOrderItemResponse {
   productSku: string;
   quantity: number;
   unitPrice: number;
+  discountPct: number;
   lineTotal: number;
 }
 
@@ -43,6 +55,14 @@ export interface SalesOrderResponse {
   status: SalesOrderStatus;
   totalAmount: number;
   notes: string | null;
+  discountPct: number;
+  discountAmount: number;
+  taxRateId: string | null;
+  taxRateName: string | null;
+  taxPct: number;
+  taxAmount: number;
+  netAmount: number;
+  subtotal: number;
   createdAt: string;
   items: SalesOrderItemResponse[];
 }
@@ -54,6 +74,7 @@ export interface SalesOrderListItem {
   orderDate: string;
   status: SalesOrderStatus;
   totalAmount: number;
+  netAmount: number;
   itemsCount: number;
 }
 

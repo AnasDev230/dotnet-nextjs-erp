@@ -34,6 +34,26 @@ public class SalesOrderConfiguration : IEntityTypeConfiguration<SalesOrder>
         builder.Property(o => o.TotalAmount)
             .HasPrecision(15, 2);
 
+        builder.Property(o => o.DiscountPct)
+            .HasPrecision(5, 2)
+            .HasDefaultValue(0m);
+
+        builder.Property(o => o.DiscountAmount)
+            .HasPrecision(15, 2)
+            .HasDefaultValue(0m);
+
+        builder.Property(o => o.TaxPct)
+            .HasPrecision(5, 2)
+            .HasDefaultValue(0m);
+
+        builder.Property(o => o.TaxAmount)
+            .HasPrecision(15, 2)
+            .HasDefaultValue(0m);
+
+        builder.Property(o => o.NetAmount)
+            .HasPrecision(15, 2)
+            .HasDefaultValue(0m);
+
         builder.Property(o => o.Notes)
             .HasMaxLength(2000);
 
@@ -42,7 +62,13 @@ public class SalesOrderConfiguration : IEntityTypeConfiguration<SalesOrder>
             .HasForeignKey(o => o.CustomerId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasOne(o => o.TaxRate)
+            .WithMany()
+            .HasForeignKey(o => o.TaxRateId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         builder.HasIndex(o => o.CustomerId);
+        builder.HasIndex(o => o.TaxRateId);
         builder.HasIndex(o => o.OrderDate);
         builder.HasIndex(o => o.Status);
 

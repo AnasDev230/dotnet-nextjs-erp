@@ -41,6 +41,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<ISalesOrderRepository, SalesOrderRepository>();
         services.AddScoped<ISalesOrderService, SalesOrderService>();
+        services.AddScoped<ITaxRateRepository, TaxRateRepository>();
 
         return services;
     }

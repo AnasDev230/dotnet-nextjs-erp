@@ -7,6 +7,11 @@ export const salesOrderItemSchema = z.object({
   productId: z.string().min(1, "المنتج مطلوب"),
   quantity: z.coerce.number().positive("الكمية يجب أن تكون أكبر من صفر"),
   unitPrice: z.coerce.number().min(0, "سعر الوحدة يجب أن يكون 0 أو أكثر"),
+  discountPct: z.coerce
+    .number()
+    .min(0, "نسبة خصم السطر يجب أن تكون بين 0 و 100")
+    .max(100, "نسبة خصم السطر يجب أن تكون بين 0 و 100")
+    .default(0),
 });
 
 export const salesOrderFormSchema = z
@@ -22,6 +27,12 @@ export const salesOrderFormSchema = z
     status: z
       .enum(salesOrderStatusValues, { message: "حالة الأمر غير صحيحة" })
       .optional(),
+    discountPct: z.coerce
+      .number()
+      .min(0, "نسبة الخصم يجب أن تكون بين 0 و 100")
+      .max(100, "نسبة الخصم يجب أن تكون بين 0 و 100")
+      .default(0),
+    taxRateId: z.string().optional().or(z.literal("")),
     items: z.array(salesOrderItemSchema).min(1, "يجب إضافة منتج واحد على الأقل"),
   })
   .superRefine((data, ctx) => {

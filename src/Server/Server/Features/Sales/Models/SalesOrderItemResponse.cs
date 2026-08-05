@@ -8,5 +8,6 @@ public class SalesOrderItemResponse
     public string ProductSku { get; set; } = string.Empty;
     public decimal Quantity { get; set; }
     public decimal UnitPrice { get; set; }
+    public decimal DiscountPct { get; set; }
     public decimal LineTotal { get; set; }
 }

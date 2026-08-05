@@ -25,6 +25,7 @@ import {
 import { useCreateSalesOrder } from "../hooks/useCreateSalesOrder";
 import { useUpdateSalesOrder } from "../hooks/useUpdateSalesOrder";
 import { useCustomersForDropdown } from "../hooks/useCustomersForDropdown";
+import { useTaxRates } from "../hooks/useTaxRates";
 import { useProducts } from "@/features/inventory/hooks/useProducts";
 import SalesOrderItemsEditor from "./SalesOrderItemsEditor";
 import SalesOrderSummary from "./SalesOrderSummary";
@@ -66,8 +67,10 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
     pageSize: 1000,
     isActive: true,
   });
+  const { data: taxRatesData } = useTaxRates();
 
   const products = productsData?.items ?? [];
+  const taxRates = taxRatesData ?? [];
 
   const customerOptions = useMemo(
     () =>
@@ -76,6 +79,17 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
         label: `${customer.code} — ${customer.name}`,
       })),
     [customers]
+  );
+
+  const taxRateOptions = useMemo(
+    () => [
+      { value: "", label: "بدون ضريبة" },
+      ...taxRates.map((rate) => ({
+        value: rate.id,
+        label: `${rate.name} (${rate.rate}%)`,
+      })),
+    ],
+    [taxRates]
   );
 
   const productOptions = useMemo(
@@ -101,9 +115,10 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
         productId: item.productId,
         quantity: item.quantity,
         unitPrice: item.unitPrice,
+        discountPct: item.discountPct,
       }));
     }
-    return [{ productId: "", quantity: 1, unitPrice: 0 }];
+    return [{ productId: "", quantity: 1, unitPrice: 0, discountPct: 0 }];
   };
 
   const form = useForm<SalesOrderFormData>({
@@ -114,6 +129,8 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
       deliveryDate: order?.deliveryDate ?? "",
       notes: order?.notes ?? "",
       status: order?.status ?? "Draft",
+      discountPct: order?.discountPct ?? 0,
+      taxRateId: order?.taxRateId ?? "",
       items: buildDefaultItems(),
     },
   });
@@ -131,6 +148,7 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
       productId: item.productId,
       quantity: Number(item.quantity),
       unitPrice: Number(item.unitPrice),
+      discountPct: Number(item.discountPct) || 0,
     }));
 
     const base = {
@@ -138,6 +156,8 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
       orderDate: data.orderDate,
       deliveryDate: data.deliveryDate || undefined,
       notes: data.notes || undefined,
+      discountPct: Number(data.discountPct) || 0,
+      taxRateId: data.taxRateId || undefined,
     };
 
     try {
@@ -268,9 +288,9 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
             )}
           </div>
 
-          {/* Items + Summary */}
+          {/* Items + Discount/Tax + Summary */}
           <div className="grid gap-6 lg:grid-cols-3">
-            <div className="lg:col-span-2">
+            <div className="space-y-6 lg:col-span-2">
               <SalesOrderItemsEditor
                 control={form.control}
                 register={form.register}
@@ -281,8 +301,52 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
                 productOptions={productOptions}
                 productById={(id) => productsById.get(id)}
               />
+
+              {/* Discount & Tax */}
+              <Card className="border-border bg-card">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">الخصم والضريبة</CardTitle>
+                </CardHeader>
+                <CardContent className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="discountPct">خصم على الأمر (%)</Label>
+                    <Input
+                      id="discountPct"
+                      type="number"
+                      min={0}
+                      max={100}
+                      step={1}
+                      {...form.register("discountPct", {
+                        valueAsNumber: true,
+                      })}
+                      className="h-10"
+                    />
+                    {form.formState.errors.discountPct && (
+                      <p className="text-sm text-destructive">
+                        {form.formState.errors.discountPct.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="taxRateId">نسبة الضريبة</Label>
+                    <Select
+                      id="taxRateId"
+                      {...form.register("taxRateId")}
+                      options={taxRateOptions}
+                      placeholder="اختر نسبة الضريبة"
+                      className="h-10"
+                    />
+                    {form.formState.errors.taxRateId && (
+                      <p className="text-sm text-destructive">
+                        {form.formState.errors.taxRateId.message}
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-            <SalesOrderSummary control={form.control} />
+            <SalesOrderSummary control={form.control} taxRates={taxRates} />
           </div>
 
           {/* Actions */}
