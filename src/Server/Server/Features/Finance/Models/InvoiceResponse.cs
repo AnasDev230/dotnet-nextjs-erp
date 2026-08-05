@@ -1,3 +1,5 @@
+using Server.Features.Finance.Enums;
+
 namespace Server.Features.Finance.Models;
 
 public class InvoiceResponse

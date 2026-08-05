@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Server.Features.Dashboard.Models;
 using Server.Features.Finance;
+using Server.Features.Finance.Enums;
 using Server.Features.Sales;
+using Server.Features.Sales.Enums;
 using Server.Infrastructure.Persistence;
 
 namespace Server.Features.Dashboard.Repositories;

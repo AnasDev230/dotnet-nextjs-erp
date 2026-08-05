@@ -1,5 +1,6 @@
 using Server.Core.Common;
 using Server.Core.Exceptions;
+using Server.Features.Finance.Enums;
 using Server.Features.Finance.Models;
 using Server.Features.Finance.Repositories;
 using Server.Infrastructure.Persistence;

@@ -1,6 +1,7 @@
 using Server.Core.Common;
 using Server.Features.Finance;
 using Server.Features.Inventory;
+using Server.Features.Sales.Enums;
 
 namespace Server.Features.Sales;
 

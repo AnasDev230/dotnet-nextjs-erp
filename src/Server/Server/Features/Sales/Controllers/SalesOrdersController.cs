@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Core.Common;
 using Server.Core.Constants;
+using Server.Features.Sales.Enums;
 using Server.Features.Sales.Models;
 using Server.Features.Sales.Services;
 
