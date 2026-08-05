@@ -177,8 +177,23 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
     (stockData?.items ?? []).forEach((level) =>
       map.set(level.productId, level.quantityAvailable)
     );
+
+    // When editing an order, the stock already reserved by this very order is
+    // deducted from QuantityAvailable. Exclude it (only for the same warehouse)
+    // so the availability check matches the server's release-then-re-reserve
+    // logic. Without this, an order of 5 from a stock of 8 shows available 3
+    // and can never be confirmed/updated.
+    if (isEdit && order && order.warehouseId === watchedWarehouseId) {
+      order.items.forEach((item) => {
+        const current = map.get(item.productId);
+        if (current !== undefined) {
+          map.set(item.productId, current + item.quantity);
+        }
+      });
+    }
+
     return map;
-  }, [stockData]);
+  }, [stockData, isEdit, order, watchedWarehouseId]);
 
   useEffect(() => {
     stockRef.current = {
