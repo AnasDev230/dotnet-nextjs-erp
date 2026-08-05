@@ -1,6 +1,8 @@
 using FluentValidation;
 using Server.Core.Common;
 using Server.Core.Common.Contracts;
+using Server.Features.Dashboard.Repositories;
+using Server.Features.Dashboard.Services;
 using Server.Features.Finance.Repositories;
 using Server.Features.Finance.Services;
 using Server.Features.Inventory.Repositories;
@@ -52,6 +54,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IInvoiceService, InvoiceService>();
         services.AddScoped<IPaymentRepository, PaymentRepository>();
         services.AddScoped<IPaymentService, PaymentService>();
+
+        // Dashboard (read-only aggregations across Sales, Finance & Inventory)
+        services.AddScoped<IDashboardRepository, DashboardRepository>();
+        services.AddScoped<IDashboardService, DashboardService>();
 
         return services;
     }
