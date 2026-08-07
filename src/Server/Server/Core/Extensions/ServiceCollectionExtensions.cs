@@ -54,6 +54,8 @@ public static class ServiceCollectionExtensions
         // Purchasing
         services.AddScoped<ISupplierRepository, SupplierRepository>();
         services.AddScoped<ISupplierService, SupplierService>();
+        services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
+        services.AddScoped<IPurchaseOrderService, PurchaseOrderService>();
 
         // Finance
         services.AddScoped<IInvoiceRepository, InvoiceRepository>();
