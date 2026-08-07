@@ -7,6 +7,8 @@ using Server.Features.Finance.Repositories;
 using Server.Features.Finance.Services;
 using Server.Features.Inventory.Repositories;
 using Server.Features.Inventory.Services;
+using Server.Features.Purchasing.Repositories;
+using Server.Features.Purchasing.Services;
 using Server.Features.Sales.Repositories;
 using Server.Features.Sales.Services;
 using Server.Features.Security.Repositories;
@@ -48,6 +50,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ISalesOrderRepository, SalesOrderRepository>();
         services.AddScoped<ISalesOrderService, SalesOrderService>();
         services.AddScoped<ITaxRateRepository, TaxRateRepository>();
+
+        // Purchasing
+        services.AddScoped<ISupplierRepository, SupplierRepository>();
+        services.AddScoped<ISupplierService, SupplierService>();
 
         // Finance
         services.AddScoped<IInvoiceRepository, InvoiceRepository>();
