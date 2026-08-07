@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Server.Core.Common;
 using Server.Features.Finance;
 using Server.Features.Inventory;
+using Server.Features.Purchasing.Entities;
 using Server.Features.Sales;
 using Server.Features.Security;
 
@@ -23,6 +24,14 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     public DbSet<TaxRate> TaxRates => Set<TaxRate>();
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<Payment> Payments => Set<Payment>();
+
+    // Purchasing Module
+    public DbSet<Supplier> Suppliers => Set<Supplier>();
+    public DbSet<PurchaseOrder> PurchaseOrders => Set<PurchaseOrder>();
+    public DbSet<PoItem> PoItems => Set<PoItem>();
+    public DbSet<GoodsReceipt> GoodsReceipts => Set<GoodsReceipt>();
+    public DbSet<GoodsReceiptItem> GoodsReceiptItems => Set<GoodsReceiptItem>();
+    public DbSet<ProductSupplier> ProductSuppliers => Set<ProductSupplier>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
