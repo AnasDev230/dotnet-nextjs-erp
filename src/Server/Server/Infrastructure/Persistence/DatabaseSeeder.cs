@@ -38,7 +38,8 @@ public static class DatabaseSeeder
 {
     (Roles.SuperAdmin, "Super Administrator - Full access to all system modules and settings"),
     (Roles.SalesManager, "Sales Manager - Manage sales orders, customers, and invoices"),
-    (Roles.WarehouseKeeper, "Warehouse Keeper - Manage products, inventory levels, and stock movements")
+    (Roles.WarehouseKeeper, "Warehouse Keeper - Manage products, inventory levels, and stock movements"),
+    (Roles.PurchasingManager, "Purchasing Manager - Manage suppliers, purchase orders, and goods receipts")
 };
 
         foreach (var (name, description) in mvpRoles)
