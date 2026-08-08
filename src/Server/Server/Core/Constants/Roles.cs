@@ -6,7 +6,8 @@ public static class Roles
     public const string SalesManager = "SalesManager";
     public const string WarehouseKeeper = "WarehouseKeeper";
     public const string PurchasingManager = "PurchasingManager";
+    public const string HRManager = "HRManager";
 
     public static readonly string[] AllAdmins = { SuperAdmin };
-    public static readonly string[] AllManagers = { SuperAdmin, SalesManager, WarehouseKeeper, PurchasingManager };
+    public static readonly string[] AllManagers = { SuperAdmin, SalesManager, WarehouseKeeper, PurchasingManager, HRManager };
 }
