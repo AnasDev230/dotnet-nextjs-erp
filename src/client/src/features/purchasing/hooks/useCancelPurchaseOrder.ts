@@ -1,10 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { deletePurchaseOrder } from "../api/purchase-orders";
+import { cancelPurchaseOrder } from "../api/purchase-orders";
 
-export function useDeletePurchaseOrder() {
+export function useCancelPurchaseOrder() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => deletePurchaseOrder(id),
+    mutationFn: (id: string) => cancelPurchaseOrder(id),
     onSuccess: (_data, id) => {
       queryClient.invalidateQueries({ queryKey: ["purchase-orders"] });
       queryClient.invalidateQueries({ queryKey: ["purchase-order", id] });

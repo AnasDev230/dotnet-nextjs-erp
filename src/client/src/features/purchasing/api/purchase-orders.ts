@@ -57,6 +57,27 @@ export async function updatePurchaseOrder(
   return response.data.data;
 }
 
+export async function submitPurchaseOrder(id: string): Promise<string> {
+  const response = await apiClient.patch<ApiResponse<string>>(
+    `/purchase-orders/${id}/submit`
+  );
+  return response.data.data;
+}
+
+export async function approvePurchaseOrder(id: string): Promise<string> {
+  const response = await apiClient.patch<ApiResponse<string>>(
+    `/purchase-orders/${id}/approve`
+  );
+  return response.data.data;
+}
+
+export async function cancelPurchaseOrder(id: string): Promise<string> {
+  const response = await apiClient.patch<ApiResponse<string>>(
+    `/purchase-orders/${id}/cancel`
+  );
+  return response.data.data;
+}
+
 export async function deletePurchaseOrder(id: string): Promise<void> {
   await apiClient.delete(`/purchase-orders/${id}`);
 }

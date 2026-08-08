@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, AlertCircle } from "lucide-react";
@@ -44,6 +44,7 @@ function todayString(): string {
 
 export default function GoodsReceiptForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const createMutation = useCreateGoodsReceipt();
   const isPending = createMutation.isPending;
   const error = createMutation.error;
@@ -57,7 +58,7 @@ export default function GoodsReceiptForm() {
   const form = useForm<GoodsReceiptFormData>({
     resolver: zodResolver(goodsReceiptFormSchema) as Resolver<GoodsReceiptFormData>,
     defaultValues: {
-      purchaseOrderId: "",
+      purchaseOrderId: searchParams.get("orderId") ?? "",
       receiptDate: todayString(),
       warehouseId: "",
       notes: "",
