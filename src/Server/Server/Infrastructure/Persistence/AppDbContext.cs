@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Server.Core.Common;
 using Server.Features.Finance;
+using Server.Features.HR.Entities;
 using Server.Features.Inventory;
 using Server.Features.Purchasing.Entities;
 using Server.Features.Sales;
@@ -32,6 +33,10 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     public DbSet<GoodsReceipt> GoodsReceipts => Set<GoodsReceipt>();
     public DbSet<GoodsReceiptItem> GoodsReceiptItems => Set<GoodsReceiptItem>();
     public DbSet<ProductSupplier> ProductSuppliers => Set<ProductSupplier>();
+
+    // HR Module
+    public DbSet<Department> Departments => Set<Department>();
+    public DbSet<Employee> Employees => Set<Employee>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
