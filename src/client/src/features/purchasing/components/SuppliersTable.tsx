@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Pencil, Trash2, Ban, CheckCircle, Truck, Loader2 } from "lucide-react";
+import { Pencil, Trash2, Ban, CheckCircle, Truck } from "lucide-react";
 import {
   Table,
   TableHeader,
@@ -11,18 +11,16 @@ import {
   TableHead,
   TableCell,
   Button,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
+  Badge,
 } from "@/components/ui";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { SupplierStatusBadge } from "./SupplierStatusBadge";
 import { useDeleteSupplier } from "../hooks/useDeleteSupplier";
 import { useSuspendSupplier } from "../hooks/useSuspendSupplier";
 import { useActivateSupplier } from "../hooks/useActivateSupplier";
 import type { SupplierListItem } from "../types/supplier.types";
+
+type ConfirmAction = "delete" | "suspend" | "activate" | null;
 
 interface SuppliersTableProps {
   suppliers: SupplierListItem[];
@@ -43,10 +41,69 @@ export default function SuppliersTable({
   totalPages,
   onPageChange,
 }: SuppliersTableProps) {
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
+  const [selectedSupplierId, setSelectedSupplierId] = useState<string | null>(
+    null
+  );
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeleteSupplier();
   const suspendMutation = useSuspendSupplier();
   const activateMutation = useActivateSupplier();
+
+  const isLoadingAction =
+    deleteMutation.isPending ||
+    suspendMutation.isPending ||
+    activateMutation.isPending;
+
+  const openConfirm = (action: Exclude<ConfirmAction, null>, id: string) => {
+    setErrorMessage(null);
+    setSelectedSupplierId(id);
+    setConfirmAction(action);
+  };
+
+  const closeConfirm = () => {
+    setConfirmAction(null);
+    setSelectedSupplierId(null);
+    setErrorMessage(null);
+  };
+
+  const handleConfirm = () => {
+    if (!selectedSupplierId) return;
+    if (confirmAction === "delete") {
+      deleteMutation.mutate(selectedSupplierId, {
+        onSuccess: closeConfirm,
+        onError: (error: any) => {
+          setErrorMessage(
+            error?.response?.data?.message ||
+              error?.message ||
+              "حدث خطأ غير متوقع"
+          );
+        },
+      });
+    } else if (confirmAction === "suspend") {
+      suspendMutation.mutate(selectedSupplierId, {
+        onSuccess: closeConfirm,
+        onError: (error: any) => {
+          setErrorMessage(
+            error?.response?.data?.message ||
+              error?.message ||
+              "حدث خطأ غير متوقع"
+          );
+        },
+      });
+    } else if (confirmAction === "activate") {
+      activateMutation.mutate(selectedSupplierId, {
+        onSuccess: closeConfirm,
+        onError: (error: any) => {
+          setErrorMessage(
+            error?.response?.data?.message ||
+              error?.message ||
+              "حدث خطأ غير متوقع"
+          );
+        },
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -99,6 +156,36 @@ export default function SuppliersTable({
     );
   }
 
+  const confirmConfig = {
+    delete: {
+      open: confirmAction === "delete",
+      title: "حذف المورد",
+      description:
+        "هل أنت متأكد من حذف هذا المورد؟ لا يمكن التراجع عن هذا الإجراء.",
+      confirmLabel: "حذف",
+      variant: "danger" as const,
+    },
+    suspend: {
+      open: confirmAction === "suspend",
+      title: "إيقاف المورد",
+      description:
+        "هل أنت متأكد من إيقاف هذا المورد؟ لن يتمكن من استلام أوامر شراء جديدة حتى يتم تفعيله.",
+      confirmLabel: "إيقاف",
+      variant: "danger" as const,
+    },
+    activate: {
+      open: confirmAction === "activate",
+      title: "تفعيل المورد",
+      description:
+        "هل أنت متأكد من تفعيل هذا المورد؟ سيتمكن من استلام أوامر شراء جديدة.",
+      confirmLabel: "تفعيل",
+      variant: "info" as const,
+    },
+  };
+
+  const activeConfig =
+    confirmAction !== null ? confirmConfig[confirmAction] : null;
+
   return (
     <>
       <div className="rounded-lg border border-border">
@@ -144,8 +231,8 @@ export default function SuppliersTable({
                         size="icon"
                         className="h-8 w-8 text-destructive"
                         title="إيقاف المورد"
-                        disabled={suspendMutation.isPending}
-                        onClick={() => suspendMutation.mutate(supplier.id)}
+                        disabled={isLoadingAction}
+                        onClick={() => openConfirm("suspend", supplier.id)}
                       >
                         <Ban className="h-4 w-4" />
                       </Button>
@@ -155,8 +242,8 @@ export default function SuppliersTable({
                         size="icon"
                         className="h-8 w-8 text-emerald-600"
                         title="تفعيل المورد"
-                        disabled={activateMutation.isPending}
-                        onClick={() => activateMutation.mutate(supplier.id)}
+                        disabled={isLoadingAction}
+                        onClick={() => openConfirm("activate", supplier.id)}
                       >
                         <CheckCircle className="h-4 w-4" />
                       </Button>
@@ -165,7 +252,7 @@ export default function SuppliersTable({
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-destructive"
-                      onClick={() => setDeleteId(supplier.id)}
+                      onClick={() => openConfirm("delete", supplier.id)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -204,37 +291,19 @@ export default function SuppliersTable({
         </div>
       )}
 
-      <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>تأكيد الحذف</DialogTitle>
-            <DialogDescription>
-              هل أنت متأكد من حذف هذا المورد؟ لا يمكن التراجع عن هذا الإجراء.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteId(null)}>
-              إلغاء
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={deleteMutation.isPending}
-              onClick={() => {
-                if (deleteId) {
-                  deleteMutation.mutate(deleteId, {
-                    onSuccess: () => setDeleteId(null),
-                  });
-                }
-              }}
-            >
-              {deleteMutation.isPending && (
-                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              )}
-              حذف
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {activeConfig && (
+        <ConfirmDialog
+          open={activeConfig.open}
+          onOpenChange={(open) => !open && closeConfirm()}
+          title={activeConfig.title}
+          description={activeConfig.description}
+          confirmLabel={activeConfig.confirmLabel}
+          variant={activeConfig.variant}
+          isLoading={isLoadingAction}
+          errorMessage={errorMessage}
+          onConfirm={handleConfirm}
+        />
+      )}
     </>
   );
 }

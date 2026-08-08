@@ -8,7 +8,6 @@ import {
   Send,
   XCircle,
   FileText,
-  Loader2,
   AlertCircle,
 } from "lucide-react";
 import {
@@ -19,18 +18,15 @@ import {
   TableHead,
   TableCell,
   Button,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
 } from "@/components/ui";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { InvoiceStatusBadge } from "./InvoiceStatusBadge";
 import { useIssueInvoice } from "../hooks/useInvoices";
 import { useCancelInvoice } from "../hooks/useInvoices";
 import { useDeleteInvoice } from "../hooks/useInvoices";
 import type { InvoiceListItem } from "../types/invoice.types";
+
+type ConfirmAction = "delete" | "issue" | "cancel" | null;
 
 function formatCurrency(value: number): string {
   return `${value.toLocaleString("ar-SA", {
@@ -62,10 +58,69 @@ export default function InvoicesTable({
   totalPages,
   onPageChange,
 }: InvoicesTableProps) {
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(
+    null
+  );
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const issueMutation = useIssueInvoice();
   const cancelMutation = useCancelInvoice();
   const deleteMutation = useDeleteInvoice();
+
+  const isLoadingAction =
+    issueMutation.isPending ||
+    cancelMutation.isPending ||
+    deleteMutation.isPending;
+
+  const openConfirm = (action: Exclude<ConfirmAction, null>, id: string) => {
+    setErrorMessage(null);
+    setSelectedInvoiceId(id);
+    setConfirmAction(action);
+  };
+
+  const closeConfirm = () => {
+    setConfirmAction(null);
+    setSelectedInvoiceId(null);
+    setErrorMessage(null);
+  };
+
+  const handleConfirm = () => {
+    if (!selectedInvoiceId) return;
+    if (confirmAction === "delete") {
+      deleteMutation.mutate(selectedInvoiceId, {
+        onSuccess: closeConfirm,
+        onError: (error: any) => {
+          setErrorMessage(
+            error?.response?.data?.message ||
+              error?.message ||
+              "حدث خطأ غير متوقع"
+          );
+        },
+      });
+    } else if (confirmAction === "issue") {
+      issueMutation.mutate(selectedInvoiceId, {
+        onSuccess: closeConfirm,
+        onError: (error: any) => {
+          setErrorMessage(
+            error?.response?.data?.message ||
+              error?.message ||
+              "حدث خطأ غير متوقع"
+          );
+        },
+      });
+    } else if (confirmAction === "cancel") {
+      cancelMutation.mutate(selectedInvoiceId, {
+        onSuccess: closeConfirm,
+        onError: (error: any) => {
+          setErrorMessage(
+            error?.response?.data?.message ||
+              error?.message ||
+              "حدث خطأ غير متوقع"
+          );
+        },
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -119,6 +174,35 @@ export default function InvoicesTable({
       </div>
     );
   }
+
+  const confirmConfig = {
+    delete: {
+      open: confirmAction === "delete",
+      title: "حذف الفاتورة",
+      description:
+        "هل أنت متأكد من حذف هذه الفاتورة؟ لا يمكن حذف الفواتير بعد إصدارها. لا يمكن التراجع عن هذا الإجراء.",
+      confirmLabel: "حذف",
+      variant: "danger" as const,
+    },
+    issue: {
+      open: confirmAction === "issue",
+      title: "إصدار الفاتورة",
+      description:
+        "هل أنت متأكد من إصدار هذه الفاتورة؟ سيصبح من غير الممكن تعديلها أو حذفها بعد الإصدار.",
+      confirmLabel: "إصدار",
+      variant: "info" as const,
+    },
+    cancel: {
+      open: confirmAction === "cancel",
+      title: "إلغاء الفاتورة",
+      description:
+        "هل أنت متأكد من إلغاء هذه الفاتورة؟ لا يمكن إلغاء الفواتير المدفوعة بالكامل أو التي عليها دفعات.",
+      confirmLabel: "إلغاء",
+      variant: "danger" as const,
+    },
+  };
+
+  const activeConfig = confirmAction !== null ? confirmConfig[confirmAction] : null;
 
   return (
     <>
@@ -186,8 +270,8 @@ export default function InvoicesTable({
                         size="icon"
                         className="h-8 w-8"
                         title="إصدار الفاتورة"
-                        disabled={issueMutation.isPending}
-                        onClick={() => issueMutation.mutate(invoice.id)}
+                        disabled={isLoadingAction}
+                        onClick={() => openConfirm("issue", invoice.id)}
                       >
                         <Send className="h-4 w-4" />
                       </Button>
@@ -200,8 +284,8 @@ export default function InvoicesTable({
                           size="icon"
                           className="h-8 w-8 text-destructive"
                           title="إلغاء الفاتورة"
-                          disabled={cancelMutation.isPending}
-                          onClick={() => cancelMutation.mutate(invoice.id)}
+                          disabled={isLoadingAction}
+                          onClick={() => openConfirm("cancel", invoice.id)}
                         >
                           <XCircle className="h-4 w-4" />
                         </Button>
@@ -211,7 +295,7 @@ export default function InvoicesTable({
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-destructive"
-                        onClick={() => setDeleteId(invoice.id)}
+                        onClick={() => openConfirm("delete", invoice.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -251,42 +335,19 @@ export default function InvoicesTable({
         </div>
       )}
 
-      <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>تأكيد الحذف</DialogTitle>
-            <DialogDescription>
-              هل أنت متأكد من حذف الفاتورة؟
-              <br />
-              <span className="text-amber-600 font-medium">
-                لا يمكن حذف الفواتير بعد إصدارها.
-              </span>{" "}
-              لا يمكن التراجع عن هذا الإجراء.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteId(null)}>
-              إلغاء
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={deleteMutation.isPending}
-              onClick={() => {
-                if (deleteId) {
-                  deleteMutation.mutate(deleteId, {
-                    onSuccess: () => setDeleteId(null),
-                  });
-                }
-              }}
-            >
-              {deleteMutation.isPending && (
-                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              )}
-              حذف
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {activeConfig && (
+        <ConfirmDialog
+          open={activeConfig.open}
+          onOpenChange={(open) => !open && closeConfirm()}
+          title={activeConfig.title}
+          description={activeConfig.description}
+          confirmLabel={activeConfig.confirmLabel}
+          variant={activeConfig.variant}
+          isLoading={isLoadingAction}
+          errorMessage={errorMessage}
+          onConfirm={handleConfirm}
+        />
+      )}
     </>
   );
 }

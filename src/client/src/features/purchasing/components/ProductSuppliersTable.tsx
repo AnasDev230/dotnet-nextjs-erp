@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Trash2, Loader2, Package, Star } from "lucide-react";
+import { Trash2, Package, Star } from "lucide-react";
 import {
   Table,
   TableHeader,
@@ -11,14 +11,8 @@ import {
   TableCell,
   Button,
   Badge,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  Alert,
 } from "@/components/ui";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { useDeleteProductSupplier } from "../hooks/useDeleteProductSupplier";
 import type { ProductSupplierListItem } from "../types/product-supplier.types";
 import type { AxiosError } from "axios";
@@ -55,13 +49,27 @@ export default function ProductSuppliersTable({
   onPageChange,
 }: ProductSuppliersTableProps) {
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeleteProductSupplier();
 
-  const getErrorMessage = (): string | null => {
-    const error = deleteMutation.error;
-    if (!error) return null;
+  const getErrorMessage = (error: unknown): string => {
     const axiosError = error as AxiosError<ApiResponse<unknown>>;
-    return axiosError.response?.data?.message || error.message;
+    return (
+      axiosError.response?.data?.message ||
+      (error instanceof Error ? error.message : "") ||
+      "حدث خطأ غير متوقع"
+    );
+  };
+
+  const handleDelete = () => {
+    if (!deleteId) return;
+    deleteMutation.mutate(deleteId, {
+      onSuccess: () => {
+        setDeleteId(null);
+        setErrorMessage(null);
+      },
+      onError: (error) => setErrorMessage(getErrorMessage(error)),
+    });
   };
 
   if (isLoading) {
@@ -151,7 +159,11 @@ export default function ProductSuppliersTable({
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-destructive"
-                    onClick={() => setDeleteId(link.id)}
+                    disabled={deleteMutation.isPending}
+                    onClick={() => {
+                      setErrorMessage(null);
+                      setDeleteId(link.id);
+                    }}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -189,43 +201,22 @@ export default function ProductSuppliersTable({
         </div>
       )}
 
-      <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>تأكيد فك الارتباط</DialogTitle>
-            <DialogDescription>
-              هل أنت متأكد من فك الارتباط بين هذا المنتج والمورد؟ لا يمكن
-              التراجع عن هذا الإجراء.
-            </DialogDescription>
-            {getErrorMessage() && (
-              <Alert variant="destructive" className="mt-2">
-                <p>{getErrorMessage()}</p>
-              </Alert>
-            )}
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteId(null)}>
-              إلغاء
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={deleteMutation.isPending}
-              onClick={() => {
-                if (deleteId) {
-                  deleteMutation.mutate(deleteId, {
-                    onSuccess: () => setDeleteId(null),
-                  });
-                }
-              }}
-            >
-              {deleteMutation.isPending && (
-                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              )}
-              تأكيد
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeleteId(null);
+            setErrorMessage(null);
+          }
+        }}
+        title="فك الارتباط"
+        description="هل أنت متأكد من فك الارتباط بين هذا المنتج والمورد؟ لا يمكن التراجع عن هذا الإجراء."
+        confirmLabel="تأكيد"
+        variant="danger"
+        isLoading={deleteMutation.isPending}
+        errorMessage={errorMessage}
+        onConfirm={handleDelete}
+      />
     </>
   );
 }

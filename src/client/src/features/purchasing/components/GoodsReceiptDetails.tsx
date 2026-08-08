@@ -17,14 +17,9 @@ import {
   TableRow,
   TableHead,
   TableCell,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
   Alert,
 } from "@/components/ui";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { GoodsReceiptStatusBadge } from "./GoodsReceiptStatusBadge";
 import { useGoodsReceipt } from "../hooks/useGoodsReceipt";
 import { useCancelGoodsReceipt } from "../hooks/useCancelGoodsReceipt";
@@ -51,8 +46,25 @@ export default function GoodsReceiptDetails({
 }) {
   const router = useRouter();
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { data: receipt, isLoading, error } = useGoodsReceipt(receiptId);
   const cancelMutation = useCancelGoodsReceipt();
+
+  const handleCancel = () => {
+    cancelMutation.mutate(receiptId, {
+      onSuccess: () => {
+        setCancelOpen(false);
+        setErrorMessage(null);
+      },
+      onError: (error: any) => {
+        setErrorMessage(
+          error?.response?.data?.message ||
+            error?.message ||
+            "حدث خطأ غير متوقع"
+        );
+      },
+    });
+  };
 
   if (isLoading) {
     return (
@@ -107,7 +119,11 @@ export default function GoodsReceiptDetails({
             <Button
               variant="outline"
               className="text-destructive"
-              onClick={() => setCancelOpen(true)}
+              disabled={cancelMutation.isPending}
+              onClick={() => {
+                setErrorMessage(null);
+                setCancelOpen(true);
+              }}
             >
               <XCircle className="ml-2 h-4 w-4" />
               إلغاء الاستلام
@@ -183,36 +199,22 @@ export default function GoodsReceiptDetails({
         </CardContent>
       </Card>
 
-      <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>إلغاء الاستلام</DialogTitle>
-            <DialogDescription>
-              سيتم عكس الكميات من المخزون وتراجعها عن أمر الشراء. لا يمكن
-              التراجع عن هذا الإجراء.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCancelOpen(false)}>
-              تراجع
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={cancelMutation.isPending}
-              onClick={() => {
-                cancelMutation.mutate(receipt.id, {
-                  onSuccess: () => setCancelOpen(false),
-                });
-              }}
-            >
-              {cancelMutation.isPending && (
-                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              )}
-              تأكيد الإلغاء
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={cancelOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            setCancelOpen(false);
+            setErrorMessage(null);
+          }
+        }}
+        title="إلغاء الاستلام"
+        description="سيتم عكس الكميات من المخزون وتراجعها عن أمر الشراء. لا يمكن التراجع عن هذا الإجراء."
+        confirmLabel="تأكيد الإلغاء"
+        variant="danger"
+        isLoading={cancelMutation.isPending}
+        errorMessage={errorMessage}
+        onConfirm={handleCancel}
+      />
     </div>
   );
 }
