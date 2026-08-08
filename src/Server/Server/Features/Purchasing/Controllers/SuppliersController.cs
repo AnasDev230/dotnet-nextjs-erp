@@ -35,6 +35,13 @@ public class SuppliersController : ControllerBase
         return Ok(ApiResponse<SupplierResponse>.SuccessResult(result));
     }
 
+    [HttpGet("dropdown")]
+    public async Task<IActionResult> GetDropdown()
+    {
+        var result = await _service.GetForDropdownAsync();
+        return Ok(ApiResponse<List<SupplierListItemResponse>>.SuccessResult(result));
+    }
+
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponse<SupplierResponse>), StatusCodes.Status201Created)]
     public async Task<IActionResult> Create([FromBody] CreateSupplierRequest request)

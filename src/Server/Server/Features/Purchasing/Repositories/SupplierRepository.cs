@@ -71,6 +71,24 @@ public class SupplierRepository : ISupplierRepository
     public async Task<Supplier?> GetEntityByIdAsync(Guid id)
         => await _context.Suppliers.FirstOrDefaultAsync(s => s.Id == id);
 
+    public async Task<List<SupplierListItemResponse>> GetForDropdownAsync()
+        => await _context.Suppliers
+            .AsNoTracking()
+            .Where(s => s.Status == SupplierStatus.Active)
+            .OrderBy(s => s.Name)
+            .Select(s => new SupplierListItemResponse
+            {
+                Id = s.Id,
+                Code = s.Code,
+                Name = s.Name,
+                ContactPerson = s.ContactPerson,
+                Phone = s.Phone,
+                PaymentTerms = s.PaymentTerms,
+                Rating = s.Rating,
+                Status = s.Status
+            })
+            .ToListAsync();
+
     public async Task<string> GenerateCodeAsync()
     {
         var count = await _context.Suppliers.CountAsync();

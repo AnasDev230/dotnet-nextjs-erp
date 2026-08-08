@@ -37,6 +37,9 @@ public class SupplierService : ISupplierService
         return MapToResponse(supplier);
     }
 
+    public async Task<List<SupplierListItemResponse>> GetForDropdownAsync()
+        => await _repository.GetForDropdownAsync();
+
     public async Task<SupplierResponse> CreateAsync(CreateSupplierRequest request)
     {
         if (await _repository.IsNameUniqueAsync(request.Name))
