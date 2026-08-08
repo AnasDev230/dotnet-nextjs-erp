@@ -5,6 +5,8 @@ using Server.Features.Dashboard.Repositories;
 using Server.Features.Dashboard.Services;
 using Server.Features.Finance.Repositories;
 using Server.Features.Finance.Services;
+using Server.Features.HR.Repositories;
+using Server.Features.HR.Services;
 using Server.Features.Inventory.Repositories;
 using Server.Features.Inventory.Services;
 using Server.Features.Purchasing.Repositories;
@@ -70,6 +72,10 @@ public static class ServiceCollectionExtensions
         // Dashboard (read-only aggregations across Sales, Finance & Inventory)
         services.AddScoped<IDashboardRepository, DashboardRepository>();
         services.AddScoped<IDashboardService, DashboardService>();
+
+        // HR (Departments registered here; Employees registered in Phase 5)
+        services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+        services.AddScoped<IDepartmentService, DepartmentService>();
 
         return services;
     }
