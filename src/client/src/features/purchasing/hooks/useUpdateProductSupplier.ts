@@ -13,6 +13,7 @@ export function useUpdateProductSupplier() {
       data: UpdateProductSupplierRequest;
     }) => updateProductSupplier(id, data),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["product-suppliers"] });
       queryClient.invalidateQueries({
         queryKey: ["product-suppliers-by-product"],
       });

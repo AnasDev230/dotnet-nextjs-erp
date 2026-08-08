@@ -1,3 +1,4 @@
+using Server.Core.Common;
 using Server.Features.Purchasing.Entities;
 using Server.Features.Purchasing.Models;
 
@@ -5,6 +6,9 @@ namespace Server.Features.Purchasing.Repositories;
 
 public interface IProductSupplierRepository
 {
+    Task<PagedResult<ProductSupplierListItemResponse>> GetAllAsync(
+        int page, int pageSize, string? searchTerm,
+        Guid? productId, Guid? supplierId);
     Task<List<ProductSupplierListItemResponse>> GetByProductIdAsync(Guid productId);
     Task<List<ProductSupplierListItemResponse>> GetBySupplierIdAsync(Guid supplierId);
     Task<ProductSupplierResponse?> GetByIdAsync(Guid id);

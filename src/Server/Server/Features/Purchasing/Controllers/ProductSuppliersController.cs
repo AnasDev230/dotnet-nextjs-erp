@@ -16,6 +16,18 @@ public class ProductSuppliersController : ControllerBase
 
     public ProductSuppliersController(IProductSupplierService service) => _service = service;
 
+    [HttpGet]
+    public async Task<IActionResult> GetAll(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        [FromQuery] string? search = null,
+        [FromQuery] Guid? productId = null,
+        [FromQuery] Guid? supplierId = null)
+    {
+        var result = await _service.GetAllAsync(page, pageSize, search, productId, supplierId);
+        return Ok(ApiResponse<PagedResult<ProductSupplierListItemResponse>>.SuccessResult(result));
+    }
+
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponse<ProductSupplierResponse>), StatusCodes.Status201Created)]
     public async Task<IActionResult> Create([FromBody] CreateProductSupplierRequest request)

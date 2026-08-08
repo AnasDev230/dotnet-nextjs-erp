@@ -32,6 +32,11 @@ public class ProductSupplierService : IProductSupplierService
         _currentUserService = currentUserService;
     }
 
+    public async Task<PagedResult<ProductSupplierListItemResponse>> GetAllAsync(
+        int page, int pageSize, string? searchTerm,
+        Guid? productId, Guid? supplierId)
+        => await _repository.GetAllAsync(page, pageSize, searchTerm, productId, supplierId);
+
     public async Task<ProductSupplierResponse> CreateAsync(CreateProductSupplierRequest request)
     {
         var product = await _productRepository.GetEntityByIdAsync(request.ProductId)

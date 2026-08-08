@@ -6,6 +6,7 @@ export function useDeleteProductSupplier() {
   return useMutation({
     mutationFn: (id: string) => deleteProductSupplier(id),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["product-suppliers"] });
       queryClient.invalidateQueries({
         queryKey: ["product-suppliers-by-product"],
       });

@@ -1,11 +1,29 @@
 import apiClient from "@/lib/api-client";
 import type { ApiResponse } from "@/types/auth";
+import type { PagedResult } from "../../sales/types/sales-order.types";
 import type {
   ProductSupplierListItem,
   ProductSupplierDetail,
   CreateProductSupplierRequest,
   UpdateProductSupplierRequest,
 } from "../types/product-supplier.types";
+
+export interface FetchProductSuppliersParams {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  productId?: string;
+  supplierId?: string;
+}
+
+export async function fetchProductSuppliers(
+  params: FetchProductSuppliersParams = {}
+): Promise<PagedResult<ProductSupplierListItem>> {
+  const response = await apiClient.get<
+    ApiResponse<PagedResult<ProductSupplierListItem>>
+  >("/product-suppliers", { params });
+  return response.data.data;
+}
 
 export async function fetchProductSuppliersByProduct(
   productId: string
