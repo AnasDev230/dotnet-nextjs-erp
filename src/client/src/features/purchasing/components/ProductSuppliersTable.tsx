@@ -1,12 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Trash2,
-  Loader2,
-  Package,
-  Star,
-} from "lucide-react";
+import { Trash2, Loader2, Package, Star } from "lucide-react";
 import {
   Table,
   TableHeader,
@@ -22,9 +17,12 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
+  Alert,
 } from "@/components/ui";
 import { useDeleteProductSupplier } from "../hooks/useDeleteProductSupplier";
 import type { ProductSupplierListItem } from "../types/product-supplier.types";
+import type { AxiosError } from "axios";
+import type { ApiResponse } from "@/types/auth";
 
 function formatCurrency(value: number): string {
   return `${value.toLocaleString("ar-SA", {
@@ -38,6 +36,11 @@ interface ProductSuppliersTableProps {
   isLoading: boolean;
   title: string;
   emptyMessage: string;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 }
 
 export default function ProductSuppliersTable({
@@ -45,9 +48,21 @@ export default function ProductSuppliersTable({
   isLoading,
   title,
   emptyMessage,
+  page,
+  pageSize,
+  totalCount,
+  totalPages,
+  onPageChange,
 }: ProductSuppliersTableProps) {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const deleteMutation = useDeleteProductSupplier();
+
+  const getErrorMessage = (): string | null => {
+    const error = deleteMutation.error;
+    if (!error) return null;
+    const axiosError = error as AxiosError<ApiResponse<unknown>>;
+    return axiosError.response?.data?.message || error.message;
+  };
 
   if (isLoading) {
     return (
@@ -147,6 +162,33 @@ export default function ProductSuppliersTable({
         </Table>
       </div>
 
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between pt-4">
+          <p className="text-sm text-muted-foreground">
+            عرض {(page - 1) * pageSize + 1}–
+            {Math.min(page * pageSize, totalCount)} من {totalCount}
+          </p>
+          <div className="flex gap-1">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page <= 1}
+              onClick={() => onPageChange(page - 1)}
+            >
+              السابق
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={page >= totalPages}
+              onClick={() => onPageChange(page + 1)}
+            >
+              التالي
+            </Button>
+          </div>
+        </div>
+      )}
+
       <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <DialogContent>
           <DialogHeader>
@@ -155,6 +197,11 @@ export default function ProductSuppliersTable({
               هل أنت متأكد من فك الارتباط بين هذا المنتج والمورد؟ لا يمكن
               التراجع عن هذا الإجراء.
             </DialogDescription>
+            {getErrorMessage() && (
+              <Alert variant="destructive" className="mt-2">
+                <p>{getErrorMessage()}</p>
+              </Alert>
+            )}
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteId(null)}>

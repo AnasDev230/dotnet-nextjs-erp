@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Server.Core.Common;
 using Server.Features.Purchasing.Entities;
 using Server.Features.Purchasing.Models;
 using Server.Infrastructure.Persistence;
@@ -12,6 +13,63 @@ public class ProductSupplierRepository : IProductSupplierRepository
     public ProductSupplierRepository(AppDbContext context)
     {
         _context = context;
+    }
+
+    public async Task<PagedResult<ProductSupplierListItemResponse>> GetAllAsync(
+        int page, int pageSize, string? searchTerm,
+        Guid? productId, Guid? supplierId)
+    {
+        var query = _context.ProductSuppliers
+            .AsNoTracking()
+            .Include(ps => ps.Product)
+            .Include(ps => ps.Supplier)
+            .AsQueryable();
+
+        if (productId.HasValue)
+            query = query.Where(ps => ps.ProductId == productId.Value);
+
+        if (supplierId.HasValue)
+            query = query.Where(ps => ps.SupplierId == supplierId.Value);
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var term = searchTerm.Trim();
+            query = query.Where(ps =>
+                ps.Product.Name.Contains(term) ||
+                ps.Supplier.Name.Contains(term) ||
+                (ps.SupplierSku != null && ps.SupplierSku.Contains(term)));
+        }
+
+        var totalCount = await query.CountAsync();
+
+        var items = await query
+            .OrderByDescending(ps => ps.IsPrimary)
+            .ThenByDescending(ps => ps.CreatedAt)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(ps => new ProductSupplierListItemResponse
+            {
+                Id = ps.Id,
+                ProductId = ps.ProductId,
+                ProductName = ps.Product.Name,
+                ProductSku = ps.Product.Sku,
+                SupplierId = ps.SupplierId,
+                SupplierName = ps.Supplier.Name,
+                SupplierCode = ps.Supplier.Code,
+                SupplierSku = ps.SupplierSku,
+                LeadTimeDays = ps.LeadTimeDays,
+                UnitCost = ps.UnitCost,
+                IsPrimary = ps.IsPrimary
+            })
+            .ToListAsync();
+
+        return new PagedResult<ProductSupplierListItemResponse>
+        {
+            Items = items,
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount
+        };
     }
 
     public async Task<List<ProductSupplierListItemResponse>> GetByProductIdAsync(Guid productId)

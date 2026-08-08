@@ -8,6 +8,7 @@ export function useCreateProductSupplier() {
     mutationFn: (data: CreateProductSupplierRequest) =>
       createProductSupplier(data),
     onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["product-suppliers"] });
       queryClient.invalidateQueries({
         queryKey: ["product-suppliers-by-product", variables.productId],
       });
