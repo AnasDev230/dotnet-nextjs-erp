@@ -1,8 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { ArrowRight, Loader2, Pencil, AlertCircle } from "lucide-react";
+import { ArrowRight, Loader2, AlertCircle } from "lucide-react";
 import {
   Button,
   Card,
@@ -19,6 +18,7 @@ import {
   Alert,
 } from "@/components/ui";
 import { PurchaseOrderStatusBadge } from "./PurchaseOrderStatusBadge";
+import { PurchaseOrderStatusActions } from "./PurchaseOrderStatusActions";
 import { usePurchaseOrder } from "../hooks/usePurchaseOrder";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
@@ -83,9 +83,6 @@ export default function PurchaseOrderDetails({
     );
   }
 
-  const canEdit =
-    order.status === "Draft" || order.status === "Submitted";
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -101,21 +98,11 @@ export default function PurchaseOrderDetails({
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {canEdit && (
-            <Link href={`/purchasing/orders/${order.id}/edit`}>
-              <Button variant="outline">
-                <Pencil className="ml-2 h-4 w-4" />
-                تعديل
-              </Button>
-            </Link>
-          )}
-          <Link href={`/purchasing/receipts/new?orderId=${order.id}`}>
-            <Button disabled={order.status !== "Approved" && order.status !== "PartiallyReceived"}>
-              تسجيل استلام
-            </Button>
-          </Link>
+          <PurchaseOrderStatusBadge status={order.status} />
         </div>
       </div>
+
+      <PurchaseOrderStatusActions orderId={order.id} status={order.status} />
 
       <Card className="border-border bg-card">
         <CardHeader className="pb-3">
