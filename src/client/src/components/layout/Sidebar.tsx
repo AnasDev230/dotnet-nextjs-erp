@@ -12,6 +12,10 @@ import {
   ClipboardCheck,
   ChevronDown,
   ShoppingCart,
+  ShoppingBag,
+  Truck,
+  Link2,
+  PackageCheck,
   Users,
   Settings,
   LogOut,
@@ -56,6 +60,17 @@ const financeItems: SubNavItem[] = [
   { label: "الفواتير", href: "/finance/invoices", icon: ReceiptText },
 ];
 
+const purchasingItems: SubNavItem[] = [
+  { label: "أوامر الشراء", href: "/purchasing/orders", icon: ShoppingBag },
+  { label: "استلام البضاعة", href: "/purchasing/receipts", icon: PackageCheck },
+  { label: "الموردون", href: "/purchasing/suppliers", icon: Truck },
+  {
+    label: "ربط المنتجات بالموردين",
+    href: "/purchasing/product-suppliers",
+    icon: Link2,
+  },
+];
+
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -63,9 +78,11 @@ export default function Sidebar() {
   const isInventoryActive = pathname.startsWith("/inventory");
   const isSalesActive = pathname.startsWith("/sales");
   const isFinanceActive = pathname.startsWith("/finance");
+  const isPurchasingActive = pathname.startsWith("/purchasing");
   const [inventoryOpen, setInventoryOpen] = useState(isInventoryActive);
   const [salesOpen, setSalesOpen] = useState(isSalesActive);
   const [financeOpen, setFinanceOpen] = useState(isFinanceActive);
+  const [purchasingOpen, setPurchasingOpen] = useState(isPurchasingActive);
 
   const handleLogout = async () => {
     await logout();
@@ -242,6 +259,55 @@ export default function Sidebar() {
           {financeOpen && (
             <div className="mt-1 space-y-1 pr-3">
               {financeItems.map((item) => {
+                const isActive = pathname === item.href;
+                const Icon = item.icon;
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "flex h-9 items-center gap-2 rounded-md px-3 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      isActive
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Purchasing group */}
+        <div>
+          <button
+            type="button"
+            onClick={() => setPurchasingOpen((prev) => !prev)}
+            aria-expanded={purchasingOpen}
+            className={cn(
+              "flex h-10 w-full items-center gap-2 rounded-md px-3 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              isPurchasingActive
+                ? "bg-primary/10 text-primary font-medium"
+                : "text-foreground"
+            )}
+          >
+            <ShoppingBag className="h-5 w-5 shrink-0" />
+            <span className="flex-1 text-right">المشتريات</span>
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 transition-transform",
+                purchasingOpen && "rotate-180"
+              )}
+            />
+          </button>
+
+          {purchasingOpen && (
+            <div className="mt-1 space-y-1 pr-3">
+              {purchasingItems.map((item) => {
                 const isActive = pathname === item.href;
                 const Icon = item.icon;
 

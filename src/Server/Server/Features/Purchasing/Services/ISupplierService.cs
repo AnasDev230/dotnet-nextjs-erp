@@ -8,6 +8,7 @@ public interface ISupplierService
 {
     Task<PagedResult<SupplierListItemResponse>> GetAllAsync(int page, int pageSize, string? searchTerm, SupplierStatus? status);
     Task<SupplierResponse> GetByIdAsync(Guid id);
+    Task<List<SupplierListItemResponse>> GetForDropdownAsync();
     Task<SupplierResponse> CreateAsync(CreateSupplierRequest request);
     Task<SupplierResponse> UpdateAsync(Guid id, UpdateSupplierRequest request);
     Task SuspendAsync(Guid id);

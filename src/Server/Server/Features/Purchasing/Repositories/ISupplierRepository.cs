@@ -10,6 +10,7 @@ public interface ISupplierRepository
     Task<PagedResult<SupplierListItemResponse>> GetAllAsync(int page, int pageSize, string? searchTerm, SupplierStatus? status);
     Task<Supplier?> GetByIdAsync(Guid id);
     Task<Supplier?> GetEntityByIdAsync(Guid id);
+    Task<List<SupplierListItemResponse>> GetForDropdownAsync();
     Task<string> GenerateCodeAsync();
     Task<bool> IsNameUniqueAsync(string name, Guid? excludeId = null);
     Task AddAsync(Supplier supplier);
