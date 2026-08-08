@@ -1,8 +1,16 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, Loader2, Pencil, Ban, CheckCircle, AlertCircle } from "lucide-react";
+import {
+  ArrowRight,
+  Loader2,
+  Pencil,
+  Ban,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
 import {
   Button,
   Card,
@@ -12,6 +20,7 @@ import {
   Label,
   Alert,
 } from "@/components/ui";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { SupplierStatusBadge } from "./SupplierStatusBadge";
 import { useSupplier } from "../hooks/useSupplier";
 import { useSuspendSupplier } from "../hooks/useSuspendSupplier";
@@ -31,10 +40,48 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 
 export default function SupplierDetails({ supplierId }: { supplierId: string }) {
   const router = useRouter();
+  const [confirmAction, setConfirmAction] = useState<"suspend" | "activate" | null>(
+    null
+  );
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { data: supplier, isLoading, error } = useSupplier(supplierId);
   const { data: linkedProducts } = useProductSuppliersBySupplier(supplierId);
   const suspendMutation = useSuspendSupplier();
   const activateMutation = useActivateSupplier();
+
+  const isLoadingAction =
+    suspendMutation.isPending || activateMutation.isPending;
+
+  const closeConfirm = () => {
+    setConfirmAction(null);
+    setErrorMessage(null);
+  };
+
+  const handleConfirm = () => {
+    if (confirmAction === "suspend") {
+      suspendMutation.mutate(supplierId, {
+        onSuccess: closeConfirm,
+        onError: (error: any) => {
+          setErrorMessage(
+            error?.response?.data?.message ||
+              error?.message ||
+              "حدث خطأ غير متوقع"
+          );
+        },
+      });
+    } else if (confirmAction === "activate") {
+      activateMutation.mutate(supplierId, {
+        onSuccess: closeConfirm,
+        onError: (error: any) => {
+          setErrorMessage(
+            error?.response?.data?.message ||
+              error?.message ||
+              "حدث خطأ غير متوقع"
+          );
+        },
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -93,8 +140,11 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
             <Button
               variant="outline"
               className="text-destructive"
-              disabled={suspendMutation.isPending}
-              onClick={() => suspendMutation.mutate(supplier.id)}
+              disabled={isLoadingAction}
+              onClick={() => {
+                setErrorMessage(null);
+                setConfirmAction("suspend");
+              }}
             >
               <Ban className="ml-2 h-4 w-4" />
               إيقاف
@@ -102,8 +152,11 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
           ) : (
             <Button
               className="text-emerald-600"
-              disabled={activateMutation.isPending}
-              onClick={() => activateMutation.mutate(supplier.id)}
+              disabled={isLoadingAction}
+              onClick={() => {
+                setErrorMessage(null);
+                setConfirmAction("activate");
+              }}
             >
               <CheckCircle className="ml-2 h-4 w-4" />
               تفعيل
@@ -179,6 +232,24 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
           )}
         </CardContent>
       </Card>
+
+      <ConfirmDialog
+        open={confirmAction !== null}
+        onOpenChange={(open) => !open && closeConfirm()}
+        title={
+          confirmAction === "suspend" ? "إيقاف المورد" : "تفعيل المورد"
+        }
+        description={
+          confirmAction === "suspend"
+            ? "هل أنت متأكد من إيقاف هذا المورد؟ لن يتمكن من استلام أوامر شراء جديدة حتى يتم تفعيله."
+            : "هل أنت متأكد من تفعيل هذا المورد؟ سيتمكن من استلام أوامر شراء جديدة."
+        }
+        confirmLabel={confirmAction === "suspend" ? "إيقاف" : "تفعيل"}
+        variant={confirmAction === "suspend" ? "danger" : "info"}
+        isLoading={isLoadingAction}
+        errorMessage={errorMessage}
+        onConfirm={handleConfirm}
+      />
     </div>
   );
 }

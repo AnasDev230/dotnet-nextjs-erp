@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, XCircle, PackageCheck, Loader2 } from "lucide-react";
+import { Eye, XCircle, PackageCheck } from "lucide-react";
 import {
   Table,
   TableHeader,
@@ -11,13 +11,8 @@ import {
   TableHead,
   TableCell,
   Button,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
 } from "@/components/ui";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { GoodsReceiptStatusBadge } from "./GoodsReceiptStatusBadge";
 import { useCancelGoodsReceipt } from "../hooks/useCancelGoodsReceipt";
 import type { GoodsReceiptListItem } from "../types/goods-receipt.types";
@@ -46,7 +41,25 @@ export default function GoodsReceiptsTable({
   onPageChange,
 }: GoodsReceiptsTableProps) {
   const [cancelId, setCancelId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const cancelMutation = useCancelGoodsReceipt();
+
+  const handleCancel = () => {
+    if (!cancelId) return;
+    cancelMutation.mutate(cancelId, {
+      onSuccess: () => {
+        setCancelId(null);
+        setErrorMessage(null);
+      },
+      onError: (error: any) => {
+        setErrorMessage(
+          error?.response?.data?.message ||
+            error?.message ||
+            "حدث خطأ غير متوقع"
+        );
+      },
+    });
+  };
 
   if (isLoading) {
     return (
@@ -146,7 +159,11 @@ export default function GoodsReceiptsTable({
                         size="icon"
                         className="h-8 w-8 text-destructive"
                         title="إلغاء الاستلام"
-                        onClick={() => setCancelId(receipt.id)}
+                        disabled={cancelMutation.isPending}
+                        onClick={() => {
+                          setErrorMessage(null);
+                          setCancelId(receipt.id);
+                        }}
                       >
                         <XCircle className="h-4 w-4" />
                       </Button>
@@ -186,38 +203,22 @@ export default function GoodsReceiptsTable({
         </div>
       )}
 
-      <Dialog open={!!cancelId} onOpenChange={() => setCancelId(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>تأكيد إلغاء الاستلام</DialogTitle>
-            <DialogDescription>
-              سيتم عكس الكميات من المخزون وتراجعها عن أمر الشراء. لا يمكن
-              التراجع عن هذا الإجراء.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCancelId(null)}>
-              إلغاء
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={cancelMutation.isPending}
-              onClick={() => {
-                if (cancelId) {
-                  cancelMutation.mutate(cancelId, {
-                    onSuccess: () => setCancelId(null),
-                  });
-                }
-              }}
-            >
-              {cancelMutation.isPending && (
-                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              )}
-              تأكيد الإلغاء
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={cancelId !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setCancelId(null);
+            setErrorMessage(null);
+          }
+        }}
+        title="إلغاء الاستلام"
+        description="سيتم عكس الكميات من المخزون وتراجعها عن أمر الشراء. لا يمكن التراجع عن هذا الإجراء."
+        confirmLabel="تأكيد الإلغاء"
+        variant="danger"
+        isLoading={cancelMutation.isPending}
+        errorMessage={errorMessage}
+        onConfirm={handleCancel}
+      />
     </>
   );
 }

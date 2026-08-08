@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, Trash2, ShoppingCart, Loader2 } from "lucide-react";
+import { Eye, Trash2, ShoppingCart } from "lucide-react";
 import {
   Table,
   TableHeader,
@@ -11,13 +11,8 @@ import {
   TableHead,
   TableCell,
   Button,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
 } from "@/components/ui";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { PurchaseOrderStatusBadge } from "./PurchaseOrderStatusBadge";
 import { useDeletePurchaseOrder } from "../hooks/useDeletePurchaseOrder";
 import type { PurchaseOrderListItem } from "../types/purchase-order.types";
@@ -53,7 +48,25 @@ export default function PurchaseOrdersTable({
   onPageChange,
 }: PurchaseOrdersTableProps) {
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeletePurchaseOrder();
+
+  const handleDelete = () => {
+    if (!deleteId) return;
+    deleteMutation.mutate(deleteId, {
+      onSuccess: () => {
+        setDeleteId(null);
+        setErrorMessage(null);
+      },
+      onError: (error: any) => {
+        setErrorMessage(
+          error?.response?.data?.message ||
+            error?.message ||
+            "حدث خطأ غير متوقع"
+        );
+      },
+    });
+  };
 
   if (isLoading) {
     return (
@@ -148,7 +161,11 @@ export default function PurchaseOrdersTable({
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-destructive"
-                        onClick={() => setDeleteId(order.id)}
+                        disabled={deleteMutation.isPending}
+                        onClick={() => {
+                          setErrorMessage(null);
+                          setDeleteId(order.id);
+                        }}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -188,37 +205,22 @@ export default function PurchaseOrdersTable({
         </div>
       )}
 
-      <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>تأكيد الحذف</DialogTitle>
-            <DialogDescription>
-              هل أنت متأكد من حذف أمر الشراء؟ لا يمكن التراجع عن هذا الإجراء.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteId(null)}>
-              إلغاء
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={deleteMutation.isPending}
-              onClick={() => {
-                if (deleteId) {
-                  deleteMutation.mutate(deleteId, {
-                    onSuccess: () => setDeleteId(null),
-                  });
-                }
-              }}
-            >
-              {deleteMutation.isPending && (
-                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              )}
-              حذف
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeleteId(null);
+            setErrorMessage(null);
+          }
+        }}
+        title="حذف أمر الشراء"
+        description="هل أنت متأكد من حذف أمر الشراء؟ لا يمكن التراجع عن هذا الإجراء."
+        confirmLabel="حذف"
+        variant="danger"
+        isLoading={deleteMutation.isPending}
+        errorMessage={errorMessage}
+        onConfirm={handleDelete}
+      />
     </>
   );
 }

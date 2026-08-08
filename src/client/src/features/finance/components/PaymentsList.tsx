@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Trash2, Wallet, Loader2 } from "lucide-react";
+import { Trash2, Wallet } from "lucide-react";
 import {
   Table,
   TableHeader,
@@ -10,13 +10,8 @@ import {
   TableHead,
   TableCell,
   Button,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
 } from "@/components/ui";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { usePayments, useDeletePayment } from "../hooks/usePayments";
 import type { PaymentMethod } from "../types/payment.types";
 
@@ -49,7 +44,25 @@ export default function PaymentsList({
 }: PaymentsListProps) {
   const { data: payments, isLoading } = usePayments(invoiceId);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeletePayment();
+
+  const handleDelete = () => {
+    if (!deleteId) return;
+    deleteMutation.mutate(deleteId, {
+      onSuccess: () => {
+        setDeleteId(null);
+        setErrorMessage(null);
+      },
+      onError: (error: any) => {
+        setErrorMessage(
+          error?.response?.data?.message ||
+            error?.message ||
+            "حدث خطأ غير متوقع"
+        );
+      },
+    });
+  };
 
   if (isLoading) {
     return (
@@ -128,7 +141,10 @@ export default function PaymentsList({
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-destructive"
-                      onClick={() => setDeleteId(payment.id)}
+                      onClick={() => {
+                        setErrorMessage(null);
+                        setDeleteId(payment.id);
+                      }}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -152,37 +168,22 @@ export default function PaymentsList({
         </div>
       )}
 
-      <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>تأكيد حذف الدفعة</DialogTitle>
-            <DialogDescription>
-              هل أنت متأكد من حذف هذه الدفعة؟ سيتم إعادة احتساب حالة الفاتورة.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteId(null)}>
-              إلغاء
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={deleteMutation.isPending}
-              onClick={() => {
-                if (deleteId) {
-                  deleteMutation.mutate(deleteId, {
-                    onSuccess: () => setDeleteId(null),
-                  });
-                }
-              }}
-            >
-              {deleteMutation.isPending && (
-                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              )}
-              حذف
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeleteId(null);
+            setErrorMessage(null);
+          }
+        }}
+        title="حذف الدفعة"
+        description="هل أنت متأكد من حذف هذه الدفعة؟ سيتم إعادة احتساب حالة الفاتورة. لا يمكن التراجع عن هذا الإجراء."
+        confirmLabel="حذف"
+        variant="danger"
+        isLoading={deleteMutation.isPending}
+        errorMessage={errorMessage}
+        onConfirm={handleDelete}
+      />
     </>
   );
 }

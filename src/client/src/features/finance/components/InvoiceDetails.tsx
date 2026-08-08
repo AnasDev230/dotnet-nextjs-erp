@@ -3,14 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import {
-  ArrowRight,
-  Loader2,
-  Send,
-  XCircle,
-  Wallet,
-  AlertCircle,
-} from "lucide-react";
+import { ArrowRight, Loader2, Send, XCircle, Wallet, AlertCircle } from "lucide-react";
 import {
   Button,
   Card,
@@ -24,14 +17,9 @@ import {
   TableRow,
   TableHead,
   TableCell,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
   Alert,
 } from "@/components/ui";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { InvoiceStatusBadge } from "./InvoiceStatusBadge";
 import PaymentsList from "./PaymentsList";
 import { useInvoice, useIssueInvoice, useCancelInvoice } from "../hooks/useInvoices";
@@ -61,12 +49,49 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 
 export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
   const router = useRouter();
-  const [cancelOpen, setCancelOpen] = useState(false);
+  const [confirmAction, setConfirmAction] = useState<"issue" | "cancel" | null>(
+    null
+  );
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const { data: invoice, isLoading, error } = useInvoice(invoiceId);
   const { data: order } = useSalesOrder(invoice?.orderId || undefined);
   const issueMutation = useIssueInvoice();
   const cancelMutation = useCancelInvoice();
+
+  const isLoadingAction =
+    issueMutation.isPending || cancelMutation.isPending;
+
+  const closeConfirm = () => {
+    setConfirmAction(null);
+    setErrorMessage(null);
+  };
+
+  const handleConfirm = () => {
+    if (confirmAction === "issue") {
+      issueMutation.mutate(invoiceId, {
+        onSuccess: closeConfirm,
+        onError: (error: any) => {
+          setErrorMessage(
+            error?.response?.data?.message ||
+              error?.message ||
+              "حدث خطأ غير متوقع"
+          );
+        },
+      });
+    } else if (confirmAction === "cancel") {
+      cancelMutation.mutate(invoiceId, {
+        onSuccess: closeConfirm,
+        onError: (error: any) => {
+          setErrorMessage(
+            error?.response?.data?.message ||
+              error?.message ||
+              "حدث خطأ غير متوقع"
+          );
+        },
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -125,12 +150,12 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
         <div className="flex items-center gap-2">
           {canIssue && (
             <Button
-              disabled={issueMutation.isPending}
-              onClick={() => issueMutation.mutate(invoice.id)}
+              disabled={isLoadingAction}
+              onClick={() => {
+                setErrorMessage(null);
+                setConfirmAction("issue");
+              }}
             >
-              {issueMutation.isPending && (
-                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              )}
               <Send className="ml-2 h-4 w-4" />
               إصدار الفاتورة
             </Button>
@@ -139,7 +164,11 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
             <Button
               variant="outline"
               className="text-destructive"
-              onClick={() => setCancelOpen(true)}
+              disabled={isLoadingAction}
+              onClick={() => {
+                setErrorMessage(null);
+                setConfirmAction("cancel");
+              }}
             >
               <XCircle className="ml-2 h-4 w-4" />
               إلغاء الفاتورة
@@ -402,39 +431,23 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
         </CardContent>
       </Card>
 
-      <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>إلغاء الفاتورة</DialogTitle>
-            <DialogDescription>
-              هل أنت متأكد من إلغاء هذه الفاتورة؟
-              <br />
-              <span className="text-amber-600 font-medium">
-                لا يمكن إلغاء الفواتير المدفوعة بالكامل أو التي عليها دفعات.
-              </span>
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCancelOpen(false)}>
-              تراجع
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={cancelMutation.isPending}
-              onClick={() => {
-                cancelMutation.mutate(invoice.id, {
-                  onSuccess: () => setCancelOpen(false),
-                });
-              }}
-            >
-              {cancelMutation.isPending && (
-                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              )}
-              تأكيد الإلغاء
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={confirmAction !== null}
+        onOpenChange={(open) => !open && closeConfirm()}
+        title={
+          confirmAction === "issue" ? "إصدار الفاتورة" : "إلغاء الفاتورة"
+        }
+        description={
+          confirmAction === "issue"
+            ? "هل أنت متأكد من إصدار هذه الفاتورة؟ سيصبح من غير الممكن تعديلها أو حذفها بعد الإصدار."
+            : "هل أنت متأكد من إلغاء هذه الفاتورة؟ لا يمكن إلغاء الفواتير المدفوعة بالكامل أو التي عليها دفعات."
+        }
+        confirmLabel={confirmAction === "issue" ? "إصدار" : "إلغاء"}
+        variant={confirmAction === "issue" ? "info" : "danger"}
+        isLoading={isLoadingAction}
+        errorMessage={errorMessage}
+        onConfirm={handleConfirm}
+      />
     </div>
   );
 }

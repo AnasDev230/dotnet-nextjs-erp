@@ -9,19 +9,9 @@ import {
   Trash2,
   Pencil,
   PackageCheck,
-  AlertTriangle,
-  Loader2,
 } from "lucide-react";
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  Alert,
-} from "@/components/ui";
+import { Button } from "@/components/ui";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import type { PurchaseOrderStatus } from "../types/purchase-order.types";
 import { useSubmitPurchaseOrder } from "../hooks/useSubmitPurchaseOrder";
 import { useApprovePurchaseOrder } from "../hooks/useApprovePurchaseOrder";
@@ -69,10 +59,7 @@ export function PurchaseOrderStatusActions({
     setErrorMessage(null);
     submitMutation.mutate(orderId, {
       onSuccess: () => setConfirmDialog(null),
-      onError: (error) => {
-        setErrorMessage(getErrorMessage(error));
-        setConfirmDialog(null);
-      },
+      onError: (error) => setErrorMessage(getErrorMessage(error)),
     });
   };
 
@@ -80,10 +67,7 @@ export function PurchaseOrderStatusActions({
     setErrorMessage(null);
     approveMutation.mutate(orderId, {
       onSuccess: () => setConfirmDialog(null),
-      onError: (error) => {
-        setErrorMessage(getErrorMessage(error));
-        setConfirmDialog(null);
-      },
+      onError: (error) => setErrorMessage(getErrorMessage(error)),
     });
   };
 
@@ -91,10 +75,7 @@ export function PurchaseOrderStatusActions({
     setErrorMessage(null);
     cancelMutation.mutate(orderId, {
       onSuccess: () => setConfirmDialog(null),
-      onError: (error) => {
-        setErrorMessage(getErrorMessage(error));
-        setConfirmDialog(null);
-      },
+      onError: (error) => setErrorMessage(getErrorMessage(error)),
     });
   };
 
@@ -105,10 +86,7 @@ export function PurchaseOrderStatusActions({
         setConfirmDialog(null);
         router.push("/purchasing/orders");
       },
-      onError: (error) => {
-        setErrorMessage(getErrorMessage(error));
-        setConfirmDialog(null);
-      },
+      onError: (error) => setErrorMessage(getErrorMessage(error)),
     });
   };
 
@@ -128,19 +106,29 @@ export function PurchaseOrderStatusActions({
     delete: "هل أنت متأكد من حذف هذا الأمر؟ لا يمكن التراجع عن هذا الإجراء.",
   };
 
+  const confirmVariant: Record<
+    Exclude<ConfirmAction, null>,
+    "warning" | "danger" | "info"
+  > = {
+    submit: "warning",
+    approve: "info",
+    cancel: "danger",
+    delete: "danger",
+  };
+
+  const handleConfirm = () => {
+    if (confirmDialog === "submit") handleSubmit();
+    else if (confirmDialog === "approve") handleApprove();
+    else if (confirmDialog === "cancel") handleCancel();
+    else if (confirmDialog === "delete") handleDelete();
+  };
+
   if (status === "Received" || status === "Cancelled") {
     return null;
   }
 
   return (
     <>
-      {errorMessage && (
-        <Alert variant="destructive" className="mb-4">
-          <AlertTriangle className="h-4 w-4 ml-2" />
-          <p>{errorMessage}</p>
-        </Alert>
-      )}
-
       <div className="flex flex-wrap items-center gap-2">
         {status === "Draft" && (
           <>
@@ -233,47 +221,24 @@ export function PurchaseOrderStatusActions({
         )}
       </div>
 
-      <Dialog
+      <ConfirmDialog
         open={confirmDialog !== null}
-        onOpenChange={() => setConfirmDialog(null)}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              {confirmDialog ? confirmTitle[confirmDialog] : ""}
-            </DialogTitle>
-            <DialogDescription>
-              {confirmDialog ? confirmDescription[confirmDialog] : ""}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setConfirmDialog(null)}
-              disabled={isLoading}
-            >
-              تراجع
-            </Button>
-            <Button
-              variant={
-                confirmDialog === "delete" || confirmDialog === "cancel"
-                  ? "destructive"
-                  : "default"
-              }
-              onClick={() => {
-                if (confirmDialog === "submit") handleSubmit();
-                else if (confirmDialog === "approve") handleApprove();
-                else if (confirmDialog === "cancel") handleCancel();
-                else if (confirmDialog === "delete") handleDelete();
-              }}
-              disabled={isLoading}
-            >
-              {isLoading && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              تأكيد
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+        onOpenChange={(open) => {
+          if (!open) {
+            setConfirmDialog(null);
+            setErrorMessage(null);
+          }
+        }}
+        title={confirmDialog ? confirmTitle[confirmDialog] : ""}
+        description={
+          confirmDialog ? confirmDescription[confirmDialog] : ""
+        }
+        confirmLabel="تأكيد"
+        variant={confirmDialog ? confirmVariant[confirmDialog] : "warning"}
+        isLoading={isLoading}
+        errorMessage={errorMessage}
+        onConfirm={handleConfirm}
+      />
     </>
   );
 }

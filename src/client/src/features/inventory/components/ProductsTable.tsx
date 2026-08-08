@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Pencil, Trash2, Package, Loader2 } from "lucide-react";
+import { Pencil, Trash2, Package } from "lucide-react";
 import {
   Table,
   TableHeader,
@@ -12,13 +12,8 @@ import {
   TableCell,
   Badge,
   Button,
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
 } from "@/components/ui";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { useDeleteProduct } from "../hooks/useDeleteProduct";
 import type { ProductListItem } from "../types/product.types";
 
@@ -42,7 +37,25 @@ export default function ProductsTable({
   onPageChange,
 }: ProductsTableProps) {
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeleteProduct();
+
+  const handleDelete = () => {
+    if (!deleteId) return;
+    deleteMutation.mutate(deleteId, {
+      onSuccess: () => {
+        setDeleteId(null);
+        setErrorMessage(null);
+      },
+      onError: (error: any) => {
+        setErrorMessage(
+          error?.response?.data?.message ||
+            error?.message ||
+            "حدث خطأ غير متوقع"
+        );
+      },
+    });
+  };
 
   if (isLoading) {
     return (
@@ -139,7 +152,11 @@ export default function ProductsTable({
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8 text-destructive"
-                      onClick={() => setDeleteId(product.id)}
+                      disabled={deleteMutation.isPending}
+                      onClick={() => {
+                        setErrorMessage(null);
+                        setDeleteId(product.id);
+                      }}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -151,7 +168,6 @@ export default function ProductsTable({
         </Table>
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-4">
           <p className="text-sm text-muted-foreground">
@@ -178,38 +194,22 @@ export default function ProductsTable({
         </div>
       )}
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>تأكيد الحذف</DialogTitle>
-            <DialogDescription>
-              هل أنت متأكد من حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteId(null)}>
-              إلغاء
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={deleteMutation.isPending}
-              onClick={() => {
-                if (deleteId) {
-                  deleteMutation.mutate(deleteId, {
-                    onSuccess: () => setDeleteId(null),
-                  });
-                }
-              }}
-            >
-              {deleteMutation.isPending && (
-                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              )}
-              حذف
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={deleteId !== null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeleteId(null);
+            setErrorMessage(null);
+          }
+        }}
+        title="حذف المنتج"
+        description="هل أنت متأكد من حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء."
+        confirmLabel="حذف"
+        variant="danger"
+        isLoading={deleteMutation.isPending}
+        errorMessage={errorMessage}
+        onConfirm={handleDelete}
+      />
     </>
   );
 }
