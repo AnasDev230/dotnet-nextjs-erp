@@ -20,6 +20,9 @@ import {
   Settings,
   LogOut,
   ReceiptText,
+  UserCog,
+  Building2,
+  Briefcase,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 import { cn, clearAuthCookie } from "@/lib/utils";
@@ -71,6 +74,11 @@ const purchasingItems: SubNavItem[] = [
   },
 ];
 
+const hrItems: SubNavItem[] = [
+  { label: "الأقسام", href: "/hr/departments", icon: Building2 },
+  { label: "الموظفون", href: "/hr/employees", icon: Briefcase },
+];
+
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -79,10 +87,12 @@ export default function Sidebar() {
   const isSalesActive = pathname.startsWith("/sales");
   const isFinanceActive = pathname.startsWith("/finance");
   const isPurchasingActive = pathname.startsWith("/purchasing");
+  const isHrActive = pathname.startsWith("/hr");
   const [inventoryOpen, setInventoryOpen] = useState(isInventoryActive);
   const [salesOpen, setSalesOpen] = useState(isSalesActive);
   const [financeOpen, setFinanceOpen] = useState(isFinanceActive);
   const [purchasingOpen, setPurchasingOpen] = useState(isPurchasingActive);
+  const [hrOpen, setHrOpen] = useState(isHrActive);
 
   const handleLogout = async () => {
     await logout();
@@ -308,6 +318,55 @@ export default function Sidebar() {
           {purchasingOpen && (
             <div className="mt-1 space-y-1 pr-3">
               {purchasingItems.map((item) => {
+                const isActive = pathname === item.href;
+                const Icon = item.icon;
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "flex h-9 items-center gap-2 rounded-md px-3 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      isActive
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* HR group */}
+        <div>
+          <button
+            type="button"
+            onClick={() => setHrOpen((prev) => !prev)}
+            aria-expanded={hrOpen}
+            className={cn(
+              "flex h-10 w-full items-center gap-2 rounded-md px-3 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              isHrActive
+                ? "bg-primary/10 text-primary font-medium"
+                : "text-foreground"
+            )}
+          >
+            <UserCog className="h-5 w-5 shrink-0" />
+            <span className="flex-1 text-right">الموارد البشرية</span>
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 transition-transform",
+                hrOpen && "rotate-180"
+              )}
+            />
+          </button>
+
+          {hrOpen && (
+            <div className="mt-1 space-y-1 pr-3">
+              {hrItems.map((item) => {
                 const isActive = pathname === item.href;
                 const Icon = item.icon;
 
