@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input, Button, Select } from "@/components/ui";
@@ -19,6 +19,9 @@ export default function EmployeeFilters() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const searchParamsRef = useRef(searchParams);
+  searchParamsRef.current = searchParams;
+
   const [search, setSearch] = useState(searchParams.get("search") ?? "");
   const [departmentId, setDepartmentId] = useState(
     searchParams.get("departmentId") ?? "all"
@@ -29,30 +32,34 @@ export default function EmployeeFilters() {
 
   const updateParams = useCallback(
     (updates: Record<string, string | undefined>) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(searchParamsRef.current.toString());
       Object.entries(updates).forEach(([key, value]) => {
         if (value && value !== "all") params.set(key, value);
         else params.delete(key);
       });
       router.push(`${pathname}?${params.toString()}`);
     },
-    [router, pathname, searchParams]
+    [router, pathname]
   );
 
   useEffect(() => {
+    const current = searchParams.get("search") ?? "";
+    if (search === current) return;
     const timer = setTimeout(() => {
       updateParams({ search: search || undefined });
     }, 300);
     return () => clearTimeout(timer);
-  }, [search, updateParams]);
+  }, [search, searchParams, updateParams]);
 
   useEffect(() => {
+    if (departmentId === (searchParams.get("departmentId") ?? "all")) return;
     updateParams({ departmentId });
-  }, [departmentId, updateParams]);
+  }, [departmentId, updateParams, searchParams]);
 
   useEffect(() => {
+    if (status === (searchParams.get("status") ?? "all")) return;
     updateParams({ status });
-  }, [status, updateParams]);
+  }, [status, updateParams, searchParams]);
 
   const departmentOptions = [
     { value: "all", label: "كل الأقسام" },

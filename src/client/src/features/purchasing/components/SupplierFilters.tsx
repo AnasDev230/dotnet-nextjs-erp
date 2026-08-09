@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input, Button } from "@/components/ui";
@@ -13,12 +13,15 @@ export default function SupplierFilters() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  const searchParamsRef = useRef(searchParams);
+  searchParamsRef.current = searchParams;
+
   const [search, setSearch] = useState(searchParams.get("search") ?? "");
   const [status, setStatus] = useState(searchParams.get("status") ?? "");
 
   const updateParams = useCallback(
     (updates: Record<string, string | undefined>) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(searchParamsRef.current.toString());
       Object.entries(updates).forEach(([key, value]) => {
         if (value) params.set(key, value);
         else params.delete(key);
@@ -26,15 +29,17 @@ export default function SupplierFilters() {
       params.delete("page");
       router.push(`${pathname}?${params.toString()}`);
     },
-    [router, pathname, searchParams]
+    [router, pathname]
   );
 
   useEffect(() => {
+    const current = searchParams.get("search") ?? "";
+    if (search === current) return;
     const timer = setTimeout(() => {
       updateParams({ search: search || undefined });
     }, 300);
     return () => clearTimeout(timer);
-  }, [search, updateParams]);
+  }, [search, searchParams, updateParams]);
 
   return (
     <div className="flex flex-wrap items-center gap-3">
