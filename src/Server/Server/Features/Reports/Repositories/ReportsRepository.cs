@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Server.Features.Finance.Enums;
 using Server.Features.HR.Enums;
-using Server.Features.Inventory;
-using Server.Features.Purchasing.Entities;
 using Server.Features.Purchasing.Enums;
 using Server.Features.Reports.Models;
 using Server.Features.Sales.Enums;
@@ -19,6 +17,10 @@ public class ReportsRepository : IReportsRepository
         _context = context;
     }
 
+    // ═══════════════════════════════════════════
+    // Sales Summary
+    // ═══════════════════════════════════════════
+
     public async Task<SalesSummaryResponse> GetSalesSummaryAsync(ReportQueryParams queryParams)
     {
         var fromDate = queryParams.FromDate;
@@ -29,7 +31,11 @@ public class ReportsRepository : IReportsRepository
             .AsNoTracking()
             .Where(o => o.Status == SalesOrderStatus.Confirmed);
 
-        confirmedOrders = ApplyDateFilter(confirmedOrders, o => o.OrderDate, fromDate, toDate);
+        if (fromDate.HasValue)
+            confirmedOrders = confirmedOrders.Where(o => o.OrderDate >= fromDate.Value);
+
+        if (toDate.HasValue)
+            confirmedOrders = confirmedOrders.Where(o => o.OrderDate <= toDate.Value);
 
         if (entityId.HasValue)
             confirmedOrders = confirmedOrders.Where(o => o.CustomerId == entityId.Value);
@@ -37,16 +43,26 @@ public class ReportsRepository : IReportsRepository
         var totalRevenue = await confirmedOrders.SumAsync(o => o.NetAmount);
         var totalOrders = await confirmedOrders.CountAsync();
 
-        var byPeriod = await confirmedOrders
+
+        var rawByPeriod = await confirmedOrders
             .GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month })
-            .Select(g => new SalesByPeriodItem
+            .Select(g => new
             {
-                Period = $"{g.Key.Year}-{g.Key.Month:D2}",
+                Year = g.Key.Year,
+                Month = g.Key.Month,
                 Revenue = g.Sum(o => o.NetAmount),
                 OrderCount = g.Count()
             })
-            .OrderBy(x => x.Period)
+            .OrderBy(x => x.Year)
+            .ThenBy(x => x.Month)
             .ToListAsync();
+
+        var byPeriod = rawByPeriod.Select(x => new SalesByPeriodItem
+        {
+            Period = $"{x.Year}-{x.Month:D2}",
+            Revenue = x.Revenue,
+            OrderCount = x.OrderCount
+        }).ToList();
 
         var topCustomers = await confirmedOrders
             .GroupBy(o => new { o.CustomerId, o.Customer.Name })
@@ -77,6 +93,10 @@ public class ReportsRepository : IReportsRepository
         };
     }
 
+    // ═══════════════════════════════════════════
+    // Purchases Summary
+    // ═══════════════════════════════════════════
+
     public async Task<PurchasesSummaryResponse> GetPurchasesSummaryAsync(ReportQueryParams queryParams)
     {
         var fromDate = queryParams.FromDate;
@@ -94,7 +114,11 @@ public class ReportsRepository : IReportsRepository
             .AsNoTracking()
             .Where(o => validStatuses.Contains(o.Status));
 
-        validOrders = ApplyDateFilter(validOrders, o => o.OrderDate, fromDate, toDate);
+        if (fromDate.HasValue)
+            validOrders = validOrders.Where(o => o.OrderDate >= fromDate.Value);
+
+        if (toDate.HasValue)
+            validOrders = validOrders.Where(o => o.OrderDate <= toDate.Value);
 
         if (entityId.HasValue)
             validOrders = validOrders.Where(o => o.SupplierId == entityId.Value);
@@ -102,16 +126,26 @@ public class ReportsRepository : IReportsRepository
         var totalSpending = await validOrders.SumAsync(o => o.TotalAmount);
         var totalOrders = await validOrders.CountAsync();
 
-        var byPeriod = await validOrders
+
+        var rawByPeriod = await validOrders
             .GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month })
-            .Select(g => new PurchasesByPeriodItem
+            .Select(g => new
             {
-                Period = $"{g.Key.Year}-{g.Key.Month:D2}",
+                Year = g.Key.Year,
+                Month = g.Key.Month,
                 Spending = g.Sum(o => o.TotalAmount),
                 OrderCount = g.Count()
             })
-            .OrderBy(x => x.Period)
+            .OrderBy(x => x.Year)
+            .ThenBy(x => x.Month)
             .ToListAsync();
+
+        var byPeriod = rawByPeriod.Select(x => new PurchasesByPeriodItem
+        {
+            Period = $"{x.Year}-{x.Month:D2}",
+            Spending = x.Spending,
+            OrderCount = x.OrderCount
+        }).ToList();
 
         var topSuppliers = await validOrders
             .GroupBy(o => new { o.SupplierId, o.Supplier.Name })
@@ -142,10 +176,19 @@ public class ReportsRepository : IReportsRepository
         };
     }
 
+    // ═══════════════════════════════════════════
+    // Inventory Summary
+    // ═══════════════════════════════════════════
+
     public async Task<InventorySummaryResponse> GetInventorySummaryAsync()
     {
-        var totalProducts = await _context.Products.AsNoTracking().CountAsync();
-        var totalWarehouses = await _context.Warehouses.AsNoTracking().CountAsync(w => w.IsActive);
+        var totalProducts = await _context.Products
+            .AsNoTracking()
+            .CountAsync();
+
+        var totalWarehouses = await _context.Warehouses
+            .AsNoTracking()
+            .CountAsync(w => w.IsActive);
 
         var totalInventoryValue = await _context.InventoryLevels
             .AsNoTracking()
@@ -171,9 +214,6 @@ public class ReportsRepository : IReportsRepository
         var lowStockItems = await _context.InventoryLevels
             .AsNoTracking()
             .Where(l => l.Product.ReorderLevel > 0 && l.QuantityOnHand <= l.Product.ReorderLevel)
-            .OrderBy(l => l.QuantityOnHand / l.Product.ReorderLevel)
-            .ThenBy(l => l.Product.Name)
-            .Take(20)
             .Select(l => new LowStockItem
             {
                 ProductId = l.ProductId,
@@ -183,6 +223,9 @@ public class ReportsRepository : IReportsRepository
                 QuantityOnHand = l.QuantityOnHand,
                 ReorderLevel = l.Product.ReorderLevel
             })
+            .OrderBy(l => l.QuantityOnHand)
+            .ThenBy(l => l.ProductName)
+            .Take(20)
             .ToListAsync();
 
         return new InventorySummaryResponse
@@ -195,6 +238,10 @@ public class ReportsRepository : IReportsRepository
             LowStockItems = lowStockItems
         };
     }
+
+    // ═══════════════════════════════════════════
+    // Customer Statement
+    // ═══════════════════════════════════════════
 
     public async Task<CustomerStatementResponse> GetCustomerStatementAsync(Guid customerId)
     {
@@ -218,6 +265,7 @@ public class ReportsRepository : IReportsRepository
             .Where(p => p.Invoice.CustomerId == customerId && p.Invoice.Status != InvoiceStatus.Cancelled)
             .Select(p => new { p.PaymentDate, p.Reference, p.Amount })
             .ToListAsync();
+
 
         var transactions = new List<StatementLineItem>();
 
@@ -247,6 +295,7 @@ public class ReportsRepository : IReportsRepository
             });
         }
 
+
         transactions = transactions
             .OrderBy(t => t.Date)
             .ToList();
@@ -273,22 +322,39 @@ public class ReportsRepository : IReportsRepository
         };
     }
 
+    // ═══════════════════════════════════════════
+    // Employees Summary
+    // ═══════════════════════════════════════════
+
     public async Task<EmployeesSummaryResponse> GetEmployeesSummaryAsync()
     {
-        var totalEmployees = await _context.Employees.AsNoTracking().CountAsync();
-        var activeCount = await _context.Employees.AsNoTracking().CountAsync(e => e.Status == EmployeeStatus.Active);
-        var onLeaveCount = await _context.Employees.AsNoTracking().CountAsync(e => e.Status == EmployeeStatus.OnLeave);
-        var terminatedCount = await _context.Employees.AsNoTracking().CountAsync(e => e.Status == EmployeeStatus.Terminated);
-
-        var totalSalaries = await _context.Employees.AsNoTracking().SumAsync(e => e.Salary);
-
-        var byDepartment = await _context.Employees
+        var totalEmployees = await _context.Employees
             .AsNoTracking()
-            .GroupBy(e => new { e.DepartmentId, e.Department!.Name })
+            .CountAsync();
+
+        var activeCount = await _context.Employees
+            .AsNoTracking()
+            .CountAsync(e => e.Status == EmployeeStatus.Active);
+
+        var onLeaveCount = await _context.Employees
+            .AsNoTracking()
+            .CountAsync(e => e.Status == EmployeeStatus.OnLeave);
+
+        var terminatedCount = await _context.Employees
+            .AsNoTracking()
+            .CountAsync(e => e.Status == EmployeeStatus.Terminated);
+
+        var totalSalaries = await _context.Employees
+            .AsNoTracking()
+            .SumAsync(e => e.Salary);
+
+        var rawByDepartment = await _context.Employees
+            .AsNoTracking()
+            .GroupBy(e => new { e.DepartmentId, DepartmentName = e.Department != null ? e.Department.Name : null })
             .Select(g => new
             {
                 g.Key.DepartmentId,
-                g.Key.Name,
+                g.Key.DepartmentName,
                 EmployeeCount = g.Count(),
                 TotalSalaries = g.Sum(e => e.Salary)
             })
@@ -302,30 +368,13 @@ public class ReportsRepository : IReportsRepository
             OnLeaveCount = onLeaveCount,
             TerminatedCount = terminatedCount,
             TotalSalaries = totalSalaries,
-            ByDepartment = byDepartment
-                .Select(x => new EmployeesByDepartmentItem
-                {
-                    DepartmentId = x.DepartmentId,
-                    DepartmentName = x.Name ?? "بدون قسم",
-                    EmployeeCount = x.EmployeeCount,
-                    TotalSalaries = x.TotalSalaries
-                })
-                .ToList()
+            ByDepartment = rawByDepartment.Select(x => new EmployeesByDepartmentItem
+            {
+                DepartmentId = x.DepartmentId,
+                DepartmentName = x.DepartmentName ?? "بدون قسم",
+                EmployeeCount = x.EmployeeCount,
+                TotalSalaries = x.TotalSalaries
+            }).ToList()
         };
-    }
-
-    private static IQueryable<T> ApplyDateFilter<T>(
-        IQueryable<T> query,
-        Func<T, DateOnly> dateSelector,
-        DateOnly? fromDate,
-        DateOnly? toDate)
-    {
-        if (fromDate.HasValue)
-            query = query.Where(e => dateSelector(e) >= fromDate.Value);
-
-        if (toDate.HasValue)
-            query = query.Where(e => dateSelector(e) <= toDate.Value);
-
-        return query;
     }
 }
