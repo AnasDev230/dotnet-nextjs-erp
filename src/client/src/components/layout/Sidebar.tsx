@@ -23,6 +23,9 @@ import {
   UserCog,
   Building2,
   Briefcase,
+  BarChart3,
+  TrendingUp,
+  FileText,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 import { cn, clearAuthCookie } from "@/lib/utils";
@@ -79,6 +82,14 @@ const hrItems: SubNavItem[] = [
   { label: "الموظفون", href: "/hr/employees", icon: Briefcase },
 ];
 
+const reportsItems: SubNavItem[] = [
+  { label: "المبيعات", href: "/reports/sales", icon: TrendingUp },
+  { label: "المشتريات", href: "/reports/purchases", icon: ShoppingCart },
+  { label: "المخزون", href: "/reports/inventory", icon: Package },
+  { label: "الموظفون", href: "/reports/employees", icon: Users },
+  { label: "كشف حساب عميل", href: "/reports/customer-statement", icon: FileText },
+];
+
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
@@ -88,11 +99,13 @@ export default function Sidebar() {
   const isFinanceActive = pathname.startsWith("/finance");
   const isPurchasingActive = pathname.startsWith("/purchasing");
   const isHrActive = pathname.startsWith("/hr");
+  const isReportsActive = pathname.startsWith("/reports");
   const [inventoryOpen, setInventoryOpen] = useState(isInventoryActive);
   const [salesOpen, setSalesOpen] = useState(isSalesActive);
   const [financeOpen, setFinanceOpen] = useState(isFinanceActive);
   const [purchasingOpen, setPurchasingOpen] = useState(isPurchasingActive);
   const [hrOpen, setHrOpen] = useState(isHrActive);
+  const [reportsOpen, setReportsOpen] = useState(isReportsActive);
 
   const handleLogout = async () => {
     await logout();
@@ -367,6 +380,54 @@ export default function Sidebar() {
           {hrOpen && (
             <div className="mt-1 space-y-1 pr-3">
               {hrItems.map((item) => {
+                const isActive = pathname === item.href;
+                const Icon = item.icon;
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "flex h-9 items-center gap-2 rounded-md px-3 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      isActive
+                        ? "bg-primary/10 text-primary font-medium"
+                        : "text-muted-foreground"
+                    )}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        {/* Reports group */}
+        <div>
+          <button
+            type="button"
+            onClick={() => setReportsOpen((prev) => !prev)}
+            aria-expanded={reportsOpen}
+            className={cn(
+              "flex h-10 w-full items-center gap-2 rounded-md px-3 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              isReportsActive
+                ? "bg-primary/10 text-primary font-medium"
+                : "text-foreground"
+            )}
+          >
+            <BarChart3 className="h-5 w-5 shrink-0" />
+            <span className="flex-1 text-right">التقارير</span>
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 transition-transform",
+                reportsOpen && "rotate-180"
+              )}
+            />
+          </button>
+
+          {reportsOpen && (
+            <div className="mt-1 space-y-1 pr-3">
+              {reportsItems.map((item) => {
                 const isActive = pathname === item.href;
                 const Icon = item.icon;
 
