@@ -11,6 +11,8 @@ using Server.Features.Inventory.Repositories;
 using Server.Features.Inventory.Services;
 using Server.Features.Purchasing.Repositories;
 using Server.Features.Purchasing.Services;
+using Server.Features.Reports.Repositories;
+using Server.Features.Reports.Services;
 using Server.Features.Sales.Repositories;
 using Server.Features.Sales.Services;
 using Server.Features.Security.Repositories;
@@ -78,6 +80,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDepartmentService, DepartmentService>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IEmployeeService, EmployeeService>();
+
+        // Reports (read-only aggregation across Sales, Purchasing, Inventory & HR)
+        services.AddScoped<IReportsRepository, ReportsRepository>();
+        services.AddScoped<IReportsService, ReportsService>();
 
         return services;
     }
