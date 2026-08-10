@@ -2,6 +2,7 @@
 
 import { useWatch, type Control } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
+import { useTranslation } from "@/hooks/use-translation";
 import type { PurchaseOrderFormData } from "../schemas/purchase-order.schema";
 
 interface PurchaseOrderSummaryProps {
@@ -22,6 +23,7 @@ function roundMoney(value: number): number {
 export default function PurchaseOrderSummary({
   control,
 }: PurchaseOrderSummaryProps) {
+  const { t } = useTranslation();
   const items = useWatch<PurchaseOrderFormData, "items">({
     control,
     name: "items",
@@ -43,21 +45,21 @@ export default function PurchaseOrderSummary({
   return (
     <Card className="border-border bg-card lg:sticky lg:top-6">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">ملخص الأمر</CardTitle>
+        <CardTitle className="text-lg">{t("purchasing.orders.summaryTitle")}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">عدد المنتجات</span>
+          <span className="text-muted-foreground">{t("purchasing.orders.itemsCount")}</span>
           <span className="font-medium">{productsCount}</span>
         </div>
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">إجمالي الكميات</span>
+          <span className="text-muted-foreground">{t("purchasing.orders.totalQuantities")}</span>
           <span className="font-medium">{totalQuantities}</span>
         </div>
 
         <div className="border-t border-border" />
         <div className="flex items-center justify-between text-sm">
-          <span>المجموع الفرعي</span>
+          <span>{t("purchasing.orders.subtotal")}</span>
           <span className="font-medium">{formatCurrency(subtotal)}</span>
         </div>
       </CardContent>

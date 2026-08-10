@@ -17,6 +17,7 @@ import { useSubmitPurchaseOrder } from "../hooks/useSubmitPurchaseOrder";
 import { useApprovePurchaseOrder } from "../hooks/useApprovePurchaseOrder";
 import { useCancelPurchaseOrder } from "../hooks/useCancelPurchaseOrder";
 import { useDeletePurchaseOrder } from "../hooks/useDeletePurchaseOrder";
+import { useTranslation } from "@/hooks/use-translation";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
 
@@ -32,6 +33,7 @@ export function PurchaseOrderStatusActions({
   status,
 }: PurchaseOrderStatusActionsProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [confirmDialog, setConfirmDialog] = useState<ConfirmAction>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -51,7 +53,7 @@ export function PurchaseOrderStatusActions({
     return (
       axiosError.response?.data?.message ||
       (error instanceof Error ? error.message : "") ||
-      "حدث خطأ غير متوقع"
+      t("common.unexpectedError")
     );
   };
 
@@ -91,19 +93,17 @@ export function PurchaseOrderStatusActions({
   };
 
   const confirmTitle: Record<Exclude<ConfirmAction, null>, string> = {
-    submit: "إرسال للاعتماد",
-    approve: "اعتماد أمر الشراء",
-    cancel: "إلغاء أمر الشراء",
-    delete: "حذف أمر الشراء",
+    submit: t("purchasing.orders.submit"),
+    approve: t("purchasing.orders.approveTitle"),
+    cancel: t("purchasing.orders.cancelTitle"),
+    delete: t("purchasing.orders.deleteTitle"),
   };
 
   const confirmDescription: Record<Exclude<ConfirmAction, null>, string> = {
-    submit:
-      "هل أنت متأكد من إرسال هذا الأمر للاعتماد؟ لن تتمكن من تعديله بعد الإرسال.",
-    approve:
-      "هل أنت متأكد من اعتماد هذا الأمر؟ سيصبح جاهزاً لاستلام البضاعة.",
-    cancel: "هل أنت متأكد من إلغاء هذا الأمر؟ لا يمكن التراجع عن هذا الإجراء.",
-    delete: "هل أنت متأكد من حذف هذا الأمر؟ لا يمكن التراجع عن هذا الإجراء.",
+    submit: t("purchasing.orders.submitDescription"),
+    approve: t("purchasing.orders.approveDescription"),
+    cancel: t("purchasing.orders.cancelDescription"),
+    delete: t("purchasing.orders.deleteDescription"),
   };
 
   const confirmVariant: Record<
@@ -137,7 +137,7 @@ export function PurchaseOrderStatusActions({
               disabled={isLoading}
             >
               <Send className="ml-2 h-4 w-4" />
-              إرسال للاعتماد
+              {t("purchasing.orders.submit")}
             </Button>
             <Button
               variant="outline"
@@ -145,7 +145,7 @@ export function PurchaseOrderStatusActions({
               disabled={isLoading}
             >
               <Pencil className="ml-2 h-4 w-4" />
-              تعديل
+              {t("common.edit")}
             </Button>
             <Button
               variant="outline"
@@ -153,7 +153,7 @@ export function PurchaseOrderStatusActions({
               disabled={isLoading}
             >
               <XCircle className="ml-2 h-4 w-4" />
-              إلغاء
+              {t("common.cancel")}
             </Button>
             <Button
               variant="destructive"
@@ -161,7 +161,7 @@ export function PurchaseOrderStatusActions({
               disabled={isLoading}
             >
               <Trash2 className="ml-2 h-4 w-4" />
-              حذف
+              {t("common.delete")}
             </Button>
           </>
         )}
@@ -173,7 +173,7 @@ export function PurchaseOrderStatusActions({
               disabled={isLoading}
             >
               <CheckCircle className="ml-2 h-4 w-4" />
-              اعتماد
+              {t("purchasing.orders.approve")}
             </Button>
             <Button
               variant="outline"
@@ -181,7 +181,7 @@ export function PurchaseOrderStatusActions({
               disabled={isLoading}
             >
               <XCircle className="ml-2 h-4 w-4" />
-              إلغاء
+              {t("common.cancel")}
             </Button>
           </>
         )}
@@ -195,7 +195,7 @@ export function PurchaseOrderStatusActions({
               disabled={isLoading}
             >
               <PackageCheck className="ml-2 h-4 w-4" />
-              إنشاء استلام
+              {t("purchasing.orders.createReceipt")}
             </Button>
             <Button
               variant="outline"
@@ -203,7 +203,7 @@ export function PurchaseOrderStatusActions({
               disabled={isLoading}
             >
               <XCircle className="ml-2 h-4 w-4" />
-              إلغاء
+              {t("common.cancel")}
             </Button>
           </>
         )}
@@ -216,7 +216,7 @@ export function PurchaseOrderStatusActions({
             disabled={isLoading}
           >
             <PackageCheck className="ml-2 h-4 w-4" />
-            استلام الباقي
+            {t("purchasing.orders.receiveRemaining")}
           </Button>
         )}
       </div>
@@ -233,7 +233,7 @@ export function PurchaseOrderStatusActions({
         description={
           confirmDialog ? confirmDescription[confirmDialog] : ""
         }
-        confirmLabel="تأكيد"
+        confirmLabel={t("common.confirm")}
         variant={confirmDialog ? confirmVariant[confirmDialog] : "warning"}
         isLoading={isLoading}
         errorMessage={errorMessage}

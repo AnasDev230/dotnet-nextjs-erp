@@ -23,6 +23,7 @@ import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { GoodsReceiptStatusBadge } from "./GoodsReceiptStatusBadge";
 import { useGoodsReceipt } from "../hooks/useGoodsReceipt";
 import { useCancelGoodsReceipt } from "../hooks/useCancelGoodsReceipt";
+import { useTranslation } from "@/hooks/use-translation";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
 
@@ -45,6 +46,7 @@ export default function GoodsReceiptDetails({
   receiptId: string;
 }) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [cancelOpen, setCancelOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { data: receipt, isLoading, error } = useGoodsReceipt(receiptId);
@@ -60,7 +62,7 @@ export default function GoodsReceiptDetails({
         setErrorMessage(
           error?.response?.data?.message ||
             error?.message ||
-            "حدث خطأ غير متوقع"
+            t("common.unexpectedError")
         );
       },
     });
@@ -83,9 +85,9 @@ export default function GoodsReceiptDetails({
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">الاستلام غير موجود</h1>
+            <h1 className="text-2xl font-semibold">{t("purchasing.receipts.notFound")}</h1>
             <p className="text-muted-foreground text-sm">
-              لم يتم العثور على عملية الاستلام المطلوبة
+              {t("purchasing.receipts.notFoundDescription")}
             </p>
           </div>
         </div>
@@ -110,7 +112,7 @@ export default function GoodsReceiptDetails({
               <span className="font-mono">{receipt.grnNumber}</span>
             </h1>
             <p className="text-muted-foreground text-sm">
-              تفاصيل استلام البضاعة
+              {t("purchasing.receipts.details")}
             </p>
           </div>
         </div>
@@ -126,27 +128,27 @@ export default function GoodsReceiptDetails({
               }}
             >
               <XCircle className="ml-2 h-4 w-4" />
-              إلغاء الاستلام
+              {t("purchasing.receipts.cancelReceipt")}
             </Button>
           )}
           <Link href={`/purchasing/orders/${receipt.purchaseOrderId}`}>
-            <Button variant="outline">أمر الشراء</Button>
+            <Button variant="outline">{t("purchasing.receipts.purchaseOrder")}</Button>
           </Link>
         </div>
       </div>
 
       <Card className="border-border bg-card">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">بيانات الاستلام</CardTitle>
+          <CardTitle className="text-lg">{t("purchasing.receipts.receiptInfo")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <InfoRow
-              label="رقم الاستلام"
+              label={t("purchasing.receipts.grnNumber")}
               value={<span className="font-mono">{receipt.grnNumber}</span>}
             />
             <InfoRow
-              label="أمر الشراء"
+              label={t("purchasing.receipts.purchaseOrder")}
               value={
                 <Link
                   href={`/purchasing/orders/${receipt.purchaseOrderId}`}
@@ -156,28 +158,28 @@ export default function GoodsReceiptDetails({
                 </Link>
               }
             />
-            <InfoRow label="المورد" value={receipt.supplierName} />
-            <InfoRow label="تاريخ الاستلام" value={formatDate(receipt.receiptDate)} />
-            <InfoRow label="المستودع" value={receipt.warehouseName} />
+            <InfoRow label={t("purchasing.orders.supplier")} value={receipt.supplierName} />
+            <InfoRow label={t("purchasing.receipts.receiptDate")} value={formatDate(receipt.receiptDate)} />
+            <InfoRow label={t("purchasing.receipts.warehouse")} value={receipt.warehouseName} />
             <InfoRow
-              label="الحالة"
+              label={t("common.status")}
               value={<GoodsReceiptStatusBadge status={receipt.status} />}
             />
-            {receipt.notes && <InfoRow label="ملاحظات" value={receipt.notes} />}
+            {receipt.notes && <InfoRow label={t("common.notes")} value={receipt.notes} />}
           </div>
         </CardContent>
       </Card>
 
       <Card className="border-border bg-card">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">المنتجات المستلمة</CardTitle>
+          <CardTitle className="text-lg">{t("purchasing.receipts.receivedProducts")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>المنتج</TableHead>
-                <TableHead className="text-left">الكمية</TableHead>
+                <TableHead>{t("purchasing.orders.product")}</TableHead>
+                <TableHead className="text-left">{t("common.quantity")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -207,9 +209,9 @@ export default function GoodsReceiptDetails({
             setErrorMessage(null);
           }
         }}
-        title="إلغاء الاستلام"
-        description="سيتم عكس الكميات من المخزون وتراجعها عن أمر الشراء. لا يمكن التراجع عن هذا الإجراء."
-        confirmLabel="تأكيد الإلغاء"
+        title={t("purchasing.receipts.cancelReceipt")}
+        description={t("purchasing.receipts.cancelDescription")}
+        confirmLabel={t("purchasing.receipts.confirmCancel")}
         variant="danger"
         isLoading={cancelMutation.isPending}
         errorMessage={errorMessage}

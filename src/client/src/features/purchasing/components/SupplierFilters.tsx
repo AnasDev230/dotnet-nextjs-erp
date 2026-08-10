@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input, Button } from "@/components/ui";
+import { useTranslation } from "@/hooks/use-translation";
 
 const selectClass =
   "flex h-10 w-40 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
@@ -12,6 +13,7 @@ export default function SupplierFilters() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const searchParamsRef = useRef(searchParams);
   searchParamsRef.current = searchParams;
@@ -46,7 +48,7 @@ export default function SupplierFilters() {
       <div className="relative flex-1 min-w-[200px]">
         <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="بحث بالاسم أو الرمز أو البريد..."
+          placeholder={t("purchasing.suppliers.searchPlaceholder")}
           className="h-10 pr-10"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -61,9 +63,9 @@ export default function SupplierFilters() {
         }}
         className={selectClass}
       >
-        <option value="">كل الحالات</option>
-        <option value="Active">نشط</option>
-        <option value="Suspended">موقوف</option>
+        <option value="">{t("common.allStatuses")}</option>
+        <option value="Active">{t("purchasing.suppliers.active")}</option>
+        <option value="Suspended">{t("purchasing.suppliers.suspended")}</option>
       </select>
 
       {searchParams.toString() && (
@@ -72,7 +74,7 @@ export default function SupplierFilters() {
           size="sm"
           onClick={() => router.push(pathname)}
         >
-          مسح الفلترة
+          {t("common.clearFilters")}
         </Button>
       )}
     </div>

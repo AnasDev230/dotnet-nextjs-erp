@@ -32,6 +32,7 @@ import { useCreateGoodsReceipt } from "../hooks/useCreateGoodsReceipt";
 import { usePurchaseOrders } from "../hooks/usePurchaseOrders";
 import { usePurchaseOrder } from "../hooks/usePurchaseOrder";
 import { useWarehousesForDropdown } from "@/features/inventory/hooks/useWarehousesForDropdown";
+import { useTranslation } from "@/hooks/use-translation";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
 
@@ -45,6 +46,7 @@ function todayString(): string {
 export default function GoodsReceiptForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
   const createMutation = useCreateGoodsReceipt();
   const isPending = createMutation.isPending;
   const error = createMutation.error;
@@ -162,9 +164,9 @@ export default function GoodsReceiptForm() {
   return (
     <Card className="border-border bg-card">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">استلام بضاعة جديد</CardTitle>
+        <CardTitle className="text-lg">{t("purchasing.receipts.createTitle")}</CardTitle>
         <p className="text-sm text-muted-foreground">
-          استلم بضاعة من أمر شراء معتمد
+          {t("purchasing.receipts.createPageDescription")}
         </p>
       </CardHeader>
       <CardContent>
@@ -177,12 +179,12 @@ export default function GoodsReceiptForm() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid gap-4 md:grid-cols-3">
             <div className="space-y-2">
-              <Label htmlFor="purchaseOrderId">أمر الشراء *</Label>
+              <Label htmlFor="purchaseOrderId">{t("purchasing.receipts.purchaseOrder")} *</Label>
               <Select
                 id="purchaseOrderId"
                 {...form.register("purchaseOrderId")}
                 options={orderOptions}
-                placeholder="اختر أمر الشراء"
+                placeholder={t("purchasing.receipts.selectPurchaseOrder")}
                 className="h-10"
               />
               {form.formState.errors.purchaseOrderId && (
@@ -193,12 +195,12 @@ export default function GoodsReceiptForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="warehouseId">المستودع *</Label>
+              <Label htmlFor="warehouseId">{t("purchasing.receipts.warehouse")} *</Label>
               <Select
                 id="warehouseId"
                 {...form.register("warehouseId")}
                 options={warehouseOptions}
-                placeholder="اختر المستودع"
+                placeholder={t("common.selectWarehouse")}
                 className="h-10"
               />
               {form.formState.errors.warehouseId && (
@@ -209,7 +211,7 @@ export default function GoodsReceiptForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="receiptDate">تاريخ الاستلام *</Label>
+              <Label htmlFor="receiptDate">{t("purchasing.receipts.receiptDate")} *</Label>
               <Input
                 id="receiptDate"
                 type="date"
@@ -225,11 +227,11 @@ export default function GoodsReceiptForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">ملاحظات</Label>
+            <Label htmlFor="notes">{t("common.notes")}</Label>
             <Textarea
               id="notes"
               {...form.register("notes")}
-              placeholder="ملاحظات اختيارية..."
+              placeholder={t("common.notesPlaceholder")}
             />
           </div>
 
@@ -237,7 +239,7 @@ export default function GoodsReceiptForm() {
             <Card className="border-border bg-card">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg">
-                  بنود أمر الشراء — اختر الكميات المستلمة
+                  {t("purchasing.receipts.orderLinesTitle")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -245,10 +247,10 @@ export default function GoodsReceiptForm() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>المنتج</TableHead>
-                        <TableHead>الكمية المطلوبة</TableHead>
-                        <TableHead>المتبقي</TableHead>
-                        <TableHead className="text-left">الكمية المستلمة</TableHead>
+                        <TableHead>{t("purchasing.orders.product")}</TableHead>
+                        <TableHead>{t("purchasing.receipts.requiredQty")}</TableHead>
+                        <TableHead>{t("purchasing.receipts.remainingQty")}</TableHead>
+                        <TableHead className="text-left">{t("purchasing.receipts.receivedQty")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -293,7 +295,7 @@ export default function GoodsReceiptForm() {
                                     toggleLine(item.id, item.remainingQty)
                                   }
                                 >
-                                  {selected ? "إلغاء" : "تحديد"}
+                                  {selected ? t("common.cancel") : t("purchasing.receipts.select")}
                                 </Button>
                               </div>
                             </TableCell>
@@ -306,8 +308,8 @@ export default function GoodsReceiptForm() {
                   <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
                     <AlertCircle className="h-4 w-4 ml-2" />
                     {order
-                      ? "لا توجد بنود متبقية للاستلام في هذا الأمر"
-                      : "لم يتم العثور على أمر الشراء"}
+                      ? t("purchasing.receipts.noRemainingLines")
+                      : t("purchasing.receipts.purchaseOrderNotFound")}
                   </div>
                 )}
 
@@ -323,14 +325,14 @@ export default function GoodsReceiptForm() {
           <div className="flex items-center gap-3 pt-4 border-t border-border">
             <Button type="submit" disabled={isPending || !watchedOrderId}>
               {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              تسجيل الاستلام
+              {t("purchasing.receipts.record")}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.back()}
             >
-              إلغاء
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

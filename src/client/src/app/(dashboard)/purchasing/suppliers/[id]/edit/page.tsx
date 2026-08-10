@@ -5,10 +5,12 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui";
 import SupplierForm from "@/features/purchasing/components/SupplierForm";
 import { useSupplier } from "@/features/purchasing/hooks/useSupplier";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function EditSupplierPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
   const { data: supplier, isLoading, error } = useSupplier(params.id);
 
   if (isLoading) {
@@ -27,9 +29,11 @@ export default function EditSupplierPage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">المورد غير موجود</h1>
+            <h1 className="text-2xl font-semibold">
+              {t("purchasing.suppliers.notFound")}
+            </h1>
             <p className="text-muted-foreground text-sm">
-              لم يتم العثور على المورد المطلوب
+              {t("purchasing.suppliers.notFoundDescription")}
             </p>
           </div>
         </div>
@@ -45,7 +49,9 @@ export default function EditSupplierPage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">تعديل المورد</h1>
+            <h1 className="text-2xl font-semibold">
+              {t("purchasing.suppliers.editTitle")}
+            </h1>
             <p className="text-muted-foreground text-sm">
               {supplier.code} — {supplier.name}
             </p>

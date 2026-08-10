@@ -13,6 +13,7 @@ import {
   Button,
 } from "@/components/ui";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
+import { useTranslation } from "@/hooks/use-translation";
 import { PurchaseOrderStatusBadge } from "./PurchaseOrderStatusBadge";
 import { useDeletePurchaseOrder } from "../hooks/useDeletePurchaseOrder";
 import type { PurchaseOrderListItem } from "../types/purchase-order.types";
@@ -47,6 +48,7 @@ export default function PurchaseOrdersTable({
   totalPages,
   onPageChange,
 }: PurchaseOrdersTableProps) {
+  const { t } = useTranslation();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeletePurchaseOrder();
@@ -62,7 +64,7 @@ export default function PurchaseOrdersTable({
         setErrorMessage(
           error?.response?.data?.message ||
             error?.message ||
-            "حدث خطأ غير متوقع"
+            t("common.unexpectedError")
         );
       },
     });
@@ -74,12 +76,12 @@ export default function PurchaseOrdersTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>رقم الأمر</TableHead>
-              <TableHead>المورد</TableHead>
-              <TableHead>تاريخ الأمر</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">الإجمالي</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("purchasing.orders.poNumber")}</TableHead>
+              <TableHead>{t("purchasing.orders.supplier")}</TableHead>
+              <TableHead>{t("purchasing.orders.orderDate")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead className="text-left">{t("purchasing.orders.totalAmount")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -104,14 +106,14 @@ export default function PurchaseOrdersTable({
         <div className="rounded-full bg-muted p-4 mb-4">
           <ShoppingCart className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-1">لا توجد أوامر شراء</h3>
+        <h3 className="text-lg font-semibold mb-1">{t("purchasing.orders.emptyTitle")}</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          لم يتم إنشاء أي أوامر شراء بعد
+          {t("purchasing.orders.emptyDescription")}
         </p>
         <Link href="/purchasing/orders/new">
           <Button>
             <ShoppingCart className="ml-2 h-4 w-4" />
-            أمر شراء جديد
+            {t("purchasing.orders.createTitle")}
           </Button>
         </Link>
       </div>
@@ -124,12 +126,12 @@ export default function PurchaseOrdersTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>رقم الأمر</TableHead>
-              <TableHead>المورد</TableHead>
-              <TableHead>تاريخ الأمر</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">الإجمالي</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("purchasing.orders.poNumber")}</TableHead>
+              <TableHead>{t("purchasing.orders.supplier")}</TableHead>
+              <TableHead>{t("purchasing.orders.orderDate")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead className="text-left">{t("purchasing.orders.totalAmount")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -181,8 +183,8 @@ export default function PurchaseOrdersTable({
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-4">
           <p className="text-sm text-muted-foreground">
-            عرض {(page - 1) * pageSize + 1}–
-            {Math.min(page * pageSize, totalCount)} من {totalCount}
+            {t("common.showing")} {(page - 1) * pageSize + 1}–
+            {Math.min(page * pageSize, totalCount)} {t("common.of")} {totalCount}
           </p>
           <div className="flex gap-1">
             <Button
@@ -191,7 +193,7 @@ export default function PurchaseOrdersTable({
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
             >
-              السابق
+              {t("common.previous")}
             </Button>
             <Button
               variant="outline"
@@ -199,7 +201,7 @@ export default function PurchaseOrdersTable({
               disabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
             >
-              التالي
+              {t("common.next")}
             </Button>
           </div>
         </div>
@@ -213,9 +215,9 @@ export default function PurchaseOrdersTable({
             setErrorMessage(null);
           }
         }}
-        title="حذف أمر الشراء"
-        description="هل أنت متأكد من حذف أمر الشراء؟ لا يمكن التراجع عن هذا الإجراء."
-        confirmLabel="حذف"
+        title={t("purchasing.orders.deleteTitle")}
+        description={t("purchasing.orders.deleteDescription")}
+        confirmLabel={t("common.delete")}
         variant="danger"
         isLoading={deleteMutation.isPending}
         errorMessage={errorMessage}

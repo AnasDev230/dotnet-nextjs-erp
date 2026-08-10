@@ -5,10 +5,12 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui";
 import PurchaseOrderForm from "@/features/purchasing/components/PurchaseOrderForm";
 import { usePurchaseOrder } from "@/features/purchasing/hooks/usePurchaseOrder";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function EditPurchaseOrderPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
   const { data: order, isLoading, error } = usePurchaseOrder(params.id);
 
   if (isLoading) {
@@ -27,9 +29,11 @@ export default function EditPurchaseOrderPage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">أمر الشراء غير موجود</h1>
+            <h1 className="text-2xl font-semibold">
+              {t("purchasing.orders.notFound")}
+            </h1>
             <p className="text-muted-foreground text-sm">
-              لم يتم العثور على أمر الشراء المطلوب
+              {t("purchasing.orders.notFoundDescription")}
             </p>
           </div>
         </div>
@@ -45,7 +49,9 @@ export default function EditPurchaseOrderPage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">تعديل أمر الشراء</h1>
+            <h1 className="text-2xl font-semibold">
+              {t("purchasing.orders.editTitle")}
+            </h1>
             <p className="text-muted-foreground text-sm">
               <span className="font-mono">{order.poNumber}</span>
             </p>

@@ -23,6 +23,7 @@ import {
 } from "../schemas/supplier.schema";
 import { useCreateSupplier } from "../hooks/useCreateSupplier";
 import { useUpdateSupplier } from "../hooks/useUpdateSupplier";
+import { useTranslation } from "@/hooks/use-translation";
 import type { SupplierDetail } from "../types/supplier.types";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
@@ -34,6 +35,7 @@ interface SupplierFormProps {
 
 export default function SupplierForm({ mode, supplier }: SupplierFormProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const isEdit = mode === "edit";
 
   const createMutation = useCreateSupplier();
@@ -107,7 +109,7 @@ export default function SupplierForm({ mode, supplier }: SupplierFormProps) {
     <Card className="border-border bg-card">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg">
-          {isEdit ? "تعديل المورد" : "مورد جديد"}
+          {isEdit ? t("purchasing.suppliers.editTitle") : t("purchasing.suppliers.new")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -120,11 +122,11 @@ export default function SupplierForm({ mode, supplier }: SupplierFormProps) {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="name">اسم المورد *</Label>
+              <Label htmlFor="name">{t("purchasing.suppliers.supplierName")} *</Label>
               <Input
                 id="name"
                 {...form.register("name")}
-                placeholder="اسم المورد"
+                placeholder={t("purchasing.suppliers.supplierName")}
                 className="h-10"
               />
               {form.formState.errors.name && (
@@ -135,11 +137,11 @@ export default function SupplierForm({ mode, supplier }: SupplierFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="contactPerson">جهة الاتصال</Label>
+              <Label htmlFor="contactPerson">{t("purchasing.suppliers.contactPerson")}</Label>
               <Input
                 id="contactPerson"
                 {...form.register("contactPerson")}
-                placeholder="اسم جهة الاتصال"
+                placeholder={t("purchasing.suppliers.enterContactPerson")}
                 className="h-10"
               />
               {form.formState.errors.contactPerson && (
@@ -150,7 +152,7 @@ export default function SupplierForm({ mode, supplier }: SupplierFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">البريد الإلكتروني</Label>
+              <Label htmlFor="email">{t("common.email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -166,11 +168,11 @@ export default function SupplierForm({ mode, supplier }: SupplierFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone">الهاتف</Label>
+              <Label htmlFor="phone">{t("common.phone")}</Label>
               <Input
                 id="phone"
                 {...form.register("phone")}
-                placeholder="رقم الهاتف"
+                placeholder={t("purchasing.suppliers.enterPhone")}
                 className="h-10"
               />
               {form.formState.errors.phone && (
@@ -181,11 +183,11 @@ export default function SupplierForm({ mode, supplier }: SupplierFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="taxNumber">الرقم الضريبي</Label>
+              <Label htmlFor="taxNumber">{t("purchasing.suppliers.taxNumber")}</Label>
               <Input
                 id="taxNumber"
                 {...form.register("taxNumber")}
-                placeholder="الرقم الضريبي"
+                placeholder={t("purchasing.suppliers.enterTaxNumber")}
                 className="h-10"
               />
               {form.formState.errors.taxNumber && (
@@ -196,7 +198,7 @@ export default function SupplierForm({ mode, supplier }: SupplierFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="paymentTerms">شروط الدفع (أيام)</Label>
+              <Label htmlFor="paymentTerms">{t("purchasing.suppliers.paymentTermsDays")}</Label>
               <Input
                 id="paymentTerms"
                 type="number"
@@ -213,7 +215,7 @@ export default function SupplierForm({ mode, supplier }: SupplierFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="rating">التقييم (0-5)</Label>
+              <Label htmlFor="rating">{t("purchasing.suppliers.ratingRange")}</Label>
               <Input
                 id="rating"
                 type="number"
@@ -234,14 +236,14 @@ export default function SupplierForm({ mode, supplier }: SupplierFormProps) {
           <div className="flex items-center gap-3 pt-4 border-t border-border">
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              {isEdit ? "حفظ التغييرات" : "إنشاء المورد"}
+              {isEdit ? t("common.saveChanges") : t("purchasing.suppliers.create")}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.back()}
             >
-              إلغاء
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

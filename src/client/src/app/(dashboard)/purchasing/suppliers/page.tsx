@@ -7,10 +7,12 @@ import { Button } from "@/components/ui";
 import SuppliersTable from "@/features/purchasing/components/SuppliersTable";
 import SupplierFilters from "@/features/purchasing/components/SupplierFilters";
 import { useSuppliers } from "@/features/purchasing/hooks/useSuppliers";
+import { useTranslation } from "@/hooks/use-translation";
 
 function SuppliersContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const page = parseInt(searchParams.get("page") ?? "1", 10);
   const pageSize = 20;
@@ -34,12 +36,14 @@ function SuppliersContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">الموردون</h1>
-          <p className="text-muted-foreground text-sm">إدارة موردي المشتريات</p>
+          <h1 className="text-2xl font-semibold">{t("purchasing.suppliers.title")}</h1>
+          <p className="text-muted-foreground text-sm">
+            {t("purchasing.suppliers.listPageDescription")}
+          </p>
         </div>
         <Button onClick={() => router.push("/purchasing/suppliers/new")}>
           <Plus className="ml-2 h-4 w-4" />
-          مورد جديد
+          {t("purchasing.suppliers.new")}
         </Button>
       </div>
 

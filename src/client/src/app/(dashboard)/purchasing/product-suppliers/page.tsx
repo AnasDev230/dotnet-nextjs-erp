@@ -7,10 +7,12 @@ import { Button } from "@/components/ui";
 import ProductSuppliersTable from "@/features/purchasing/components/ProductSuppliersTable";
 import ProductSuppliersFilter from "@/features/purchasing/components/ProductSuppliersFilter";
 import { useProductSuppliers } from "@/features/purchasing/hooks/useProductSuppliers";
+import { useTranslation } from "@/hooks/use-translation";
 
 function ProductSuppliersContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const page = parseInt(searchParams.get("page") ?? "1", 10);
   const pageSize = 20;
@@ -36,9 +38,11 @@ function ProductSuppliersContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">ربط المنتجات بالموردين</h1>
+          <h1 className="text-2xl font-semibold">
+            {t("purchasing.productSuppliers.title")}
+          </h1>
           <p className="text-muted-foreground text-sm">
-            حدد الموردين لكل منتج وتكلفة الشراء
+            {t("purchasing.productSuppliers.listPageDescription")}
           </p>
         </div>
         <Button
@@ -51,7 +55,7 @@ function ProductSuppliersContent() {
           }
         >
           <Plus className="ml-2 h-4 w-4" />
-          ربط جديد
+          {t("purchasing.productSuppliers.new")}
         </Button>
       </div>
 
@@ -60,8 +64,8 @@ function ProductSuppliersContent() {
       <ProductSuppliersTable
         links={data?.items ?? []}
         isLoading={isLoading}
-        title="لا توجد روابط"
-        emptyMessage="لا توجد روابط مطابقة للفلترة"
+        title={t("purchasing.productSuppliers.emptyTitle")}
+        emptyMessage={t("purchasing.productSuppliers.emptyDescription")}
         page={data?.page ?? page}
         pageSize={data?.pageSize ?? pageSize}
         totalCount={data?.totalCount ?? 0}

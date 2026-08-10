@@ -5,10 +5,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui";
 import ProductSupplierForm from "@/features/purchasing/components/ProductSupplierForm";
+import { useTranslation } from "@/hooks/use-translation";
 
 function CreateProductSupplierContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
   const productId = searchParams.get("productId") ?? undefined;
 
   return (
@@ -19,9 +21,11 @@ function CreateProductSupplierContent() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">ربط منتج بمورد</h1>
+            <h1 className="text-2xl font-semibold">
+              {t("purchasing.productSuppliers.createTitle")}
+            </h1>
             <p className="text-muted-foreground text-sm">
-              حدد المنتج والمورد وشروط الشراء
+              {t("purchasing.productSuppliers.createPageDescription")}
             </p>
           </div>
         </div>

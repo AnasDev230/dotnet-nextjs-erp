@@ -5,9 +5,11 @@ import { useRouter } from "next/navigation";
 import { ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui";
 import GoodsReceiptForm from "@/features/purchasing/components/GoodsReceiptForm";
+import { useTranslation } from "@/hooks/use-translation";
 
 function CreateGoodsReceiptContent() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   return (
     <div className="space-y-6">
@@ -17,9 +19,11 @@ function CreateGoodsReceiptContent() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">استلام بضاعة جديد</h1>
+            <h1 className="text-2xl font-semibold">
+              {t("purchasing.receipts.createTitle")}
+            </h1>
             <p className="text-muted-foreground text-sm">
-              استلم بضاعة من أمر شراء معتمد
+              {t("purchasing.receipts.createPageDescription")}
             </p>
           </div>
         </div>

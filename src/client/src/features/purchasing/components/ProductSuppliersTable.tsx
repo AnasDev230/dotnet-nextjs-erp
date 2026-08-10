@@ -13,6 +13,7 @@ import {
   Badge,
 } from "@/components/ui";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
+import { useTranslation } from "@/hooks/use-translation";
 import { useDeleteProductSupplier } from "../hooks/useDeleteProductSupplier";
 import type { ProductSupplierListItem } from "../types/product-supplier.types";
 import type { AxiosError } from "axios";
@@ -48,6 +49,7 @@ export default function ProductSuppliersTable({
   totalPages,
   onPageChange,
 }: ProductSuppliersTableProps) {
+  const { t } = useTranslation();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeleteProductSupplier();
@@ -57,7 +59,7 @@ export default function ProductSuppliersTable({
     return (
       axiosError.response?.data?.message ||
       (error instanceof Error ? error.message : "") ||
-      "حدث خطأ غير متوقع"
+      t("common.unexpectedError")
     );
   };
 
@@ -78,12 +80,12 @@ export default function ProductSuppliersTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>المنتج</TableHead>
-              <TableHead>رمز المورد للصنف</TableHead>
-              <TableHead>مدة التسليم</TableHead>
-              <TableHead className="text-left">التكلفة</TableHead>
-              <TableHead>الأساسي</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("purchasing.productSuppliers.product")}</TableHead>
+              <TableHead>{t("purchasing.productSuppliers.supplierSku")}</TableHead>
+              <TableHead>{t("purchasing.productSuppliers.leadTimeDays")}</TableHead>
+              <TableHead className="text-left">{t("purchasing.productSuppliers.unitCost")}</TableHead>
+              <TableHead>{t("purchasing.productSuppliers.primary")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -120,12 +122,12 @@ export default function ProductSuppliersTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>المنتج</TableHead>
-              <TableHead>رمز المورد للصنف</TableHead>
-              <TableHead>مدة التسليم</TableHead>
-              <TableHead className="text-left">التكلفة</TableHead>
-              <TableHead>الأساسي</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("purchasing.productSuppliers.product")}</TableHead>
+              <TableHead>{t("purchasing.productSuppliers.supplierSku")}</TableHead>
+              <TableHead>{t("purchasing.productSuppliers.leadTimeDays")}</TableHead>
+              <TableHead className="text-left">{t("purchasing.productSuppliers.unitCost")}</TableHead>
+              <TableHead>{t("purchasing.productSuppliers.primary")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -140,7 +142,7 @@ export default function ProductSuppliersTable({
                 <TableCell className="text-muted-foreground font-mono text-xs">
                   {link.supplierSku ?? "—"}
                 </TableCell>
-                <TableCell>{link.leadTimeDays} يوم</TableCell>
+                <TableCell>{link.leadTimeDays} {t("common.days")}</TableCell>
                 <TableCell className="text-left font-mono text-xs">
                   {formatCurrency(link.unitCost)}
                 </TableCell>
@@ -148,10 +150,12 @@ export default function ProductSuppliersTable({
                   {link.isPrimary ? (
                     <Badge variant="success">
                       <Star className="ml-1 h-3 w-3" />
-                      أساسي
+                      {t("purchasing.productSuppliers.primary")}
                     </Badge>
                   ) : (
-                    <Badge variant="neutral">غير أساسي</Badge>
+                    <Badge variant="neutral">
+                      {t("purchasing.productSuppliers.notPrimary")}
+                    </Badge>
                   )}
                 </TableCell>
                 <TableCell className="text-left">
@@ -177,8 +181,8 @@ export default function ProductSuppliersTable({
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-4">
           <p className="text-sm text-muted-foreground">
-            عرض {(page - 1) * pageSize + 1}–
-            {Math.min(page * pageSize, totalCount)} من {totalCount}
+            {t("common.showing")} {(page - 1) * pageSize + 1}–
+            {Math.min(page * pageSize, totalCount)} {t("common.of")} {totalCount}
           </p>
           <div className="flex gap-1">
             <Button
@@ -187,7 +191,7 @@ export default function ProductSuppliersTable({
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
             >
-              السابق
+              {t("common.previous")}
             </Button>
             <Button
               variant="outline"
@@ -195,7 +199,7 @@ export default function ProductSuppliersTable({
               disabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
             >
-              التالي
+              {t("common.next")}
             </Button>
           </div>
         </div>
@@ -209,9 +213,9 @@ export default function ProductSuppliersTable({
             setErrorMessage(null);
           }
         }}
-        title="فك الارتباط"
-        description="هل أنت متأكد من فك الارتباط بين هذا المنتج والمورد؟ لا يمكن التراجع عن هذا الإجراء."
-        confirmLabel="تأكيد"
+        title={t("purchasing.productSuppliers.unlinkTitle")}
+        description={t("purchasing.productSuppliers.unlinkDescription")}
+        confirmLabel={t("common.confirm")}
         variant="danger"
         isLoading={deleteMutation.isPending}
         errorMessage={errorMessage}

@@ -13,6 +13,7 @@ import {
 } from "react-hook-form";
 import { Plus, Trash2, AlertCircle } from "lucide-react";
 import { Alert, Button, Input, Label } from "@/components/ui";
+import { useTranslation } from "@/hooks/use-translation";
 import type { ProductListItem } from "@/features/inventory/types/product.types";
 import type {
   PurchaseOrderFormData,
@@ -40,6 +41,7 @@ export default function PurchaseOrderItemsEditor({
   productOptions,
   productById,
 }: PurchaseOrderItemsEditorProps) {
+  const { t } = useTranslation();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "items",
@@ -66,7 +68,7 @@ export default function PurchaseOrderItemsEditor({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <Label className="text-base font-medium">منتجات الأمر</Label>
+        <Label className="text-base font-medium">{t("purchasing.orders.orderItems")}</Label>
         <Button
           type="button"
           variant="outline"
@@ -75,14 +77,14 @@ export default function PurchaseOrderItemsEditor({
           className="h-9"
         >
           <Plus className="ml-2 h-4 w-4" />
-          إضافة منتج
+          {t("purchasing.orders.addProduct")}
         </Button>
       </div>
 
       {showCannotRemove && (
         <Alert className="border-amber-500/20 bg-amber-500/10 text-amber-600">
           <AlertCircle className="h-4 w-4" />
-          <p>يجب أن يحتوي الأمر على منتج واحد على الأقل</p>
+          <p>{t("purchasing.orders.atLeastOneProduct")}</p>
         </Alert>
       )}
 
@@ -113,7 +115,7 @@ export default function PurchaseOrderItemsEditor({
             if (isDuplicate) {
               setError(`items.${index}.productId`, {
                 type: "manual",
-                message: "لا يمكن تكرار نفس المنتج في نفس الأمر",
+                message: t("purchasing.orders.duplicateProduct"),
               });
               return;
             }
@@ -140,7 +142,7 @@ export default function PurchaseOrderItemsEditor({
             >
               <div className="space-y-2">
                 <Label htmlFor={`items.${index}.productId`} className="text-xs">
-                  المنتج
+                  {t("purchasing.orders.product")}
                 </Label>
                 <select
                   id={`items.${index}.productId`}
@@ -148,7 +150,7 @@ export default function PurchaseOrderItemsEditor({
                   onChange={handleProductChange}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <option value="">اختر المنتج</option>
+                  <option value="">{t("common.selectProduct")}</option>
                   {productOptions.map((opt) => (
                     <option key={opt.value} value={opt.value}>
                       {opt.label}
@@ -164,7 +166,7 @@ export default function PurchaseOrderItemsEditor({
 
               <div className="space-y-2">
                 <Label htmlFor={`items.${index}.quantity`} className="text-xs">
-                  الكمية
+                  {t("common.quantity")}
                 </Label>
                 <Input
                   id={`items.${index}.quantity`}
@@ -185,7 +187,7 @@ export default function PurchaseOrderItemsEditor({
 
               <div className="space-y-2">
                 <Label htmlFor={`items.${index}.unitPrice`} className="text-xs">
-                  سعر الوحدة
+                  {t("purchasing.orders.unitPrice")}
                 </Label>
                 <Input
                   id={`items.${index}.unitPrice`}
@@ -205,7 +207,7 @@ export default function PurchaseOrderItemsEditor({
               </div>
 
               <div className="space-y-2">
-                <Label className="text-xs">الإجمالي</Label>
+                <Label className="text-xs">{t("purchasing.orders.lineTotal")}</Label>
                 <div className="flex h-10 items-center rounded-md border border-input bg-muted px-3 text-sm font-medium">
                   {lineTotal.toLocaleString("ar-SA", {
                     minimumFractionDigits: 2,
@@ -222,7 +224,7 @@ export default function PurchaseOrderItemsEditor({
                   className="h-10 w-10 text-destructive"
                   onClick={() => handleRemove(index)}
                   disabled={fields.length <= 1}
-                  title={fields.length > 1 ? "حذف السطر" : "لا يمكن حذف آخر سطر"}
+                  title={fields.length > 1 ? t("common.deleteRow") : t("common.cannotDeleteLastRow")}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

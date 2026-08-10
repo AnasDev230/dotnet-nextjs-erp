@@ -1,14 +1,15 @@
 "use client";
 
 import { Badge } from "@/components/ui";
+import { useTranslation } from "@/hooks/use-translation";
 import type { GoodsReceiptStatus } from "../types/goods-receipt.types";
 
 const statusConfig: Record<
   GoodsReceiptStatus,
-  { label: string; variant: "success" | "destructive" }
+  { labelKey: string; variant: "success" | "destructive" }
 > = {
-  Received: { label: "مستلمة", variant: "success" },
-  Cancelled: { label: "ملغية", variant: "destructive" },
+  Received: { labelKey: "purchasing.receipts.received", variant: "success" },
+  Cancelled: { labelKey: "purchasing.receipts.cancelled", variant: "destructive" },
 };
 
 export function GoodsReceiptStatusBadge({
@@ -16,6 +17,7 @@ export function GoodsReceiptStatusBadge({
 }: {
   status: GoodsReceiptStatus;
 }) {
+  const { t } = useTranslation();
   const config = statusConfig[status];
-  return <Badge variant={config.variant}>{config.label}</Badge>;
+  return <Badge variant={config.variant}>{t(config.labelKey)}</Badge>;
 }

@@ -28,6 +28,7 @@ import { useSuppliersForDropdown } from "../hooks/useSuppliersForDropdown";
 import { useProducts } from "@/features/inventory/hooks/useProducts";
 import PurchaseOrderItemsEditor from "./PurchaseOrderItemsEditor";
 import PurchaseOrderSummary from "./PurchaseOrderSummary";
+import { useTranslation } from "@/hooks/use-translation";
 import type { PurchaseOrderResponse } from "../types/purchase-order.types";
 import type { ProductListItem } from "@/features/inventory/types/product.types";
 import type { AxiosError } from "axios";
@@ -50,6 +51,7 @@ export default function PurchaseOrderForm({
   order,
 }: PurchaseOrderFormProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const isEdit = mode === "edit";
 
   const createMutation = useCreatePurchaseOrder();
@@ -152,7 +154,7 @@ export default function PurchaseOrderForm({
     <Card className="border-border bg-card">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg">
-          {isEdit ? "تعديل أمر الشراء" : "أمر شراء جديد"}
+          {isEdit ? t("purchasing.orders.editTitle") : t("purchasing.orders.createTitle")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -165,12 +167,12 @@ export default function PurchaseOrderForm({
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="supplierId">المورد *</Label>
+              <Label htmlFor="supplierId">{t("purchasing.orders.supplier")} *</Label>
               <Select
                 id="supplierId"
                 {...form.register("supplierId")}
                 options={supplierOptions}
-                placeholder="اختر المورد"
+                placeholder={t("purchasing.orders.selectSupplier")}
                 className="h-10"
               />
               {form.formState.errors.supplierId && (
@@ -181,7 +183,7 @@ export default function PurchaseOrderForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="currency">العملة</Label>
+              <Label htmlFor="currency">{t("purchasing.orders.currency")}</Label>
               <Input
                 id="currency"
                 {...form.register("currency")}
@@ -196,7 +198,7 @@ export default function PurchaseOrderForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="orderDate">تاريخ الأمر *</Label>
+              <Label htmlFor="orderDate">{t("purchasing.orders.orderDate")} *</Label>
               <Input
                 id="orderDate"
                 type="date"
@@ -211,7 +213,7 @@ export default function PurchaseOrderForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="expectedDate">تاريخ التوقع</Label>
+              <Label htmlFor="expectedDate">{t("purchasing.orders.expectedDate")}</Label>
               <Input
                 id="expectedDate"
                 type="date"
@@ -227,11 +229,11 @@ export default function PurchaseOrderForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="terms">الشروط</Label>
+            <Label htmlFor="terms">{t("purchasing.orders.terms")}</Label>
             <Textarea
               id="terms"
               {...form.register("terms")}
-              placeholder="شروط اختيارية..."
+              placeholder={t("purchasing.orders.termsPlaceholder")}
             />
             {form.formState.errors.terms && (
               <p className="text-sm text-destructive">
@@ -259,14 +261,14 @@ export default function PurchaseOrderForm({
           <div className="flex items-center gap-3 pt-4 border-t border-border">
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              {isEdit ? "حفظ التغييرات" : "إنشاء الأمر"}
+              {isEdit ? t("common.saveChanges") : t("purchasing.orders.create")}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.back()}
             >
-              إلغاء
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

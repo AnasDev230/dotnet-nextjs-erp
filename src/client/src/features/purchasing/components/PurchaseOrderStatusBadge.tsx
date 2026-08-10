@@ -1,12 +1,13 @@
 "use client";
 
 import { Badge } from "@/components/ui";
+import { useTranslation } from "@/hooks/use-translation";
 import type { PurchaseOrderStatus } from "../types/purchase-order.types";
 
 const statusConfig: Record<
   PurchaseOrderStatus,
   {
-    label: string;
+    labelKey: string;
     variant:
       | "secondary"
       | "default"
@@ -16,12 +17,15 @@ const statusConfig: Record<
       | "destructive";
   }
 > = {
-  Draft: { label: "مسودة", variant: "secondary" },
-  Submitted: { label: "مقدمة", variant: "default" },
-  Approved: { label: "معتمدة", variant: "info" },
-  PartiallyReceived: { label: "استلام جزئي", variant: "warning" },
-  Received: { label: "مستلمة بالكامل", variant: "success" },
-  Cancelled: { label: "ملغاة", variant: "destructive" },
+  Draft: { labelKey: "purchasing.orders.draft", variant: "secondary" },
+  Submitted: { labelKey: "purchasing.orders.submitted", variant: "default" },
+  Approved: { labelKey: "purchasing.orders.approved", variant: "info" },
+  PartiallyReceived: {
+    labelKey: "purchasing.orders.partiallyReceived",
+    variant: "warning",
+  },
+  Received: { labelKey: "purchasing.orders.received", variant: "success" },
+  Cancelled: { labelKey: "purchasing.orders.cancelled", variant: "destructive" },
 };
 
 export function PurchaseOrderStatusBadge({
@@ -29,6 +33,7 @@ export function PurchaseOrderStatusBadge({
 }: {
   status: PurchaseOrderStatus;
 }) {
+  const { t } = useTranslation();
   const config = statusConfig[status];
-  return <Badge variant={config.variant}>{config.label}</Badge>;
+  return <Badge variant={config.variant}>{t(config.labelKey)}</Badge>;
 }

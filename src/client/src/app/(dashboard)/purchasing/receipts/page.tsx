@@ -7,10 +7,12 @@ import { Button } from "@/components/ui";
 import GoodsReceiptsTable from "@/features/purchasing/components/GoodsReceiptsTable";
 import GoodsReceiptFilters from "@/features/purchasing/components/GoodsReceiptFilters";
 import { useGoodsReceipts } from "@/features/purchasing/hooks/useGoodsReceipts";
+import { useTranslation } from "@/hooks/use-translation";
 
 function GoodsReceiptsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const page = parseInt(searchParams.get("page") ?? "1", 10);
   const pageSize = 20;
@@ -36,14 +38,14 @@ function GoodsReceiptsContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">استلام البضاعة</h1>
+          <h1 className="text-2xl font-semibold">{t("purchasing.receipts.title")}</h1>
           <p className="text-muted-foreground text-sm">
-            عمليات استلام البضاعة من الموردين
+            {t("purchasing.receipts.listPageDescription")}
           </p>
         </div>
         <Button onClick={() => router.push("/purchasing/receipts/new")}>
           <Plus className="ml-2 h-4 w-4" />
-          استلام جديد
+          {t("purchasing.receipts.new")}
         </Button>
       </div>
 

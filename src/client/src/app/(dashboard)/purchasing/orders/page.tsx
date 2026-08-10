@@ -7,10 +7,12 @@ import { Button } from "@/components/ui";
 import PurchaseOrdersTable from "@/features/purchasing/components/PurchaseOrdersTable";
 import PurchaseOrderFilters from "@/features/purchasing/components/PurchaseOrderFilters";
 import { usePurchaseOrders } from "@/features/purchasing/hooks/usePurchaseOrders";
+import { useTranslation } from "@/hooks/use-translation";
 
 function PurchaseOrdersContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const page = parseInt(searchParams.get("page") ?? "1", 10);
   const pageSize = 20;
@@ -40,12 +42,14 @@ function PurchaseOrdersContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">أوامر الشراء</h1>
-          <p className="text-muted-foreground text-sm">إدارة أوامر الشراء</p>
+          <h1 className="text-2xl font-semibold">{t("purchasing.orders.title")}</h1>
+          <p className="text-muted-foreground text-sm">
+            {t("purchasing.orders.listPageDescription")}
+          </p>
         </div>
         <Button onClick={() => router.push("/purchasing/orders/new")}>
           <Plus className="ml-2 h-4 w-4" />
-          أمر شراء جديد
+          {t("purchasing.orders.newOrder")}
         </Button>
       </div>
 

@@ -23,6 +23,7 @@ import {
 import { useCreateProductSupplier } from "../hooks/useCreateProductSupplier";
 import { useProducts } from "@/features/inventory/hooks/useProducts";
 import { useSuppliersForDropdown } from "../hooks/useSuppliersForDropdown";
+import { useTranslation } from "@/hooks/use-translation";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
 
@@ -34,6 +35,7 @@ export default function ProductSupplierForm({
   preSelectedProductId,
 }: ProductSupplierFormProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const createMutation = useCreateProductSupplier();
   const isPending = createMutation.isPending;
   const error = createMutation.error;
@@ -108,7 +110,7 @@ export default function ProductSupplierForm({
   return (
     <Card className="border-border bg-card">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">ربط منتج بمورد</CardTitle>
+        <CardTitle className="text-lg">{t("purchasing.productSuppliers.link")}</CardTitle>
       </CardHeader>
       <CardContent>
         {error && (
@@ -120,12 +122,12 @@ export default function ProductSupplierForm({
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="productId">المنتج *</Label>
+              <Label htmlFor="productId">{t("purchasing.productSuppliers.product")} *</Label>
               <Select
                 id="productId"
                 {...form.register("productId")}
                 options={productOptions}
-                placeholder="اختر المنتج"
+                placeholder={t("common.selectProduct")}
                 className="h-10"
                 disabled={!!preSelectedProductId}
               />
@@ -137,12 +139,12 @@ export default function ProductSupplierForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="supplierId">المورد *</Label>
+              <Label htmlFor="supplierId">{t("purchasing.orders.supplier")} *</Label>
               <Select
                 id="supplierId"
                 {...form.register("supplierId")}
                 options={supplierOptions}
-                placeholder="اختر المورد"
+                placeholder={t("common.selectSupplier")}
                 className="h-10"
               />
               {form.formState.errors.supplierId && (
@@ -153,11 +155,13 @@ export default function ProductSupplierForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="supplierSku">رمز المورد للصنف</Label>
+              <Label htmlFor="supplierSku">
+                {t("purchasing.productSuppliers.supplierSku")}
+              </Label>
               <Input
                 id="supplierSku"
                 {...form.register("supplierSku")}
-                placeholder="رمز المورد لهذا المنتج"
+                placeholder={t("purchasing.productSuppliers.supplierSkuPlaceholder")}
                 className="h-10"
               />
               {form.formState.errors.supplierSku && (
@@ -168,7 +172,9 @@ export default function ProductSupplierForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="leadTimeDays">مدة التسليم (أيام)</Label>
+              <Label htmlFor="leadTimeDays">
+                {t("purchasing.productSuppliers.leadTime")}
+              </Label>
               <Input
                 id="leadTimeDays"
                 type="number"
@@ -185,7 +191,9 @@ export default function ProductSupplierForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="minOrderQty">الحد الأدنى للكمية</Label>
+              <Label htmlFor="minOrderQty">
+                {t("purchasing.productSuppliers.minOrderQty")}
+              </Label>
               <Input
                 id="minOrderQty"
                 type="number"
@@ -202,7 +210,9 @@ export default function ProductSupplierForm({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="unitCost">تكلفة الوحدة</Label>
+              <Label htmlFor="unitCost">
+                {t("purchasing.productSuppliers.unitCost")}
+              </Label>
               <Input
                 id="unitCost"
                 type="number"
@@ -226,7 +236,7 @@ export default function ProductSupplierForm({
                 {...form.register("isPrimary")}
               />
               <Label htmlFor="isPrimary" className="font-normal">
-                مورد أساسي لهذا المنتج
+                {t("purchasing.productSuppliers.isPrimaryLabel")}
               </Label>
             </div>
           </div>
@@ -234,14 +244,14 @@ export default function ProductSupplierForm({
           <div className="flex items-center gap-3 pt-4 border-t border-border">
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              ربط المنتج بالمورد
+              {t("purchasing.productSuppliers.link")}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.back()}
             >
-              إلغاء
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

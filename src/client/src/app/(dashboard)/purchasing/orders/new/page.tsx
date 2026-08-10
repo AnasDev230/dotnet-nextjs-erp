@@ -4,9 +4,11 @@ import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui";
 import PurchaseOrderForm from "@/features/purchasing/components/PurchaseOrderForm";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function CreatePurchaseOrderPage() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   return (
     <div className="space-y-6">
@@ -16,9 +18,11 @@ export default function CreatePurchaseOrderPage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">أمر شراء جديد</h1>
+            <h1 className="text-2xl font-semibold">
+              {t("purchasing.orders.createTitle")}
+            </h1>
             <p className="text-muted-foreground text-sm">
-              أنشئ أمر شراء من مورد
+              {t("purchasing.orders.createPageDescription")}
             </p>
           </div>
         </div>

@@ -26,6 +26,7 @@ import { useSupplier } from "../hooks/useSupplier";
 import { useSuspendSupplier } from "../hooks/useSuspendSupplier";
 import { useActivateSupplier } from "../hooks/useActivateSupplier";
 import { useProductSuppliersBySupplier } from "../hooks/useProductSuppliersBySupplier";
+import { useTranslation } from "@/hooks/use-translation";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
 
@@ -40,6 +41,7 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 
 export default function SupplierDetails({ supplierId }: { supplierId: string }) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [confirmAction, setConfirmAction] = useState<"suspend" | "activate" | null>(
     null
   );
@@ -65,7 +67,7 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
           setErrorMessage(
             error?.response?.data?.message ||
               error?.message ||
-              "حدث خطأ غير متوقع"
+              t("common.unexpectedError")
           );
         },
       });
@@ -76,7 +78,7 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
           setErrorMessage(
             error?.response?.data?.message ||
               error?.message ||
-              "حدث خطأ غير متوقع"
+              t("common.unexpectedError")
           );
         },
       });
@@ -100,9 +102,9 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">المورد غير موجود</h1>
+            <h1 className="text-2xl font-semibold">{t("purchasing.suppliers.notFound")}</h1>
             <p className="text-muted-foreground text-sm">
-              لم يتم العثور على المورد المطلوب
+              {t("purchasing.suppliers.notFoundDescription")}
             </p>
           </div>
         </div>
@@ -125,7 +127,7 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
           <div>
             <h1 className="text-2xl font-semibold">{supplier.name}</h1>
             <p className="text-muted-foreground text-sm">
-              <span className="font-mono">{supplier.code}</span> — تفاصيل المورد
+              <span className="font-mono">{supplier.code}</span> — {t("purchasing.suppliers.details")}
             </p>
           </div>
         </div>
@@ -133,7 +135,7 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
           <Link href={`/purchasing/suppliers/${supplier.id}/edit`}>
             <Button variant="outline">
               <Pencil className="ml-2 h-4 w-4" />
-              تعديل
+              {t("common.edit")}
             </Button>
           </Link>
           {supplier.status === "Active" ? (
@@ -147,7 +149,7 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
               }}
             >
               <Ban className="ml-2 h-4 w-4" />
-              إيقاف
+              {t("purchasing.suppliers.suspend")}
             </Button>
           ) : (
             <Button
@@ -159,7 +161,7 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
               }}
             >
               <CheckCircle className="ml-2 h-4 w-4" />
-              تفعيل
+              {t("purchasing.suppliers.activate")}
             </Button>
           )}
         </div>
@@ -167,25 +169,25 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
 
       <Card className="border-border bg-card">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">بيانات المورد</CardTitle>
+          <CardTitle className="text-lg">{t("purchasing.suppliers.supplierInfo")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <InfoRow
-              label="رمز المورد"
+              label={t("purchasing.suppliers.supplierCode")}
               value={<span className="font-mono">{supplier.code}</span>}
             />
-            <InfoRow label="جهة الاتصال" value={supplier.contactPerson ?? "—"} />
-            <InfoRow label="البريد الإلكتروني" value={supplier.email ?? "—"} />
-            <InfoRow label="الهاتف" value={supplier.phone ?? "—"} />
-            <InfoRow label="الرقم الضريبي" value={supplier.taxNumber ?? "—"} />
-            <InfoRow label="شروط الدفع" value={`${supplier.paymentTerms} يوم`} />
-            <InfoRow label="التقييم" value={supplier.rating} />
+            <InfoRow label={t("purchasing.suppliers.contactPerson")} value={supplier.contactPerson ?? "—"} />
+            <InfoRow label={t("common.email")} value={supplier.email ?? "—"} />
+            <InfoRow label={t("common.phone")} value={supplier.phone ?? "—"} />
+            <InfoRow label={t("purchasing.suppliers.taxNumber")} value={supplier.taxNumber ?? "—"} />
+            <InfoRow label={t("purchasing.suppliers.paymentTerms")} value={`${supplier.paymentTerms} ${t("common.days")}`} />
+            <InfoRow label={t("purchasing.suppliers.rating")} value={supplier.rating} />
             <InfoRow
-              label="الحالة"
+              label={t("common.status")}
               value={<SupplierStatusBadge status={supplier.status} />}
             />
-            <InfoRow label="تاريخ الإنشاء" value={new Date(supplier.createdAt).toLocaleDateString("ar-SA")} />
+            <InfoRow label={t("common.createdAt")} value={new Date(supplier.createdAt).toLocaleDateString("ar-SA")} />
           </div>
         </CardContent>
       </Card>
@@ -193,14 +195,14 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
       <Card className="border-border bg-card">
         <CardHeader className="pb-3">
           <CardTitle className="text-lg">
-            المنتجات المرتبطة ({linkedProducts?.length ?? 0})
+            {t("purchasing.suppliers.linkedProducts")} ({linkedProducts?.length ?? 0})
           </CardTitle>
         </CardHeader>
         <CardContent>
           {!linkedProducts || linkedProducts.length === 0 ? (
             <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
               <AlertCircle className="h-4 w-4 ml-2" />
-              لا توجد منتجات مرتبطة بهذا المورد
+              {t("purchasing.suppliers.noLinkedProducts")}
             </div>
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
@@ -223,7 +225,7 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
                       })}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {link.leadTimeDays} يوم
+                      {link.leadTimeDays} {t("common.days")}
                     </div>
                   </div>
                 </div>
@@ -237,14 +239,14 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
         open={confirmAction !== null}
         onOpenChange={(open) => !open && closeConfirm()}
         title={
-          confirmAction === "suspend" ? "إيقاف المورد" : "تفعيل المورد"
+          confirmAction === "suspend" ? t("purchasing.suppliers.suspendTitle") : t("purchasing.suppliers.activateTitle")
         }
         description={
           confirmAction === "suspend"
-            ? "هل أنت متأكد من إيقاف هذا المورد؟ لن يتمكن من استلام أوامر شراء جديدة حتى يتم تفعيله."
-            : "هل أنت متأكد من تفعيل هذا المورد؟ سيتمكن من استلام أوامر شراء جديدة."
+            ? t("purchasing.suppliers.suspendDescription")
+            : t("purchasing.suppliers.activateDescription")
         }
-        confirmLabel={confirmAction === "suspend" ? "إيقاف" : "تفعيل"}
+        confirmLabel={confirmAction === "suspend" ? t("purchasing.suppliers.suspend") : t("purchasing.suppliers.activate")}
         variant={confirmAction === "suspend" ? "danger" : "info"}
         isLoading={isLoadingAction}
         errorMessage={errorMessage}

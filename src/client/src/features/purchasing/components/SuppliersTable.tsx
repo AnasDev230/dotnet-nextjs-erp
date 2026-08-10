@@ -14,6 +14,7 @@ import {
   Badge,
 } from "@/components/ui";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
+import { useTranslation } from "@/hooks/use-translation";
 import { SupplierStatusBadge } from "./SupplierStatusBadge";
 import { useDeleteSupplier } from "../hooks/useDeleteSupplier";
 import { useSuspendSupplier } from "../hooks/useSuspendSupplier";
@@ -41,6 +42,7 @@ export default function SuppliersTable({
   totalPages,
   onPageChange,
 }: SuppliersTableProps) {
+  const { t } = useTranslation();
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
   const [selectedSupplierId, setSelectedSupplierId] = useState<string | null>(
     null
@@ -76,7 +78,7 @@ export default function SuppliersTable({
           setErrorMessage(
             error?.response?.data?.message ||
               error?.message ||
-              "حدث خطأ غير متوقع"
+              t("common.unexpectedError")
           );
         },
       });
@@ -87,7 +89,7 @@ export default function SuppliersTable({
           setErrorMessage(
             error?.response?.data?.message ||
               error?.message ||
-              "حدث خطأ غير متوقع"
+              t("common.unexpectedError")
           );
         },
       });
@@ -98,7 +100,7 @@ export default function SuppliersTable({
           setErrorMessage(
             error?.response?.data?.message ||
               error?.message ||
-              "حدث خطأ غير متوقع"
+              t("common.unexpectedError")
           );
         },
       });
@@ -111,13 +113,13 @@ export default function SuppliersTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>الرمز</TableHead>
-              <TableHead>الاسم</TableHead>
-              <TableHead>جهة الاتصال</TableHead>
-              <TableHead>الهاتف</TableHead>
-              <TableHead>التقييم</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("common.code")}</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead>{t("purchasing.suppliers.contactPerson")}</TableHead>
+              <TableHead>{t("common.phone")}</TableHead>
+              <TableHead>{t("purchasing.suppliers.rating")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -142,14 +144,14 @@ export default function SuppliersTable({
         <div className="rounded-full bg-muted p-4 mb-4">
           <Truck className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-1">لا يوجد موردون</h3>
+        <h3 className="text-lg font-semibold mb-1">{t("purchasing.suppliers.emptyTitle")}</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          لم يتم إضافة أي موردين بعد
+          {t("purchasing.suppliers.emptyDescription")}
         </p>
         <Link href="/purchasing/suppliers/new">
           <Button>
             <Truck className="ml-2 h-4 w-4" />
-            إضافة مورد
+            {t("purchasing.suppliers.addNew")}
           </Button>
         </Link>
       </div>
@@ -159,26 +161,23 @@ export default function SuppliersTable({
   const confirmConfig = {
     delete: {
       open: confirmAction === "delete",
-      title: "حذف المورد",
-      description:
-        "هل أنت متأكد من حذف هذا المورد؟ لا يمكن التراجع عن هذا الإجراء.",
-      confirmLabel: "حذف",
+      title: t("purchasing.suppliers.deleteTitle"),
+      description: t("purchasing.suppliers.deleteDescription"),
+      confirmLabel: t("common.delete"),
       variant: "danger" as const,
     },
     suspend: {
       open: confirmAction === "suspend",
-      title: "إيقاف المورد",
-      description:
-        "هل أنت متأكد من إيقاف هذا المورد؟ لن يتمكن من استلام أوامر شراء جديدة حتى يتم تفعيله.",
-      confirmLabel: "إيقاف",
+      title: t("purchasing.suppliers.suspendTitle"),
+      description: t("purchasing.suppliers.suspendDescription"),
+      confirmLabel: t("purchasing.suppliers.suspend"),
       variant: "danger" as const,
     },
     activate: {
       open: confirmAction === "activate",
-      title: "تفعيل المورد",
-      description:
-        "هل أنت متأكد من تفعيل هذا المورد؟ سيتمكن من استلام أوامر شراء جديدة.",
-      confirmLabel: "تفعيل",
+      title: t("purchasing.suppliers.activateTitle"),
+      description: t("purchasing.suppliers.activateDescription"),
+      confirmLabel: t("purchasing.suppliers.activate"),
       variant: "info" as const,
     },
   };
@@ -192,13 +191,13 @@ export default function SuppliersTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>الرمز</TableHead>
-              <TableHead>الاسم</TableHead>
-              <TableHead>جهة الاتصال</TableHead>
-              <TableHead>الهاتف</TableHead>
-              <TableHead>التقييم</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("common.code")}</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead>{t("purchasing.suppliers.contactPerson")}</TableHead>
+              <TableHead>{t("common.phone")}</TableHead>
+              <TableHead>{t("purchasing.suppliers.rating")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -230,7 +229,7 @@ export default function SuppliersTable({
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-destructive"
-                        title="إيقاف المورد"
+                        title={t("purchasing.suppliers.suspendTitle")}
                         disabled={isLoadingAction}
                         onClick={() => openConfirm("suspend", supplier.id)}
                       >
@@ -241,7 +240,7 @@ export default function SuppliersTable({
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-emerald-600"
-                        title="تفعيل المورد"
+                        title={t("purchasing.suppliers.activateTitle")}
                         disabled={isLoadingAction}
                         onClick={() => openConfirm("activate", supplier.id)}
                       >
@@ -267,8 +266,8 @@ export default function SuppliersTable({
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-4">
           <p className="text-sm text-muted-foreground">
-            عرض {(page - 1) * pageSize + 1}–
-            {Math.min(page * pageSize, totalCount)} من {totalCount}
+            {t("common.showing")} {(page - 1) * pageSize + 1}–
+            {Math.min(page * pageSize, totalCount)} {t("common.of")} {totalCount}
           </p>
           <div className="flex gap-1">
             <Button
@@ -277,7 +276,7 @@ export default function SuppliersTable({
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
             >
-              السابق
+              {t("common.previous")}
             </Button>
             <Button
               variant="outline"
@@ -285,7 +284,7 @@ export default function SuppliersTable({
               disabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
             >
-              التالي
+              {t("common.next")}
             </Button>
           </div>
         </div>

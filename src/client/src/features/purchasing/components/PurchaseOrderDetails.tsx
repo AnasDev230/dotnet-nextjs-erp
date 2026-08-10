@@ -20,6 +20,7 @@ import {
 import { PurchaseOrderStatusBadge } from "./PurchaseOrderStatusBadge";
 import { PurchaseOrderStatusActions } from "./PurchaseOrderStatusActions";
 import { usePurchaseOrder } from "../hooks/usePurchaseOrder";
+import { useTranslation } from "@/hooks/use-translation";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
 
@@ -49,6 +50,7 @@ export default function PurchaseOrderDetails({
   orderId: string;
 }) {
   const router = useRouter();
+  const { t } = useTranslation();
   const { data: order, isLoading, error } = usePurchaseOrder(orderId);
 
   if (isLoading) {
@@ -68,9 +70,9 @@ export default function PurchaseOrderDetails({
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">أمر الشراء غير موجود</h1>
+            <h1 className="text-2xl font-semibold">{t("purchasing.orders.notFound")}</h1>
             <p className="text-muted-foreground text-sm">
-              لم يتم العثور على أمر الشراء المطلوب
+              {t("purchasing.orders.notFoundDescription")}
             </p>
           </div>
         </div>
@@ -94,7 +96,7 @@ export default function PurchaseOrderDetails({
             <h1 className="text-2xl font-semibold">
               <span className="font-mono">{order.poNumber}</span>
             </h1>
-            <p className="text-muted-foreground text-sm">تفاصيل أمر الشراء</p>
+            <p className="text-muted-foreground text-sm">{t("purchasing.orders.details")}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -106,30 +108,30 @@ export default function PurchaseOrderDetails({
 
       <Card className="border-border bg-card">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">بيانات الأمر</CardTitle>
+          <CardTitle className="text-lg">{t("purchasing.orders.orderInfo")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <InfoRow label="المورد" value={order.supplierName} />
-            <InfoRow label="تاريخ الأمر" value={formatDate(order.orderDate)} />
+            <InfoRow label={t("purchasing.orders.supplier")} value={order.supplierName} />
+            <InfoRow label={t("purchasing.orders.orderDate")} value={formatDate(order.orderDate)} />
             <InfoRow
-              label="تاريخ التوقع"
+              label={t("purchasing.orders.expectedDate")}
               value={order.expectedDate ? formatDate(order.expectedDate) : "—"}
             />
-            <InfoRow label="العملة" value={order.currency} />
+            <InfoRow label={t("purchasing.orders.currency")} value={order.currency} />
             <InfoRow
-              label="الحالة"
+              label={t("common.status")}
               value={<PurchaseOrderStatusBadge status={order.status} />}
             />
-            <InfoRow label="إجمالي الأمر" value={formatCurrency(order.totalAmount, order.currency)} />
+            <InfoRow label={t("purchasing.orders.totalAmount")} value={formatCurrency(order.totalAmount, order.currency)} />
             {order.approvedByName && (
               <InfoRow
-                label="المعتمد"
+                label={t("purchasing.orders.approvedBy")}
                 value={`${order.approvedByName}${order.approvedAt ? ` (${new Date(order.approvedAt).toLocaleDateString("ar-SA")})` : ""}`}
               />
             )}
             {order.terms && (
-              <InfoRow label="الشروط" value={order.terms} />
+              <InfoRow label={t("purchasing.orders.terms")} value={order.terms} />
             )}
           </div>
         </CardContent>
@@ -137,18 +139,18 @@ export default function PurchaseOrderDetails({
 
       <Card className="border-border bg-card">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">بنود الأمر</CardTitle>
+          <CardTitle className="text-lg">{t("purchasing.orders.items")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>المنتج</TableHead>
-                <TableHead>الكمية</TableHead>
-                <TableHead>المستلم</TableHead>
-                <TableHead>المتبقي</TableHead>
-                <TableHead>سعر الوحدة</TableHead>
-                <TableHead className="text-left">الإجمالي</TableHead>
+                <TableHead>{t("purchasing.orders.product")}</TableHead>
+                <TableHead>{t("common.quantity")}</TableHead>
+                <TableHead>{t("purchasing.orders.receivedQty")}</TableHead>
+                <TableHead>{t("purchasing.orders.remainingQty")}</TableHead>
+                <TableHead>{t("purchasing.orders.unitPrice")}</TableHead>
+                <TableHead className="text-left">{t("purchasing.orders.lineTotal")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -179,7 +181,7 @@ export default function PurchaseOrderDetails({
       {order.status === "Draft" && (
         <div className="flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-600">
           <AlertCircle className="h-4 w-4" />
-          هذا الأمر ما زال مسودة ولم يُعتمد بعد.
+          {t("purchasing.orders.draftWarning")}
         </div>
       )}
     </div>

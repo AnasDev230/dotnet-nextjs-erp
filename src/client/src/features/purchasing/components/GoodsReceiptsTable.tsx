@@ -13,6 +13,7 @@ import {
   Button,
 } from "@/components/ui";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
+import { useTranslation } from "@/hooks/use-translation";
 import { GoodsReceiptStatusBadge } from "./GoodsReceiptStatusBadge";
 import { useCancelGoodsReceipt } from "../hooks/useCancelGoodsReceipt";
 import type { GoodsReceiptListItem } from "../types/goods-receipt.types";
@@ -40,6 +41,7 @@ export default function GoodsReceiptsTable({
   totalPages,
   onPageChange,
 }: GoodsReceiptsTableProps) {
+  const { t } = useTranslation();
   const [cancelId, setCancelId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const cancelMutation = useCancelGoodsReceipt();
@@ -55,7 +57,7 @@ export default function GoodsReceiptsTable({
         setErrorMessage(
           error?.response?.data?.message ||
             error?.message ||
-            "حدث خطأ غير متوقع"
+            t("common.unexpectedError")
         );
       },
     });
@@ -67,13 +69,13 @@ export default function GoodsReceiptsTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>رقم الاستلام</TableHead>
-              <TableHead>رقم الأمر</TableHead>
-              <TableHead>المورد</TableHead>
-              <TableHead>تاريخ الاستلام</TableHead>
-              <TableHead>المستودع</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("purchasing.receipts.grnNumber")}</TableHead>
+              <TableHead>{t("purchasing.orders.poNumber")}</TableHead>
+              <TableHead>{t("purchasing.orders.supplier")}</TableHead>
+              <TableHead>{t("purchasing.receipts.receiptDate")}</TableHead>
+              <TableHead>{t("purchasing.receipts.warehouse")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -98,14 +100,14 @@ export default function GoodsReceiptsTable({
         <div className="rounded-full bg-muted p-4 mb-4">
           <PackageCheck className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-1">لا توجد عمليات استلام</h3>
+        <h3 className="text-lg font-semibold mb-1">{t("purchasing.receipts.emptyTitle")}</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          لم يتم تسجيل أي استلام بضاعة بعد
+          {t("purchasing.receipts.emptyDescription")}
         </p>
         <Link href="/purchasing/receipts/new">
           <Button>
             <PackageCheck className="ml-2 h-4 w-4" />
-            استلام جديد
+            {t("purchasing.receipts.new")}
           </Button>
         </Link>
       </div>
@@ -118,13 +120,13 @@ export default function GoodsReceiptsTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>رقم الاستلام</TableHead>
-              <TableHead>رقم الأمر</TableHead>
-              <TableHead>المورد</TableHead>
-              <TableHead>تاريخ الاستلام</TableHead>
-              <TableHead>المستودع</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("purchasing.receipts.grnNumber")}</TableHead>
+              <TableHead>{t("purchasing.orders.poNumber")}</TableHead>
+              <TableHead>{t("purchasing.orders.supplier")}</TableHead>
+              <TableHead>{t("purchasing.receipts.receiptDate")}</TableHead>
+              <TableHead>{t("purchasing.receipts.warehouse")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -158,7 +160,7 @@ export default function GoodsReceiptsTable({
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8 text-destructive"
-                        title="إلغاء الاستلام"
+                        title={t("purchasing.receipts.cancelReceipt")}
                         disabled={cancelMutation.isPending}
                         onClick={() => {
                           setErrorMessage(null);
@@ -179,8 +181,8 @@ export default function GoodsReceiptsTable({
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-4">
           <p className="text-sm text-muted-foreground">
-            عرض {(page - 1) * pageSize + 1}–
-            {Math.min(page * pageSize, totalCount)} من {totalCount}
+            {t("common.showing")} {(page - 1) * pageSize + 1}–
+            {Math.min(page * pageSize, totalCount)} {t("common.of")} {totalCount}
           </p>
           <div className="flex gap-1">
             <Button
@@ -189,7 +191,7 @@ export default function GoodsReceiptsTable({
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
             >
-              السابق
+              {t("common.previous")}
             </Button>
             <Button
               variant="outline"
@@ -197,7 +199,7 @@ export default function GoodsReceiptsTable({
               disabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
             >
-              التالي
+              {t("common.next")}
             </Button>
           </div>
         </div>
@@ -211,9 +213,9 @@ export default function GoodsReceiptsTable({
             setErrorMessage(null);
           }
         }}
-        title="إلغاء الاستلام"
-        description="سيتم عكس الكميات من المخزون وتراجعها عن أمر الشراء. لا يمكن التراجع عن هذا الإجراء."
-        confirmLabel="تأكيد الإلغاء"
+        title={t("purchasing.receipts.cancelReceipt")}
+        description={t("purchasing.receipts.cancelDescription")}
+        confirmLabel={t("purchasing.receipts.confirmCancel")}
         variant="danger"
         isLoading={cancelMutation.isPending}
         errorMessage={errorMessage}
