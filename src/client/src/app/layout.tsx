@@ -35,6 +35,11 @@ export default function RootLayout({
                     isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                   }
                   document.documentElement.classList.toggle('dark', isDark);
+
+                  var lang = localStorage.getItem('bunyan-lang');
+                  var isAr = lang !== 'en';
+                  document.documentElement.lang = isAr ? 'ar' : 'en';
+                  document.documentElement.dir = isAr ? 'rtl' : 'ltr';
                 } catch (e) {}
               })();
             `,
