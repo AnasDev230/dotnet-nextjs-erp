@@ -5,20 +5,24 @@ interface LanguageState {
   language: Language;
   direction: "rtl" | "ltr";
   setLanguage: (lang: Language) => void;
+  hydrate: () => void;
 }
 
 const STORAGE_KEY = "bunyan-lang";
 const LANGUAGE_VALUES: Language[] = ["ar", "en"];
+export const DEFAULT_LANGUAGE: Language = "ar";
 
-const getInitialLanguage = (): Language => {
-  if (typeof window === "undefined") return "ar";
+export const getStoredLanguage = (): Language => {
+  if (typeof window === "undefined") return DEFAULT_LANGUAGE;
   const saved = localStorage.getItem(STORAGE_KEY);
-  return saved && LANGUAGE_VALUES.includes(saved as Language) ? (saved as Language) : "ar";
+  return saved && LANGUAGE_VALUES.includes(saved as Language)
+    ? (saved as Language)
+    : DEFAULT_LANGUAGE;
 };
 
 export const useLanguageStore = create<LanguageState>((set) => ({
-  language: getInitialLanguage(),
-  direction: getDirection(getInitialLanguage()),
+  language: DEFAULT_LANGUAGE,
+  direction: getDirection(DEFAULT_LANGUAGE),
 
   setLanguage: (lang) => {
     localStorage.setItem(STORAGE_KEY, lang);
@@ -27,5 +31,10 @@ export const useLanguageStore = create<LanguageState>((set) => ({
       document.documentElement.lang = lang;
       document.documentElement.dir = getDirection(lang);
     }
+  },
+
+  hydrate: () => {
+    const lang = getStoredLanguage();
+    set({ language: lang, direction: getDirection(lang) });
   },
 }));
