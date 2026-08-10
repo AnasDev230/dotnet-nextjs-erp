@@ -21,6 +21,7 @@ import {
 import { useCreateWarehouse } from "../hooks/useCreateWarehouse";
 import { useUpdateWarehouse } from "../hooks/useUpdateWarehouse";
 import type { WarehouseDetail } from "../types/warehouse.types";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface WarehouseFormProps {
   mode: "create" | "edit";
@@ -29,6 +30,7 @@ interface WarehouseFormProps {
 
 export default function WarehouseForm({ mode, warehouse }: WarehouseFormProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const isEdit = mode === "edit";
 
   const createMutation = useCreateWarehouse();
@@ -73,13 +75,13 @@ export default function WarehouseForm({ mode, warehouse }: WarehouseFormProps) {
     <Card className="border-border bg-card">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg">
-          {isEdit ? "تعديل المستودع" : "إضافة مستودع جديد"}
+          {isEdit ? t("inventory.warehouses.editTitle") : t("inventory.warehouses.createTitle")}
         </CardTitle>
       </CardHeader>
       <CardContent>
         {error && (
           <Alert variant="destructive" className="mb-6">
-            <p>حدث خطأ: {(error as any)?.response?.data?.message || error.message}</p>
+            <p>{t("common.error")}: {(error as any)?.response?.data?.message || error.message}</p>
           </Alert>
         )}
 
@@ -87,17 +89,17 @@ export default function WarehouseForm({ mode, warehouse }: WarehouseFormProps) {
           <div className="grid gap-4 md:grid-cols-2">
             {/* Code — disabled on edit */}
             <div className="space-y-2">
-              <Label htmlFor="code">{isEdit ? "الرمز" : "الرمز *"}</Label>
+              <Label htmlFor="code">{isEdit ? t("common.code") : `${t("common.code")} *`}</Label>
               <Input
                 id="code"
                 {...form.register("code")}
-                placeholder="أدخل رمز المستودع"
+                placeholder={t("inventory.warehouses.enterCode")}
                 className="h-10"
                 disabled={isEdit}
               />
               {isEdit && (
                 <p className="text-xs text-muted-foreground">
-                  لا يمكن تعديل الرمز بعد الإنشاء
+                  {t("inventory.warehouses.codeUneditable")}
                 </p>
               )}
               {form.formState.errors.code && (
@@ -109,11 +111,11 @@ export default function WarehouseForm({ mode, warehouse }: WarehouseFormProps) {
 
             {/* Name */}
             <div className="space-y-2">
-              <Label htmlFor="name">اسم المستودع *</Label>
+              <Label htmlFor="name">{t("inventory.warehouses.name")} *</Label>
               <Input
                 id="name"
                 {...form.register("name")}
-                placeholder="أدخل اسم المستودع"
+                placeholder={t("inventory.warehouses.enterName")}
                 className="h-10"
               />
               {form.formState.errors.name && (
@@ -125,13 +127,13 @@ export default function WarehouseForm({ mode, warehouse }: WarehouseFormProps) {
 
             {/* Location */}
             <div className="space-y-2">
-              <Label htmlFor="location">الموقع</Label>
+              <Label htmlFor="location">{t("inventory.warehouses.location")}</Label>
               <div className="relative">
                 <MapPin className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="location"
                   {...form.register("location")}
-                  placeholder="أدخل موقع المستودع (اختياري)"
+                  placeholder={t("inventory.warehouses.enterLocation")}
                   className="h-10 pr-10"
                 />
               </div>
@@ -147,7 +149,7 @@ export default function WarehouseForm({ mode, warehouse }: WarehouseFormProps) {
           {isEdit && (
             <div className="flex items-center gap-3 pt-4 border-t border-border">
               <Label htmlFor="isActive" className="cursor-pointer">
-                حالة المستودع
+                {t("inventory.warehouses.status")}
               </Label>
               <button
                 id="isActive"
@@ -169,7 +171,7 @@ export default function WarehouseForm({ mode, warehouse }: WarehouseFormProps) {
                 />
               </button>
               <span className="text-sm text-muted-foreground">
-                {form.watch("isActive") ? "نشط" : "غير نشط"}
+                {form.watch("isActive") ? t("common.active") : t("common.inactive")}
               </span>
             </div>
           )}
@@ -178,14 +180,14 @@ export default function WarehouseForm({ mode, warehouse }: WarehouseFormProps) {
           <div className="flex items-center gap-3 pt-4 border-t border-border">
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              {isEdit ? "حفظ التغييرات" : "إضافة المستودع"}
+              {isEdit ? t("common.saveChanges") : t("inventory.warehouses.create")}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.push("/inventory/warehouses")}
             >
-              إلغاء
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

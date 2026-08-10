@@ -24,6 +24,7 @@ import { useCategoriesForDropdown } from "../hooks/useCategoriesForDropdown";
 import type { CategoryDetail } from "../types/category.types";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface CategoryFormProps {
   mode: "create" | "edit";
@@ -32,6 +33,7 @@ interface CategoryFormProps {
 
 export default function CategoryForm({ mode, category }: CategoryFormProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const isEdit = mode === "edit";
 
   const { data: allCategories } = useCategoriesForDropdown();
@@ -85,13 +87,13 @@ export default function CategoryForm({ mode, category }: CategoryFormProps) {
     <Card className="border-border bg-card">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg">
-          {isEdit ? "تعديل التصنيف" : "إضافة تصنيف جديد"}
+          {isEdit ? t("inventory.categories.editTitle") : t("inventory.categories.createTitle")}
         </CardTitle>
       </CardHeader>
       <CardContent>
         {error && (
           <Alert variant="destructive" className="mb-6">
-            <p>حدث خطأ: {(error as AxiosError<ApiResponse<unknown>>)?.response?.data?.message || error.message}</p>
+            <p>{t("common.error")}: {(error as AxiosError<ApiResponse<unknown>>)?.response?.data?.message || error.message}</p>
           </Alert>
         )}
 
@@ -99,17 +101,17 @@ export default function CategoryForm({ mode, category }: CategoryFormProps) {
           <div className="grid gap-4 md:grid-cols-2">
             {/* Code — disabled on edit */}
             <div className="space-y-2">
-              <Label htmlFor="code">{isEdit ? "الرمز" : "الرمز *"}</Label>
+              <Label htmlFor="code">{isEdit ? t("common.code") : `${t("common.code")} *`}</Label>
               <Input
                 id="code"
                 {...form.register("code")}
-                placeholder="أدخل رمز التصنيف"
+                placeholder={t("inventory.categories.enterCode")}
                 className="h-10"
                 disabled={isEdit}
               />
               {isEdit && (
                 <p className="text-xs text-muted-foreground">
-                  لا يمكن تعديل الرمز بعد الإنشاء
+                  {t("inventory.categories.codeUneditable")}
                 </p>
               )}
               {form.formState.errors.code && (
@@ -121,11 +123,11 @@ export default function CategoryForm({ mode, category }: CategoryFormProps) {
 
             {/* Name */}
             <div className="space-y-2">
-              <Label htmlFor="name">اسم التصنيف *</Label>
+              <Label htmlFor="name">{t("inventory.categories.name")} *</Label>
               <Input
                 id="name"
                 {...form.register("name")}
-                placeholder="أدخل اسم التصنيف"
+                placeholder={t("inventory.categories.enterName")}
                 className="h-10"
               />
               {form.formState.errors.name && (
@@ -137,13 +139,13 @@ export default function CategoryForm({ mode, category }: CategoryFormProps) {
 
             {/* Parent Category */}
             <div className="space-y-2">
-              <Label htmlFor="parentId">التصنيف الأب</Label>
+              <Label htmlFor="parentId">{t("inventory.categories.parentCategory")}</Label>
               <select
                 id="parentId"
                 {...form.register("parentId")}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <option value="">بدون تصنيف أب</option>
+                <option value="">{t("inventory.categories.withoutParent")}</option>
                 {parentOptions.map((opt) => (
                   <option key={opt.value} value={opt.value}>
                     {opt.label}
@@ -157,14 +159,14 @@ export default function CategoryForm({ mode, category }: CategoryFormProps) {
           <div className="flex items-center gap-3 pt-4 border-t border-border">
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              {isEdit ? "حفظ التغييرات" : "إضافة التصنيف"}
+              {isEdit ? t("common.saveChanges") : t("inventory.categories.create")}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.push("/inventory/categories")}
             >
-              إلغاء
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

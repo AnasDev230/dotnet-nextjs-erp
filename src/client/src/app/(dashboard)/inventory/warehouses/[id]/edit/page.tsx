@@ -5,10 +5,12 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui";
 import WarehouseForm from "@/features/inventory/components/WarehouseForm";
 import { useWarehouse } from "@/features/inventory/hooks/useWarehouse";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function EditWarehousePage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
   const { data: warehouse, isLoading, error } = useWarehouse(params.id);
 
   if (isLoading) {
@@ -27,9 +29,9 @@ export default function EditWarehousePage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">المستودع غير موجود</h1>
+            <h1 className="text-2xl font-semibold">{t("inventory.warehouses.notFound")}</h1>
             <p className="text-muted-foreground text-sm">
-              لم يتم العثور على المستودع المطلوب
+              {t("inventory.warehouses.notFoundDescription")}
             </p>
           </div>
         </div>
@@ -45,7 +47,7 @@ export default function EditWarehousePage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">تعديل المستودع</h1>
+            <h1 className="text-2xl font-semibold">{t("inventory.warehouses.editTitle")}</h1>
             <p className="text-muted-foreground text-sm">
               {warehouse.code} — {warehouse.name}
             </p>

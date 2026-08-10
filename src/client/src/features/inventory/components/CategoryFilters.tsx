@@ -4,11 +4,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input, Button } from "@/components/ui";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function CategoryFilters() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const searchParamsRef = useRef(searchParams);
   searchParamsRef.current = searchParams;
@@ -41,7 +43,7 @@ export default function CategoryFilters() {
       <div className="relative flex-1 min-w-[200px]">
         <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="بحث برمز أو اسم التصنيف..."
+          placeholder={t("inventory.categories.searchPlaceholder")}
           className="h-10 pr-10"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -54,7 +56,7 @@ export default function CategoryFilters() {
           size="sm"
           onClick={() => router.push(pathname)}
         >
-          مسح الفلترة
+          {t("common.clearFilters")}
         </Button>
       )}
     </div>

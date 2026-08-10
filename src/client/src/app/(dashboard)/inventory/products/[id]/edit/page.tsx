@@ -5,10 +5,12 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui";
 import ProductForm from "@/features/inventory/components/ProductForm";
 import { useProduct } from "@/features/inventory/hooks/useProduct";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function EditProductPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
   const { data: product, isLoading, error } = useProduct(params.id);
 
   if (isLoading) {
@@ -27,9 +29,9 @@ export default function EditProductPage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">المنتج غير موجود</h1>
+            <h1 className="text-2xl font-semibold">{t("inventory.products.notFound")}</h1>
             <p className="text-muted-foreground text-sm">
-              لم يتم العثور على المنتج المطلوب
+              {t("inventory.products.notFoundDescription")}
             </p>
           </div>
         </div>
@@ -45,7 +47,7 @@ export default function EditProductPage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">تعديل المنتج</h1>
+            <h1 className="text-2xl font-semibold">{t("inventory.products.editTitle")}</h1>
             <p className="text-muted-foreground text-sm">
               {product.sku} — {product.name}
             </p>

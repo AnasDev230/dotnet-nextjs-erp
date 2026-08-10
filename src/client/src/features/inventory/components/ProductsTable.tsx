@@ -15,6 +15,7 @@ import {
 } from "@/components/ui";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { useDeleteProduct } from "../hooks/useDeleteProduct";
+import { useTranslation } from "@/hooks/use-translation";
 import type { ProductListItem } from "../types/product.types";
 
 interface ProductsTableProps {
@@ -36,6 +37,7 @@ export default function ProductsTable({
   totalPages,
   onPageChange,
 }: ProductsTableProps) {
+  const { t } = useTranslation();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeleteProduct();
@@ -51,7 +53,7 @@ export default function ProductsTable({
         setErrorMessage(
           error?.response?.data?.message ||
             error?.message ||
-            "حدث خطأ غير متوقع"
+            t("common.unexpectedError")
         );
       },
     });
@@ -63,14 +65,14 @@ export default function ProductsTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>رمز المنتج</TableHead>
-              <TableHead>الاسم</TableHead>
-              <TableHead>التصنيف</TableHead>
-              <TableHead>الوحدة</TableHead>
-              <TableHead>مستوى الطلب</TableHead>
-              <TableHead className="text-left">السعر</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("inventory.products.sku")}</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead>{t("inventory.products.category")}</TableHead>
+              <TableHead>{t("inventory.products.unitOfMeasure")}</TableHead>
+              <TableHead>{t("inventory.products.reorderLevel")}</TableHead>
+              <TableHead className="text-left">{t("inventory.products.salePrice")}</TableHead>
+              <TableHead>{t("inventory.products.status")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -95,12 +97,12 @@ export default function ProductsTable({
         <div className="rounded-full bg-muted p-4 mb-4">
           <Package className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-1">لا توجد منتجات</h3>
-        <p className="text-sm text-muted-foreground mb-4">لم يتم إضافة أي منتجات بعد</p>
+        <h3 className="text-lg font-semibold mb-1">{t("inventory.products.emptyTitle")}</h3>
+        <p className="text-sm text-muted-foreground mb-4">{t("inventory.products.emptyDescription")}</p>
         <Link href="/inventory/products/new">
           <Button>
             <Package className="ml-2 h-4 w-4" />
-            إضافة منتج
+            {t("inventory.products.addNew")}
           </Button>
         </Link>
       </div>
@@ -113,14 +115,14 @@ export default function ProductsTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>رمز المنتج</TableHead>
-              <TableHead>الاسم</TableHead>
-              <TableHead>التصنيف</TableHead>
-              <TableHead>الوحدة</TableHead>
-              <TableHead>مستوى الطلب</TableHead>
-              <TableHead className="text-left">السعر</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("inventory.products.sku")}</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead>{t("inventory.products.category")}</TableHead>
+              <TableHead>{t("inventory.products.unitOfMeasure")}</TableHead>
+              <TableHead>{t("inventory.products.reorderLevel")}</TableHead>
+              <TableHead className="text-left">{t("inventory.products.salePrice")}</TableHead>
+              <TableHead>{t("inventory.products.status")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -138,7 +140,7 @@ export default function ProductsTable({
                 </TableCell>
                 <TableCell>
                   <Badge variant={product.isActive ? "success" : "neutral"}>
-                    {product.isActive ? "نشط" : "غير نشط"}
+                    {product.isActive ? t("common.active") : t("common.inactive")}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-left">
@@ -171,7 +173,7 @@ export default function ProductsTable({
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-4">
           <p className="text-sm text-muted-foreground">
-            عرض {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} من {totalCount}
+            {t("common.showing")} {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} {t("common.of")} {totalCount}
           </p>
           <div className="flex gap-1">
             <Button
@@ -180,7 +182,7 @@ export default function ProductsTable({
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
             >
-              السابق
+              {t("common.previous")}
             </Button>
             <Button
               variant="outline"
@@ -188,7 +190,7 @@ export default function ProductsTable({
               disabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
             >
-              التالي
+              {t("common.next")}
             </Button>
           </div>
         </div>
@@ -202,9 +204,9 @@ export default function ProductsTable({
             setErrorMessage(null);
           }
         }}
-        title="حذف المنتج"
-        description="هل أنت متأكد من حذف هذا المنتج؟ لا يمكن التراجع عن هذا الإجراء."
-        confirmLabel="حذف"
+        title={t("inventory.products.deleteTitle")}
+        description={t("inventory.products.deleteDescription")}
+        confirmLabel={t("common.delete")}
         variant="danger"
         isLoading={deleteMutation.isPending}
         errorMessage={errorMessage}

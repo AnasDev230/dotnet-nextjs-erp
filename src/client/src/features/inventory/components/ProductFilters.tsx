@@ -6,8 +6,10 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui";
 import { Button } from "@/components/ui";
 import { useCategoriesForDropdown } from "../hooks/useCategoriesForDropdown";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function ProductFilters() {
+  const { t } = useTranslation();
   const { data: categories, isLoading: categoriesLoading } = useCategoriesForDropdown();
 
   const categoryOptions = (categories ?? []).map((c) => ({
@@ -52,7 +54,7 @@ export default function ProductFilters() {
       <div className="relative flex-1 min-w-[200px]">
         <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="بحث باسم أو رمز المنتج..."
+          placeholder={t("inventory.products.searchPlaceholder")}
           className="h-10 pr-10"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -66,7 +68,7 @@ export default function ProductFilters() {
         disabled={categoriesLoading}
       >
         <option value="">
-          {categoriesLoading ? "جاري التحميل..." : "جميع التصنيفات"}
+          {categoriesLoading ? t("common.loading") : t("inventory.products.allCategories")}
         </option>
         {categoryOptions.map((opt) => (
           <option key={opt.value} value={opt.value}>
@@ -82,9 +84,9 @@ export default function ProductFilters() {
           updateParams({ isActive: e.target.value || undefined })
         }
       >
-        <option value="">جميع الحالات</option>
-        <option value="true">نشط</option>
-        <option value="false">غير نشط</option>
+        <option value="">{t("common.allStatuses")}</option>
+        <option value="true">{t("common.active")}</option>
+        <option value="false">{t("common.inactive")}</option>
       </select>
 
       {searchParams.toString() && (
@@ -93,7 +95,7 @@ export default function ProductFilters() {
           size="sm"
           onClick={() => router.push(pathname)}
         >
-          مسح الفلترة
+          {t("common.clearFilters")}
         </Button>
       )}
     </div>

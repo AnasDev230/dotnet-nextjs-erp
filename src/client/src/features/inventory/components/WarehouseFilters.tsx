@@ -4,11 +4,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input, Button } from "@/components/ui";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function WarehouseFilters() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const searchParamsRef = useRef(searchParams);
   searchParamsRef.current = searchParams;
@@ -48,7 +50,7 @@ export default function WarehouseFilters() {
       <div className="relative flex-1 min-w-[200px]">
         <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="بحث برمز أو اسم المستودع..."
+          placeholder={t("inventory.warehouses.searchPlaceholder")}
           className="h-10 pr-10"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -60,9 +62,9 @@ export default function WarehouseFilters() {
         onChange={(e) => handleStatusChange(e.target.value)}
         className="flex h-10 w-40 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <option value="">الكل</option>
-        <option value="true">نشط</option>
-        <option value="false">غير نشط</option>
+        <option value="">{t("common.all")}</option>
+        <option value="true">{t("common.active")}</option>
+        <option value="false">{t("common.inactive")}</option>
       </select>
 
       {searchParams.toString() && (
@@ -71,7 +73,7 @@ export default function WarehouseFilters() {
           size="sm"
           onClick={() => router.push(pathname)}
         >
-          مسح الفلترة
+          {t("common.clearFilters")}
         </Button>
       )}
     </div>

@@ -7,10 +7,12 @@ import { Button } from "@/components/ui";
 import ProductsTable from "@/features/inventory/components/ProductsTable";
 import ProductFilters from "@/features/inventory/components/ProductFilters";
 import { useProducts } from "@/features/inventory/hooks/useProducts";
+import { useTranslation } from "@/hooks/use-translation";
 
 function ProductsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const page = parseInt(searchParams.get("page") ?? "1", 10);
   const pageSize = 20;
@@ -37,12 +39,12 @@ function ProductsContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">المنتجات</h1>
-          <p className="text-muted-foreground text-sm">إدارة منتجات المخزون</p>
+          <h1 className="text-2xl font-semibold">{t("inventory.products.title")}</h1>
+          <p className="text-muted-foreground text-sm">{t("inventory.products.listPageDescription")}</p>
         </div>
         <Button onClick={() => router.push("/inventory/products/new")}>
           <Plus className="ml-2 h-4 w-4" />
-          منتج جديد
+          {t("inventory.products.new")}
         </Button>
       </div>
 

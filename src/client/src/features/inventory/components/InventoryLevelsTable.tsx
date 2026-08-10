@@ -2,6 +2,7 @@
 
 import { AlertTriangle, Package } from "lucide-react";
 import { Badge, Button } from "@/components/ui";
+import { useTranslation } from "@/hooks/use-translation";
 import type { InventoryLevelListItem } from "../types/inventory-level.types";
 
 interface InventoryLevelsTableProps {
@@ -37,20 +38,22 @@ export default function InventoryLevelsTable({
   onPageChange,
   onAdjust,
 }: InventoryLevelsTableProps) {
+  const { t } = useTranslation();
+
   if (isLoading) {
     return (
       <div className="rounded-md border border-border">
         <table className="w-full">
           <thead className="bg-muted/50 text-muted-foreground text-xs font-medium uppercase">
             <tr>
-              <th className="px-4 py-3 text-right">المنتج</th>
-              <th className="px-4 py-3 text-right">المستودع</th>
-              <th className="px-4 py-3 text-right">الكمية</th>
-              <th className="px-4 py-3 text-right">محجوز</th>
-              <th className="px-4 py-3 text-right">المتاح</th>
-              <th className="px-4 py-3 text-right">حد الطلب</th>
-              <th className="px-4 py-3 text-right">الحالة</th>
-              <th className="px-4 py-3 text-left">الإجراءات</th>
+              <th className="px-4 py-3 text-right">{t("inventory.levels.product")}</th>
+              <th className="px-4 py-3 text-right">{t("inventory.levels.warehouse")}</th>
+              <th className="px-4 py-3 text-right">{t("inventory.levels.quantity")}</th>
+              <th className="px-4 py-3 text-right">{t("inventory.levels.reserved")}</th>
+              <th className="px-4 py-3 text-right">{t("inventory.levels.available")}</th>
+              <th className="px-4 py-3 text-right">{t("inventory.levels.reorderLevel")}</th>
+              <th className="px-4 py-3 text-right">{t("inventory.products.status")}</th>
+              <th className="px-4 py-3 text-left">{t("common.actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -69,9 +72,9 @@ export default function InventoryLevelsTable({
         <div className="rounded-full bg-muted p-4 mb-4">
           <Package className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-1">لا توجد مستويات مخزون</h3>
+        <h3 className="text-lg font-semibold mb-1">{t("inventory.levels.emptyTitle")}</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          لم يتم إضافة أي منتجات للمستودعات بعد
+          {t("inventory.levels.emptyDescription")}
         </p>
       </div>
     );
@@ -82,14 +85,14 @@ export default function InventoryLevelsTable({
       <table className="w-full">
         <thead className="bg-muted/50 text-muted-foreground text-xs font-medium uppercase">
           <tr>
-            <th className="px-4 py-3 text-right">المنتج</th>
-            <th className="px-4 py-3 text-right">المستودع</th>
-            <th className="px-4 py-3 text-right">الكمية</th>
-            <th className="px-4 py-3 text-right">محجوز</th>
-            <th className="px-4 py-3 text-right">المتاح</th>
-            <th className="px-4 py-3 text-right">حد الطلب</th>
-            <th className="px-4 py-3 text-right">الحالة</th>
-            <th className="px-4 py-3 text-left">الإجراءات</th>
+            <th className="px-4 py-3 text-right">{t("inventory.levels.product")}</th>
+            <th className="px-4 py-3 text-right">{t("inventory.levels.warehouse")}</th>
+            <th className="px-4 py-3 text-right">{t("inventory.levels.quantity")}</th>
+            <th className="px-4 py-3 text-right">{t("inventory.levels.reserved")}</th>
+            <th className="px-4 py-3 text-right">{t("inventory.levels.available")}</th>
+            <th className="px-4 py-3 text-right">{t("inventory.levels.reorderLevel")}</th>
+            <th className="px-4 py-3 text-right">{t("inventory.products.status")}</th>
+            <th className="px-4 py-3 text-left">{t("common.actions")}</th>
           </tr>
         </thead>
         <tbody>
@@ -127,11 +130,11 @@ export default function InventoryLevelsTable({
                   {level.isLowStock ? (
                     <Badge variant="destructive" className="gap-1">
                       <AlertTriangle className="h-3 w-3" />
-                      مخزون منخفض
+                      {t("inventory.levels.lowStock")}
                     </Badge>
                   ) : (
                     <Badge variant="outline" className="text-emerald-600 border-emerald-500/20 bg-emerald-500/10">
-                      جيد
+                      {t("inventory.levels.good")}
                     </Badge>
                   )}
                 </td>
@@ -141,7 +144,7 @@ export default function InventoryLevelsTable({
                     size="sm"
                     onClick={() => onAdjust(level.productId, level.warehouseId)}
                   >
-                    تسوية
+                    {t("inventory.levels.adjust")}
                   </Button>
                 </td>
               </tr>
@@ -154,7 +157,7 @@ export default function InventoryLevelsTable({
       {totalPages > 1 && (
         <div className="flex items-center justify-between border-t border-border px-4 py-3 text-sm text-muted-foreground">
           <span>
-            عرض {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} من{" "}
+            {t("common.showing")} {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} {t("common.of")}{" "}
             {totalCount}
           </span>
           <div className="flex items-center gap-2">
@@ -164,7 +167,7 @@ export default function InventoryLevelsTable({
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
             >
-              السابق
+              {t("common.previous")}
             </Button>
             <Button
               variant="outline"
@@ -172,7 +175,7 @@ export default function InventoryLevelsTable({
               disabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
             >
-              التالي
+              {t("common.next")}
             </Button>
           </div>
         </div>

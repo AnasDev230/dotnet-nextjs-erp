@@ -7,10 +7,12 @@ import { Button } from "@/components/ui";
 import WarehousesTable from "@/features/inventory/components/WarehousesTable";
 import WarehouseFilters from "@/features/inventory/components/WarehouseFilters";
 import { useWarehouses } from "@/features/inventory/hooks/useWarehouses";
+import { useTranslation } from "@/hooks/use-translation";
 
 function WarehousesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const page = parseInt(searchParams.get("page") ?? "1", 10);
   const pageSize = 20;
@@ -31,12 +33,12 @@ function WarehousesContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">المستودعات</h1>
-          <p className="text-muted-foreground text-sm">إدارة المستودعات والمواقع</p>
+          <h1 className="text-2xl font-semibold">{t("inventory.warehouses.title")}</h1>
+          <p className="text-muted-foreground text-sm">{t("inventory.warehouses.listPageDescription")}</p>
         </div>
         <Button onClick={() => router.push("/inventory/warehouses/new")}>
           <Plus className="ml-2 h-4 w-4" />
-          مستودع جديد
+          {t("inventory.warehouses.new")}
         </Button>
       </div>
 

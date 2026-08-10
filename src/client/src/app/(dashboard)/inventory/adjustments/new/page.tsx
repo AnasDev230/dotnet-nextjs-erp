@@ -7,10 +7,12 @@ import { Button } from "@/components/ui";
 import StockAdjustmentForm from "@/features/inventory/components/StockAdjustmentForm";
 import { useWarehousesForDropdown } from "@/features/inventory/hooks/useWarehousesForDropdown";
 import { useProducts } from "@/features/inventory/hooks/useProducts";
+import { useTranslation } from "@/hooks/use-translation";
 
 function NewAdjustmentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const initialProductId = searchParams.get("productId") ?? undefined;
   const initialWarehouseId = searchParams.get("warehouseId") ?? undefined;
@@ -41,12 +43,12 @@ function NewAdjustmentContent() {
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" onClick={() => router.back()}>
           <ArrowRight className="ml-2 h-4 w-4" />
-          رجوع
+          {t("inventory.adjustments.back")}
         </Button>
         <div>
-          <h1 className="text-2xl font-semibold">تسوية مخزون جديدة</h1>
+          <h1 className="text-2xl font-semibold">{t("inventory.adjustments.createTitle")}</h1>
           <p className="text-muted-foreground text-sm">
-            تعديل الكمية الفعلية لمنتج في مستودع
+            {t("inventory.adjustments.createPageDescription")}
           </p>
         </div>
       </div>

@@ -8,10 +8,12 @@ import InventoryLevelsTable from "@/features/inventory/components/InventoryLevel
 import InventoryFilters from "@/features/inventory/components/InventoryFilters";
 import { useInventoryLevels } from "@/features/inventory/hooks/useInventoryLevels";
 import { useWarehousesForDropdown } from "@/features/inventory/hooks/useWarehousesForDropdown";
+import { useTranslation } from "@/hooks/use-translation";
 
 function LevelsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const page = parseInt(searchParams.get("page") ?? "1", 10);
   const pageSize = 20;
@@ -50,19 +52,19 @@ function LevelsContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">مستويات المخزون</h1>
+          <h1 className="text-2xl font-semibold">{t("inventory.levels.title")}</h1>
           <p className="text-muted-foreground text-sm">
-            متابعة كميات المنتجات في المستودعات
+            {t("inventory.levels.listPageDescription")}
           </p>
         </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={() => router.push("/inventory/adjustments/new")}>
             <Scale className="ml-2 h-4 w-4" />
-            تسوية جديدة
+            {t("inventory.levels.newAdjustment")}
           </Button>
           <Button onClick={() => router.push("/inventory/levels/new")}>
             <Plus className="ml-2 h-4 w-4" />
-            إضافة مخزون
+            {t("inventory.levels.new")}
           </Button>
         </div>
       </div>

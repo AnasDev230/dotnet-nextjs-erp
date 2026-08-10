@@ -14,6 +14,7 @@ import {
 } from "@/components/ui";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { useDeleteCategory } from "../hooks/useDeleteCategory";
+import { useTranslation } from "@/hooks/use-translation";
 import type { CategoryListItem } from "../types/category.types";
 
 interface CategoriesTableProps {
@@ -35,6 +36,7 @@ export default function CategoriesTable({
   totalPages,
   onPageChange,
 }: CategoriesTableProps) {
+  const { t } = useTranslation();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeleteCategory();
@@ -50,7 +52,7 @@ export default function CategoriesTable({
         setErrorMessage(
           error?.response?.data?.message ||
             error?.message ||
-            "حدث خطأ غير متوقع"
+            t("common.unexpectedError")
         );
       },
     });
@@ -62,12 +64,12 @@ export default function CategoriesTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>الرمز</TableHead>
-              <TableHead>الاسم</TableHead>
-              <TableHead>التصنيف الأب</TableHead>
-              <TableHead>عدد المنتجات</TableHead>
-              <TableHead>تاريخ الإنشاء</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("common.code")}</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead>{t("inventory.categories.parentCategory")}</TableHead>
+              <TableHead>{t("inventory.categories.productsCount")}</TableHead>
+              <TableHead>{t("common.createdAt")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -92,12 +94,12 @@ export default function CategoriesTable({
         <div className="rounded-full bg-muted p-4 mb-4">
           <FolderTree className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-1">لا توجد تصنيفات</h3>
-        <p className="text-sm text-muted-foreground mb-4">لم يتم إضافة أي تصنيفات بعد</p>
+        <h3 className="text-lg font-semibold mb-1">{t("inventory.categories.emptyTitle")}</h3>
+        <p className="text-sm text-muted-foreground mb-4">{t("inventory.categories.emptyDescription")}</p>
         <Link href="/inventory/categories/new">
           <Button>
             <FolderTree className="ml-2 h-4 w-4" />
-            إضافة تصنيف
+            {t("inventory.categories.addNew")}
           </Button>
         </Link>
       </div>
@@ -110,12 +112,12 @@ export default function CategoriesTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>الرمز</TableHead>
-              <TableHead>الاسم</TableHead>
-              <TableHead>التصنيف الأب</TableHead>
-              <TableHead>عدد المنتجات</TableHead>
-              <TableHead>تاريخ الإنشاء</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("common.code")}</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead>{t("inventory.categories.parentCategory")}</TableHead>
+              <TableHead>{t("inventory.categories.productsCount")}</TableHead>
+              <TableHead>{t("common.createdAt")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -160,7 +162,7 @@ export default function CategoriesTable({
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-4">
           <p className="text-sm text-muted-foreground">
-            عرض {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} من {totalCount}
+            {t("common.showing")} {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} {t("common.of")} {totalCount}
           </p>
           <div className="flex gap-1">
             <Button
@@ -169,7 +171,7 @@ export default function CategoriesTable({
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
             >
-              السابق
+              {t("common.previous")}
             </Button>
             <Button
               variant="outline"
@@ -177,7 +179,7 @@ export default function CategoriesTable({
               disabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
             >
-              التالي
+              {t("common.next")}
             </Button>
           </div>
         </div>
@@ -191,9 +193,9 @@ export default function CategoriesTable({
             setErrorMessage(null);
           }
         }}
-        title="حذف التصنيف"
-        description="هل أنت متأكد من حذف هذا التصنيف؟ سيتم إلغاء تصنيف المنتجات المرتبطة بهذا التصنيف. لا يمكن التراجع عن هذا الإجراء."
-        confirmLabel="حذف"
+        title={t("inventory.categories.deleteTitle")}
+        description={t("inventory.categories.deleteDescription")}
+        confirmLabel={t("common.delete")}
         variant="danger"
         isLoading={deleteMutation.isPending}
         errorMessage={errorMessage}

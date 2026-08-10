@@ -6,10 +6,12 @@ import { Plus, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui";
 import StockAdjustmentsTable from "@/features/inventory/components/StockAdjustmentsTable";
 import { useStockAdjustments } from "@/features/inventory/hooks/useStockAdjustments";
+import { useTranslation } from "@/hooks/use-translation";
 
 function AdjustmentsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const page = parseInt(searchParams.get("page") ?? "1", 10);
   const pageSize = 20;
@@ -26,14 +28,14 @@ function AdjustmentsContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">سجل التسويات</h1>
+          <h1 className="text-2xl font-semibold">{t("inventory.adjustments.title")}</h1>
           <p className="text-muted-foreground text-sm">
-            تاريخ عمليات تسوية المخزون
+            {t("inventory.adjustments.listPageDescription")}
           </p>
         </div>
         <Button onClick={() => router.push("/inventory/adjustments/new")}>
           <Plus className="ml-2 h-4 w-4" />
-          تسوية جديدة
+          {t("inventory.adjustments.new")}
         </Button>
       </div>
 

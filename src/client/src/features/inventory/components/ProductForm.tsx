@@ -23,14 +23,15 @@ import {
 import { useCreateProduct } from "../hooks/useCreateProduct";
 import { useUpdateProduct } from "../hooks/useUpdateProduct";
 import { useCategoriesForDropdown } from "../hooks/useCategoriesForDropdown";
+import { useTranslation } from "@/hooks/use-translation";
 import type { ProductDetail } from "../types/product.types";
 
-const unitOptions = [
-  { value: "piece", label: "قطعة" },
-  { value: "kg", label: "كيلوغرام" },
-  { value: "liter", label: "لتر" },
-  { value: "box", label: "كرتونة" },
-  { value: "meter", label: "متر" },
+const unitKeys = [
+  { value: "piece", labelKey: "inventory.products.unitPiece" },
+  { value: "kg", labelKey: "inventory.products.unitKg" },
+  { value: "liter", labelKey: "inventory.products.unitLiter" },
+  { value: "box", labelKey: "inventory.products.unitBox" },
+  { value: "meter", labelKey: "inventory.products.unitMeter" },
 ];
 
 interface ProductFormProps {
@@ -40,6 +41,7 @@ interface ProductFormProps {
 
 export default function ProductForm({ mode, product }: ProductFormProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const isEdit = mode === "edit";
 
   const zodResolverTyped = zodResolver(productFormSchema) as Resolver<ProductFormData>;
@@ -49,8 +51,10 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
   const error = createMutation.error || updateMutation.error;
   const { data: categories, isLoading: categoriesLoading } = useCategoriesForDropdown();
 
+  const unitOptions = unitKeys.map((u) => ({ value: u.value, label: t(u.labelKey) }));
+
   const categoryOptions = [
-    { value: "", label: "بدون تصنيف" },
+    { value: "", label: t("inventory.products.withoutCategory") },
     ...(categories ?? []).map((c) => ({
       value: c.id,
       label: `${c.code} — ${c.name}`,
@@ -112,13 +116,15 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
     <Card className="border-border bg-card">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg">
-          {isEdit ? "تعديل المنتج" : "إضافة منتج جديد"}
+          {isEdit
+            ? t("inventory.products.editTitle")
+            : t("inventory.products.createTitle")}
         </CardTitle>
       </CardHeader>
       <CardContent>
         {error && (
           <Alert variant="destructive" className="mb-6">
-            <p>حدث خطأ: {(error as any)?.response?.data?.message || error.message}</p>
+            <p>{t("common.error")}: {(error as any)?.response?.data?.message || error.message}</p>
           </Alert>
         )}
 
@@ -126,11 +132,15 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
           <div className="grid gap-4 md:grid-cols-2">
             {/* SKU — disabled on edit */}
             <div className="space-y-2">
-              <Label htmlFor="sku">{isEdit ? "رمز المنتج" : "رمز المنتج *"}</Label>
+              <Label htmlFor="sku">
+                {isEdit
+                  ? t("inventory.products.sku")
+                  : `${t("inventory.products.sku")} *`}
+              </Label>
               <Input
                 id="sku"
                 {...form.register("sku")}
-                placeholder="أدخل رمز المنتج"
+                placeholder={t("inventory.products.enterSku")}
                 className="h-10"
                 disabled={isEdit}
               />
@@ -143,11 +153,11 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
 
             {/* Name */}
             <div className="space-y-2">
-              <Label htmlFor="name">اسم المنتج *</Label>
+              <Label htmlFor="name">{t("inventory.products.name")} *</Label>
               <Input
                 id="name"
                 {...form.register("name")}
-                placeholder="أدخل اسم المنتج"
+                placeholder={t("inventory.products.enterName")}
                 className="h-10"
               />
               {form.formState.errors.name && (
@@ -159,12 +169,12 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
 
             {/* Unit of Measure */}
             <div className="space-y-2">
-              <Label htmlFor="unitOfMeasure">وحدة القياس *</Label>
+              <Label htmlFor="unitOfMeasure">{t("inventory.products.unitOfMeasure")} *</Label>
               <Select
                 id="unitOfMeasure"
                 {...form.register("unitOfMeasure")}
                 options={unitOptions}
-                placeholder="اختر وحدة القياس"
+                placeholder={t("inventory.products.selectUnit")}
                 className="h-10"
               />
               {form.formState.errors.unitOfMeasure && (
@@ -176,18 +186,18 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
 
             {/* Category */}
             <div className="space-y-2">
-              <Label htmlFor="categoryId">التصنيف</Label>
+              <Label htmlFor="categoryId">{t("inventory.products.category")}</Label>
               {categoriesLoading ? (
                 <div className="flex h-10 items-center gap-2 rounded-md border border-input bg-background px-3 text-sm text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  جاري التحميل...
+                  {t("common.loading")}
                 </div>
               ) : (
                 <Select
                   id="categoryId"
                   {...form.register("categoryId")}
                   options={categoryOptions}
-                  placeholder="اختر التصنيف"
+                  placeholder={t("inventory.products.selectCategory")}
                   className="h-10"
                 />
               )}
@@ -195,7 +205,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
 
             {/* Reorder Level */}
             <div className="space-y-2">
-              <Label htmlFor="reorderLevel">مستوى إعادة الطلب</Label>
+              <Label htmlFor="reorderLevel">{t("inventory.products.reorderLevel")}</Label>
               <Input
                 id="reorderLevel"
                 type="number"
@@ -213,7 +223,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
 
             {/* Reorder Qty */}
             <div className="space-y-2">
-              <Label htmlFor="reorderQty">كمية إعادة الطلب</Label>
+              <Label htmlFor="reorderQty">{t("inventory.products.reorderQty")}</Label>
               <Input
                 id="reorderQty"
                 type="number"
@@ -231,7 +241,7 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
 
             {/* Sale Price */}
             <div className="space-y-2">
-              <Label htmlFor="salePrice">سعر البيع *</Label>
+              <Label htmlFor="salePrice">{t("inventory.products.salePrice")} *</Label>
               <Input
                 id="salePrice"
                 type="number"
@@ -250,14 +260,14 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
             {/* IsActive — edit only */}
             {isEdit && (
               <div className="space-y-2">
-                <Label htmlFor="isActive">الحالة</Label>
+                <Label htmlFor="isActive">{t("inventory.products.status")}</Label>
                 <select
                   id="isActive"
                   {...form.register("isActive")}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
-                  <option value="true">نشط</option>
-                  <option value="false">غير نشط</option>
+                  <option value="true">{t("common.active")}</option>
+                  <option value="false">{t("common.inactive")}</option>
                 </select>
               </div>
             )}
@@ -265,11 +275,11 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description">الوصف</Label>
+            <Label htmlFor="description">{t("common.description")}</Label>
             <Textarea
               id="description"
               {...form.register("description")}
-              placeholder="وصف المنتج (اختياري)"
+              placeholder={t("inventory.products.enterDescription")}
               rows={3}
             />
           </div>
@@ -278,14 +288,14 @@ export default function ProductForm({ mode, product }: ProductFormProps) {
           <div className="flex items-center gap-3 pt-4 border-t border-border">
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              {isEdit ? "حفظ التغييرات" : "إضافة المنتج"}
+              {isEdit ? t("common.saveChanges") : t("inventory.products.create")}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.push("/inventory/products")}
             >
-              إلغاء
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

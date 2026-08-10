@@ -24,6 +24,7 @@ import {
 import { useCreateStockAdjustment } from "../hooks/useCreateStockAdjustment";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface StockAdjustmentFormProps {
   productOptions: { value: string; label: string }[];
@@ -39,6 +40,7 @@ export default function StockAdjustmentForm({
   initialWarehouseId,
 }: StockAdjustmentFormProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const mutation = useCreateStockAdjustment();
   const isPending = mutation.isPending;
   const error = mutation.error;
@@ -83,13 +85,13 @@ export default function StockAdjustmentForm({
   return (
     <Card className="border-border bg-card">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">تسوية مخزون جديدة</CardTitle>
+        <CardTitle className="text-lg">{t("inventory.adjustments.createTitle")}</CardTitle>
       </CardHeader>
       <CardContent>
         {error && (
           <Alert variant="destructive" className="mb-6">
             <p>
-              حدث خطأ:{" "}
+              {t("common.error")}:{" "}
               {(error as AxiosError<ApiResponse<unknown>>)?.response?.data?.message || error.message}
             </p>
           </Alert>
@@ -97,12 +99,12 @@ export default function StockAdjustmentForm({
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="productId">المنتج *</Label>
+            <Label htmlFor="productId">{t("inventory.adjustments.product")} *</Label>
             <Select
               id="productId"
               {...form.register("productId")}
               options={productOptions}
-              placeholder="اختر المنتج"
+              placeholder={t("common.selectProduct")}
               className="h-10"
             />
             {form.formState.errors.productId && (
@@ -113,12 +115,12 @@ export default function StockAdjustmentForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="warehouseId">المستودع *</Label>
+            <Label htmlFor="warehouseId">{t("inventory.adjustments.warehouse")} *</Label>
             <Select
               id="warehouseId"
               {...form.register("warehouseId")}
               options={warehouseOptions}
-              placeholder="اختر المستودع"
+              placeholder={t("common.selectWarehouse")}
               className="h-10"
             />
             {form.formState.errors.warehouseId && (
@@ -130,7 +132,7 @@ export default function StockAdjustmentForm({
 
           {systemQty !== null && (
             <div className="rounded-md bg-muted px-4 py-3 text-sm">
-              <span className="text-muted-foreground">الكمية الحالية في النظام: </span>
+              <span className="text-muted-foreground">{t("inventory.adjustments.currentSystemQty")} </span>
               <span className="font-semibold">{systemQty}</span>
             </div>
           )}
@@ -138,12 +140,12 @@ export default function StockAdjustmentForm({
           {watchedProductId && watchedWarehouseId && systemQty === null && (
             <div className="flex h-10 items-center gap-2 text-sm text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
-              جاري تحميل الكمية الحالية...
+              {t("inventory.adjustments.loadingQty")}
             </div>
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="countedQty">الكمية المعدودة *</Label>
+            <Label htmlFor="countedQty">{t("inventory.adjustments.countedQtyLabel")} *</Label>
             <Input
               id="countedQty"
               type="number"
@@ -161,7 +163,7 @@ export default function StockAdjustmentForm({
 
           {variance !== null && (
             <div className="rounded-md bg-muted px-4 py-3 text-sm">
-              <span className="text-muted-foreground">الفرق: </span>
+              <span className="text-muted-foreground">{t("inventory.adjustments.variance")}: </span>
               <span className={`font-semibold ${varianceColor}`}>
                 {variance > 0 ? "+" : ""}
                 {variance}
@@ -170,11 +172,11 @@ export default function StockAdjustmentForm({
           )}
 
           <div className="space-y-2">
-            <Label htmlFor="reason">سبب التسوية *</Label>
+            <Label htmlFor="reason">{t("inventory.adjustments.reasonLabel")} *</Label>
             <Textarea
               id="reason"
               {...form.register("reason")}
-              placeholder="أدخل سبب التسوية"
+              placeholder={t("inventory.adjustments.reasonPlaceholder")}
               rows={3}
             />
             {form.formState.errors.reason && (
@@ -189,7 +191,7 @@ export default function StockAdjustmentForm({
               {isPending && (
                 <Loader2 className="ml-2 h-4 w-4 animate-spin" />
               )}
-              تأكيد التسوية
+              {t("inventory.adjustments.confirmAdjustment")}
             </Button>
             <Button
               type="button"
@@ -197,7 +199,7 @@ export default function StockAdjustmentForm({
               onClick={() => router.back()}
             >
               <ArrowRight className="ml-2 h-4 w-4" />
-              رجوع
+              {t("inventory.adjustments.back")}
             </Button>
           </div>
         </form>

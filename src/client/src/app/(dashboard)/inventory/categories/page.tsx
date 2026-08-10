@@ -7,10 +7,12 @@ import { Button } from "@/components/ui";
 import CategoriesTable from "@/features/inventory/components/CategoriesTable";
 import CategoryFilters from "@/features/inventory/components/CategoryFilters";
 import { useCategories } from "@/features/inventory/hooks/useCategories";
+import { useTranslation } from "@/hooks/use-translation";
 
 function CategoriesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const page = parseInt(searchParams.get("page") ?? "1", 10);
   const pageSize = 20;
@@ -28,12 +30,12 @@ function CategoriesContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">التصنيفات</h1>
-          <p className="text-muted-foreground text-sm">إدارة تصنيفات المنتجات</p>
+          <h1 className="text-2xl font-semibold">{t("inventory.categories.title")}</h1>
+          <p className="text-muted-foreground text-sm">{t("inventory.categories.description")}</p>
         </div>
         <Button onClick={() => router.push("/inventory/categories/new")}>
           <Plus className="ml-2 h-4 w-4" />
-          تصنيف جديد
+          {t("inventory.categories.new")}
         </Button>
       </div>
 

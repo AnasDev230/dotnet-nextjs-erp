@@ -4,6 +4,7 @@ import { useCallback, useRef } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input, Button } from "@/components/ui";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface InventoryFiltersProps {
   warehouseOptions: { value: string; label: string }[];
@@ -17,6 +18,7 @@ export default function InventoryFilters({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const searchParamsRef = useRef(searchParams);
   searchParamsRef.current = searchParams;
@@ -42,7 +44,7 @@ export default function InventoryFilters({
       <div className="relative flex-1 min-w-[200px]">
         <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="بحث باسم المنتج..."
+          placeholder={t("inventory.levels.searchPlaceholder")}
           className="h-10 pr-10"
           defaultValue={searchParams.get("search") ?? ""}
           onChange={(e) => {
@@ -61,7 +63,7 @@ export default function InventoryFilters({
         disabled={warehousesLoading}
       >
         <option value="">
-          {warehousesLoading ? "جاري التحميل..." : "جميع المستودعات"}
+          {warehousesLoading ? t("common.loading") : t("inventory.levels.allWarehouses")}
         </option>
         {warehouseOptions.map((opt) => (
           <option key={opt.value} value={opt.value}>
@@ -79,7 +81,7 @@ export default function InventoryFilters({
             updateParams({ lowStockOnly: e.target.checked ? "true" : undefined })
           }
         />
-        <span>المخزون المنخفض فقط</span>
+        <span>{t("inventory.levels.lowStockOnly")}</span>
       </label>
 
       {searchParams.toString() && (
@@ -88,7 +90,7 @@ export default function InventoryFilters({
           size="sm"
           onClick={() => router.push(pathname)}
         >
-          مسح الفلترة
+          {t("common.clearFilters")}
         </Button>
       )}
     </div>

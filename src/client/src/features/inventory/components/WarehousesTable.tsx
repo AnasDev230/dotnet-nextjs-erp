@@ -15,6 +15,7 @@ import {
 } from "@/components/ui";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { useDeleteWarehouse } from "../hooks/useDeleteWarehouse";
+import { useTranslation } from "@/hooks/use-translation";
 import type { WarehouseListItem } from "../types/warehouse.types";
 
 interface WarehousesTableProps {
@@ -36,6 +37,7 @@ export default function WarehousesTable({
   totalPages,
   onPageChange,
 }: WarehousesTableProps) {
+  const { t } = useTranslation();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeleteWarehouse();
@@ -51,7 +53,7 @@ export default function WarehousesTable({
         setErrorMessage(
           error?.response?.data?.message ||
             error?.message ||
-            "حدث خطأ غير متوقع"
+            t("common.unexpectedError")
         );
       },
     });
@@ -63,12 +65,12 @@ export default function WarehousesTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>الرمز</TableHead>
-              <TableHead>الاسم</TableHead>
-              <TableHead>الموقع</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead>تاريخ الإنشاء</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("common.code")}</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead>{t("inventory.warehouses.location")}</TableHead>
+              <TableHead>{t("inventory.warehouses.status")}</TableHead>
+              <TableHead>{t("common.createdAt")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -93,12 +95,12 @@ export default function WarehousesTable({
         <div className="rounded-full bg-muted p-4 mb-4">
           <Warehouse className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-1">لا توجد مستودعات</h3>
-        <p className="text-sm text-muted-foreground mb-4">لم يتم إضافة أي مستودعات بعد</p>
+        <h3 className="text-lg font-semibold mb-1">{t("inventory.warehouses.emptyTitle")}</h3>
+        <p className="text-sm text-muted-foreground mb-4">{t("inventory.warehouses.emptyDescription")}</p>
         <Link href="/inventory/warehouses/new">
           <Button>
             <Warehouse className="ml-2 h-4 w-4" />
-            إضافة مستودع
+            {t("inventory.warehouses.addNew")}
           </Button>
         </Link>
       </div>
@@ -111,12 +113,12 @@ export default function WarehousesTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>الرمز</TableHead>
-              <TableHead>الاسم</TableHead>
-              <TableHead>الموقع</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead>تاريخ الإنشاء</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("common.code")}</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead>{t("inventory.warehouses.location")}</TableHead>
+              <TableHead>{t("inventory.warehouses.status")}</TableHead>
+              <TableHead>{t("common.createdAt")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -131,7 +133,7 @@ export default function WarehousesTable({
                   <Badge
                     variant={warehouse.isActive ? "success" : "secondary"}
                   >
-                    {warehouse.isActive ? "نشط" : "غير نشط"}
+                    {warehouse.isActive ? t("common.active") : t("common.inactive")}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-muted-foreground text-xs">
@@ -167,7 +169,7 @@ export default function WarehousesTable({
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-4">
           <p className="text-sm text-muted-foreground">
-            عرض {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} من {totalCount}
+            {t("common.showing")} {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} {t("common.of")} {totalCount}
           </p>
           <div className="flex gap-1">
             <Button
@@ -176,7 +178,7 @@ export default function WarehousesTable({
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
             >
-              السابق
+              {t("common.previous")}
             </Button>
             <Button
               variant="outline"
@@ -184,7 +186,7 @@ export default function WarehousesTable({
               disabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
             >
-              التالي
+              {t("common.next")}
             </Button>
           </div>
         </div>
@@ -198,9 +200,9 @@ export default function WarehousesTable({
             setErrorMessage(null);
           }
         }}
-        title="حذف المستودع"
-        description="هل أنت متأكد من حذف هذا المستودع؟ سيتم تعطيل المستودع ولن يمكن استخدامه. لا يمكن التراجع عن هذا الإجراء."
-        confirmLabel="حذف"
+        title={t("inventory.warehouses.deleteTitle")}
+        description={t("inventory.warehouses.deleteDescription")}
+        confirmLabel={t("common.delete")}
         variant="danger"
         isLoading={deleteMutation.isPending}
         errorMessage={errorMessage}

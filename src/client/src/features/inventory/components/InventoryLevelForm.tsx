@@ -24,9 +24,11 @@ import { useProducts } from "../hooks/useProducts";
 import { useWarehousesForDropdown } from "../hooks/useWarehousesForDropdown";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function InventoryLevelForm() {
   const router = useRouter();
+  const { t } = useTranslation();
   const mutation = useUpsertInventoryLevel();
   const isPending = mutation.isPending;
   const error = mutation.error;
@@ -74,24 +76,24 @@ export default function InventoryLevelForm() {
   return (
     <Card className="border-border bg-card">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">إضافة مخزون أولي</CardTitle>
+        <CardTitle className="text-lg">{t("inventory.levels.createTitle")}</CardTitle>
       </CardHeader>
       <CardContent>
         {error && (
           <Alert variant="destructive" className="mb-6">
-            <p>{getErrorMessage()}</p>
+            <p>{t("common.error")}: {getErrorMessage()}</p>
           </Alert>
         )}
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="productId">المنتج *</Label>
+              <Label htmlFor="productId">{t("inventory.levels.product")} *</Label>
               <Select
                 id="productId"
                 {...form.register("productId")}
                 options={productOptions}
-                placeholder="اختر المنتج"
+                placeholder={t("common.selectProduct")}
                 className="h-10"
               />
               {form.formState.errors.productId && (
@@ -102,12 +104,12 @@ export default function InventoryLevelForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="warehouseId">المستودع *</Label>
+              <Label htmlFor="warehouseId">{t("inventory.levels.warehouse")} *</Label>
               <Select
                 id="warehouseId"
                 {...form.register("warehouseId")}
                 options={warehouseOptions}
-                placeholder="اختر المستودع"
+                placeholder={t("common.selectWarehouse")}
                 className="h-10"
               />
               {form.formState.errors.warehouseId && (
@@ -118,7 +120,7 @@ export default function InventoryLevelForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="quantityOnHand">الكمية الافتتاحية *</Label>
+              <Label htmlFor="quantityOnHand">{t("inventory.levels.openingQty")} *</Label>
               <Input
                 id="quantityOnHand"
                 type="number"
@@ -135,7 +137,7 @@ export default function InventoryLevelForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="avgCost">متوسط التكلفة</Label>
+              <Label htmlFor="avgCost">{t("inventory.levels.avgCost")}</Label>
               <Input
                 id="avgCost"
                 type="number"
@@ -155,14 +157,14 @@ export default function InventoryLevelForm() {
           <div className="flex items-center gap-3 pt-4 border-t border-border">
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              حفظ
+              {t("common.save")}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.push("/inventory/levels")}
             >
-              إلغاء
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

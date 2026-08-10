@@ -2,6 +2,7 @@
 
 import { ClipboardList } from "lucide-react";
 import { Badge, Button } from "@/components/ui";
+import { useTranslation } from "@/hooks/use-translation";
 import type { StockAdjustmentItem } from "../types/stock-adjustment.types";
 
 interface StockAdjustmentsTableProps {
@@ -60,19 +61,21 @@ export default function StockAdjustmentsTable({
   totalPages,
   onPageChange,
 }: StockAdjustmentsTableProps) {
+  const { t } = useTranslation();
+
   if (isLoading) {
     return (
       <div className="rounded-md border border-border">
         <table className="w-full">
           <thead className="bg-muted/50 text-muted-foreground text-xs font-medium uppercase">
             <tr>
-              <th className="px-4 py-3 text-right">المنتج</th>
-              <th className="px-4 py-3 text-right">المستودع</th>
-              <th className="px-4 py-3 text-right">النظام</th>
-              <th className="px-4 py-3 text-right">المعدود</th>
-              <th className="px-4 py-3 text-right">الفرق</th>
-              <th className="px-4 py-3 text-right">السبب</th>
-              <th className="px-4 py-3 text-right">التاريخ</th>
+              <th className="px-4 py-3 text-right">{t("inventory.adjustments.product")}</th>
+              <th className="px-4 py-3 text-right">{t("inventory.adjustments.warehouse")}</th>
+              <th className="px-4 py-3 text-right">{t("inventory.adjustments.systemQty")}</th>
+              <th className="px-4 py-3 text-right">{t("inventory.adjustments.countedQty")}</th>
+              <th className="px-4 py-3 text-right">{t("inventory.adjustments.variance")}</th>
+              <th className="px-4 py-3 text-right">{t("inventory.adjustments.reason")}</th>
+              <th className="px-4 py-3 text-right">{t("common.createdAt")}</th>
             </tr>
           </thead>
           <tbody>
@@ -91,9 +94,9 @@ export default function StockAdjustmentsTable({
         <div className="rounded-full bg-muted p-4 mb-4">
           <ClipboardList className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-1">لا توجد تسويات</h3>
+        <h3 className="text-lg font-semibold mb-1">{t("inventory.adjustments.emptyTitle")}</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          لم يتم إجراء أي تسويات مخزون بعد
+          {t("inventory.adjustments.emptyDescription")}
         </p>
       </div>
     );
@@ -104,13 +107,13 @@ export default function StockAdjustmentsTable({
       <table className="w-full">
         <thead className="bg-muted/50 text-muted-foreground text-xs font-medium uppercase">
           <tr>
-            <th className="px-4 py-3 text-right">المنتج</th>
-            <th className="px-4 py-3 text-right">المستودع</th>
-            <th className="px-4 py-3 text-right">النظام</th>
-            <th className="px-4 py-3 text-right">المعدود</th>
-            <th className="px-4 py-3 text-right">الفرق</th>
-            <th className="px-4 py-3 text-right">السبب</th>
-            <th className="px-4 py-3 text-right">التاريخ</th>
+            <th className="px-4 py-3 text-right">{t("inventory.adjustments.product")}</th>
+            <th className="px-4 py-3 text-right">{t("inventory.adjustments.warehouse")}</th>
+            <th className="px-4 py-3 text-right">{t("inventory.adjustments.systemQty")}</th>
+            <th className="px-4 py-3 text-right">{t("inventory.adjustments.countedQty")}</th>
+            <th className="px-4 py-3 text-right">{t("inventory.adjustments.variance")}</th>
+            <th className="px-4 py-3 text-right">{t("inventory.adjustments.reason")}</th>
+            <th className="px-4 py-3 text-right">{t("common.createdAt")}</th>
           </tr>
         </thead>
         <tbody>
@@ -139,7 +142,7 @@ export default function StockAdjustmentsTable({
       {totalPages > 1 && (
         <div className="flex items-center justify-between border-t border-border px-4 py-3 text-sm text-muted-foreground">
           <span>
-            عرض {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} من{" "}
+            {t("common.showing")} {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} {t("common.of")}{" "}
             {totalCount}
           </span>
           <div className="flex items-center gap-2">
@@ -149,7 +152,7 @@ export default function StockAdjustmentsTable({
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
             >
-              السابق
+              {t("common.previous")}
             </Button>
             <Button
               variant="outline"
@@ -157,7 +160,7 @@ export default function StockAdjustmentsTable({
               disabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
             >
-              التالي
+              {t("common.next")}
             </Button>
           </div>
         </div>
