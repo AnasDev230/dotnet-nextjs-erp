@@ -5,6 +5,7 @@ import { useWatch, type Control } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
 import type { SalesOrderFormData } from "../schemas/sales-order.schema";
 import type { TaxRate } from "../types/sales-order.types";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface SalesOrderSummaryProps {
   control: Control<SalesOrderFormData>;
@@ -26,6 +27,7 @@ export default function SalesOrderSummary({
   control,
   taxRates,
 }: SalesOrderSummaryProps) {
+  const { t } = useTranslation();
   const items = useWatch<SalesOrderFormData, "items">({
     control,
     name: "items",
@@ -71,26 +73,26 @@ export default function SalesOrderSummary({
   return (
     <Card className="border-border bg-card lg:sticky lg:top-6">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">ملخص الأمر</CardTitle>
+        <CardTitle className="text-lg">{t("sales.orders.summary")}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">عدد المنتجات</span>
+          <span className="text-muted-foreground">{t("sales.orders.itemsCount")}</span>
           <span className="font-medium">{productsCount}</span>
         </div>
         <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">إجمالي الكميات</span>
+          <span className="text-muted-foreground">{t("sales.orders.totalQuantities")}</span>
           <span className="font-medium">{totalQuantities}</span>
         </div>
 
         <div className="border-t border-border" />
         <div className="flex items-center justify-between text-sm">
-          <span>المجموع الفرعي</span>
+          <span>{t("sales.orders.subtotal")}</span>
           <span>{formatCurrency(subtotal)}</span>
         </div>
         <div className="flex items-center justify-between text-sm">
           <span>
-            الخصم
+            {t("sales.orders.discount")}
             {Number(discountPct) > 0 && (
               <span className="text-muted-foreground">
                 {" "}
@@ -105,12 +107,12 @@ export default function SalesOrderSummary({
 
         <div className="border-t border-border" />
         <div className="flex items-center justify-between text-sm">
-          <span>الخاضع للضريبة</span>
+          <span>{t("sales.orders.taxable")}</span>
           <span>{formatCurrency(taxableAmount)}</span>
         </div>
         <div className="flex items-center justify-between text-sm">
           <span>
-            الضريبة
+            {t("sales.orders.tax")}
             {selectedTaxRate && (
               <span className="text-muted-foreground">
                 {" "}
@@ -124,7 +126,7 @@ export default function SalesOrderSummary({
         </div>
 
         <div className="flex items-center justify-between border-t border-border pt-3 text-base font-semibold">
-          <span>الإجمالي النهائي</span>
+          <span>{t("sales.orders.grandTotal")}</span>
           <span className="text-primary">{formatCurrency(netAmount)}</span>
         </div>
       </CardContent>

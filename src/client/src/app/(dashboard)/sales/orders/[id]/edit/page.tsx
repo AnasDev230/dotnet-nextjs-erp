@@ -5,10 +5,12 @@ import { ArrowRight, Loader2, AlertCircle } from "lucide-react";
 import { Alert, Button } from "@/components/ui";
 import SalesOrderForm from "@/features/sales/components/SalesOrderForm";
 import { useSalesOrder } from "@/features/sales/hooks/useSalesOrder";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function EditSalesOrderPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
   const { data: order, isLoading, error } = useSalesOrder(params.id);
 
   if (isLoading) {
@@ -27,9 +29,9 @@ export default function EditSalesOrderPage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">أمر البيع غير موجود</h1>
+            <h1 className="text-2xl font-semibold">{t("sales.orders.notFound")}</h1>
             <p className="text-muted-foreground text-sm">
-              لم يتم العثور على أمر البيع المطلوب
+              {t("sales.orders.notFoundDescription")}
             </p>
           </div>
         </div>
@@ -46,10 +48,10 @@ export default function EditSalesOrderPage() {
           </Button>
           <div>
             <h1 className="text-2xl font-semibold">
-              تعديل أمر البيع {order.orderNumber}
+              {t("sales.orders.editTitle")} {order.orderNumber}
             </h1>
             <p className="text-muted-foreground text-sm">
-              تعديل بيانات أمر البيع
+              {t("sales.orders.editPageDescription")}
             </p>
           </div>
         </div>
@@ -58,7 +60,7 @@ export default function EditSalesOrderPage() {
       {order.status !== "Draft" && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <p>هذا الأمر مؤكد ولا يمكن تعديله</p>
+          <p>{t("sales.orders.cannotEditConfirmed")}</p>
         </Alert>
       )}
 

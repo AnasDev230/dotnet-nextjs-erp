@@ -7,10 +7,12 @@ import { Button } from "@/components/ui";
 import SalesOrdersTable from "@/features/sales/components/SalesOrdersTable";
 import SalesOrderFilters from "@/features/sales/components/SalesOrderFilters";
 import { useSalesOrders } from "@/features/sales/hooks/useSalesOrders";
+import { useTranslation } from "@/hooks/use-translation";
 
 function SalesOrdersContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const page = parseInt(searchParams.get("page") ?? "1", 10);
   const pageSize = 20;
@@ -40,14 +42,14 @@ function SalesOrdersContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">أوامر البيع</h1>
+          <h1 className="text-2xl font-semibold">{t("sales.orders.title")}</h1>
           <p className="text-muted-foreground text-sm">
-            إدارة أوامر البيع والعملاء
+            {t("sales.orders.listPageDescription")}
           </p>
         </div>
         <Button onClick={() => router.push("/sales/orders/new")}>
           <Plus className="ml-2 h-4 w-4" />
-          أمر بيع جديد
+          {t("sales.orders.new")}
         </Button>
       </div>
 

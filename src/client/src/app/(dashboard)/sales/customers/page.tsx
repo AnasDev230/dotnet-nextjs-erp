@@ -7,10 +7,12 @@ import { Button } from "@/components/ui";
 import CustomersTable from "@/features/sales/components/CustomersTable";
 import CustomerFilters from "@/features/sales/components/CustomerFilters";
 import { useCustomers } from "@/features/sales/hooks/useCustomers";
+import { useTranslation } from "@/hooks/use-translation";
 
 function CustomersContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const page = parseInt(searchParams.get("page") ?? "1", 10);
   const pageSize = 20;
@@ -30,12 +32,12 @@ function CustomersContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">العملاء</h1>
-          <p className="text-muted-foreground text-sm">إدارة العملاء وبياناتهم</p>
+          <h1 className="text-2xl font-semibold">{t("sales.customers.title")}</h1>
+          <p className="text-muted-foreground text-sm">{t("sales.customers.listPageDescription")}</p>
         </div>
         <Button onClick={() => router.push("/sales/customers/new")}>
           <Plus className="ml-2 h-4 w-4" />
-          عميل جديد
+          {t("sales.customers.new")}
         </Button>
       </div>
 

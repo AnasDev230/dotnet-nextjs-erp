@@ -15,6 +15,7 @@ import {
 } from "@/components/ui";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { useDeleteSalesOrder } from "../hooks/useDeleteSalesOrder";
+import { useTranslation } from "@/hooks/use-translation";
 import type {
   SalesOrderListItem,
   SalesOrderStatus,
@@ -29,10 +30,10 @@ const statusBadgeVariant: Record<
   Cancelled: "destructive",
 };
 
-const statusLabel: Record<SalesOrderStatus, string> = {
-  Draft: "مسودة",
-  Confirmed: "مؤكد",
-  Cancelled: "ملغي",
+const statusLabelKey: Record<SalesOrderStatus, string> = {
+  Draft: "sales.orders.draft",
+  Confirmed: "sales.orders.confirmed",
+  Cancelled: "sales.orders.cancelled",
 };
 
 function formatCurrency(value: number): string {
@@ -64,6 +65,7 @@ export default function SalesOrdersTable({
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeleteSalesOrder();
+  const { t } = useTranslation();
 
   const handleDelete = () => {
     if (!deleteId) return;
@@ -76,7 +78,7 @@ export default function SalesOrdersTable({
         setErrorMessage(
           error?.response?.data?.message ||
             error?.message ||
-            "حدث خطأ غير متوقع"
+            t("common.unexpectedError")
         );
       },
     });
@@ -88,14 +90,14 @@ export default function SalesOrdersTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>رقم الأمر</TableHead>
-              <TableHead>العميل</TableHead>
-              <TableHead>المستودع</TableHead>
-              <TableHead>تاريخ الأمر</TableHead>
-              <TableHead>عدد المنتجات</TableHead>
-              <TableHead>صافي المبلغ</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("sales.orders.orderNumber")}</TableHead>
+              <TableHead>{t("sales.orders.customer")}</TableHead>
+              <TableHead>{t("purchasing.receipts.warehouse")}</TableHead>
+              <TableHead>{t("sales.orders.orderDate")}</TableHead>
+              <TableHead>{t("sales.orders.itemsCount")}</TableHead>
+              <TableHead>{t("sales.orders.netAmount")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -120,14 +122,14 @@ export default function SalesOrdersTable({
         <div className="rounded-full bg-muted p-4 mb-4">
           <ShoppingCart className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-1">لا توجد أوامر بيع</h3>
+        <h3 className="text-lg font-semibold mb-1">{t("sales.orders.emptyTitle")}</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          لم يتم إضافة أي أوامر بيع بعد
+          {t("sales.orders.emptyDescription")}
         </p>
         <Link href="/sales/orders/new">
           <Button>
             <ShoppingCart className="ml-2 h-4 w-4" />
-            أمر بيع جديد
+            {t("sales.orders.new")}
           </Button>
         </Link>
       </div>
@@ -140,14 +142,14 @@ export default function SalesOrdersTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>رقم الأمر</TableHead>
-              <TableHead>العميل</TableHead>
-              <TableHead>المستودع</TableHead>
-              <TableHead>تاريخ الأمر</TableHead>
-              <TableHead>عدد المنتجات</TableHead>
-              <TableHead>صافي المبلغ</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("sales.orders.orderNumber")}</TableHead>
+              <TableHead>{t("sales.orders.customer")}</TableHead>
+              <TableHead>{t("purchasing.receipts.warehouse")}</TableHead>
+              <TableHead>{t("sales.orders.orderDate")}</TableHead>
+              <TableHead>{t("sales.orders.itemsCount")}</TableHead>
+              <TableHead>{t("sales.orders.netAmount")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -171,7 +173,7 @@ export default function SalesOrdersTable({
                 </TableCell>
                 <TableCell>
                   <Badge variant={statusBadgeVariant[order.status]}>
-                    {statusLabel[order.status]}
+                    {t(statusLabelKey[order.status])}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-left">
@@ -209,8 +211,8 @@ export default function SalesOrdersTable({
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-4">
           <p className="text-sm text-muted-foreground">
-            عرض {(page - 1) * pageSize + 1}–
-            {Math.min(page * pageSize, totalCount)} من {totalCount}
+            {t("common.showing")} {(page - 1) * pageSize + 1}–
+            {Math.min(page * pageSize, totalCount)} {t("common.of")} {totalCount}
           </p>
           <div className="flex gap-1">
             <Button
@@ -219,7 +221,7 @@ export default function SalesOrdersTable({
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
             >
-              السابق
+              {t("common.previous")}
             </Button>
             <Button
               variant="outline"
@@ -227,7 +229,7 @@ export default function SalesOrdersTable({
               disabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
             >
-              التالي
+              {t("common.next")}
             </Button>
           </div>
         </div>
@@ -241,9 +243,9 @@ export default function SalesOrdersTable({
             setErrorMessage(null);
           }
         }}
-        title="حذف أمر البيع"
-        description="هل أنت متأكد من حذف أمر البيع؟ لا يمكن حذف الأوامر المؤكدة أو الملغاة. لا يمكن التراجع عن هذا الإجراء."
-        confirmLabel="حذف"
+        title={t("sales.orders.deleteTitle")}
+        description={t("sales.orders.deleteDescription")}
+        confirmLabel={t("common.delete")}
         variant="danger"
         isLoading={deleteMutation.isPending}
         errorMessage={errorMessage}

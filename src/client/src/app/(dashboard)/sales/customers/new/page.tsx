@@ -4,9 +4,11 @@ import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui";
 import CustomerForm from "@/features/sales/components/CustomerForm";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function CreateCustomerPage() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   return (
     <div className="space-y-6">
@@ -16,8 +18,8 @@ export default function CreateCustomerPage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">إضافة عميل جديد</h1>
-            <p className="text-muted-foreground text-sm">أدخل بيانات العميل الجديد</p>
+            <h1 className="text-2xl font-semibold">{t("sales.customers.newTitle")}</h1>
+            <p className="text-muted-foreground text-sm">{t("sales.customers.createPageDescription")}</p>
           </div>
         </div>
       </div>

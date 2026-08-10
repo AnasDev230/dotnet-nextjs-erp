@@ -19,6 +19,7 @@ import {
   TableCell,
 } from "@/components/ui";
 import { useSalesOrder } from "@/features/sales/hooks/useSalesOrder";
+import { useTranslation } from "@/hooks/use-translation";
 import type { SalesOrderStatus } from "@/features/sales/types/sales-order.types";
 
 const statusBadgeVariant: Record<
@@ -30,10 +31,10 @@ const statusBadgeVariant: Record<
   Cancelled: "destructive",
 };
 
-const statusLabel: Record<SalesOrderStatus, string> = {
-  Draft: "مسودة",
-  Confirmed: "مؤكد",
-  Cancelled: "ملغي",
+const statusLabelKey: Record<SalesOrderStatus, string> = {
+  Draft: "sales.orders.draft",
+  Confirmed: "sales.orders.confirmed",
+  Cancelled: "sales.orders.cancelled",
 };
 
 function formatCurrency(value: number): string {
@@ -65,6 +66,7 @@ function InfoRow({
 export default function SalesOrderDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
   const { data: order, isLoading, error } = useSalesOrder(params.id);
 
   if (isLoading) {
@@ -83,9 +85,9 @@ export default function SalesOrderDetailPage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">أمر البيع غير موجود</h1>
+            <h1 className="text-2xl font-semibold">{t("sales.orders.notFound")}</h1>
             <p className="text-muted-foreground text-sm">
-              لم يتم العثور على أمر البيع المطلوب
+              {t("sales.orders.notFoundDescription")}
             </p>
           </div>
         </div>
@@ -102,47 +104,47 @@ export default function SalesOrderDetailPage() {
           </Button>
           <div>
             <h1 className="text-2xl font-semibold">
-              أمر البيع {order.orderNumber}
+              {t("sales.orders.detailTitle")} {order.orderNumber}
             </h1>
-            <p className="text-muted-foreground text-sm">تفاصيل أمر البيع</p>
+            <p className="text-muted-foreground text-sm">{t("sales.orders.details")}</p>
           </div>
         </div>
         <Link href={`/sales/orders/${order.id}/edit`}>
           <Button>
             <Pencil className="ml-2 h-4 w-4" />
-            تعديل
+            {t("common.edit")}
           </Button>
         </Link>
       </div>
 
       <Card className="border-border bg-card">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">بيانات الأمر</CardTitle>
+          <CardTitle className="text-lg">{t("sales.orders.orderInfo")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <InfoRow label="رقم الأمر" value={order.orderNumber} />
-            <InfoRow label="العميل" value={order.customerName} />
-            <InfoRow label="المستودع" value={order.warehouseName || "—"} />
-            <InfoRow label="تاريخ الأمر" value={formatDate(order.orderDate)} />
+            <InfoRow label={t("sales.orders.orderNumber")} value={order.orderNumber} />
+            <InfoRow label={t("sales.orders.customer")} value={order.customerName} />
+            <InfoRow label={t("purchasing.receipts.warehouse")} value={order.warehouseName || "—"} />
+            <InfoRow label={t("sales.orders.orderDate")} value={formatDate(order.orderDate)} />
             <InfoRow
-              label="تاريخ التسليم"
+              label={t("sales.orders.deliveryDate")}
               value={order.deliveryDate ? formatDate(order.deliveryDate) : "—"}
             />
             <InfoRow
-              label="الحالة"
+              label={t("common.status")}
               value={
                 <Badge variant={statusBadgeVariant[order.status]}>
-                  {statusLabel[order.status]}
+                  {t(statusLabelKey[order.status])}
                 </Badge>
               }
             />
             <InfoRow
-              label="تاريخ الإنشاء"
+              label={t("common.createdAt")}
               value={formatDate(order.createdAt)}
             />
             <InfoRow
-              label="نسبة الضريبة"
+              label={t("sales.orders.taxRate")}
               value={
                 order.taxRateName
                   ? `${order.taxRateName} (${order.taxPct}%)`
@@ -152,7 +154,7 @@ export default function SalesOrderDetailPage() {
           </div>
           {order.notes && (
             <div className="mt-4 space-y-1">
-              <Label className="text-xs text-muted-foreground">ملاحظات</Label>
+              <Label className="text-xs text-muted-foreground">{t("common.notes")}</Label>
               <p className="text-sm">{order.notes}</p>
             </div>
           )}
@@ -161,17 +163,17 @@ export default function SalesOrderDetailPage() {
 
       <Card className="border-border bg-card">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">منتجات الأمر</CardTitle>
+          <CardTitle className="text-lg">{t("sales.orders.orderItems")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>المنتج</TableHead>
-                <TableHead>الكمية</TableHead>
-                <TableHead>سعر الوحدة</TableHead>
-                <TableHead>الخصم %</TableHead>
-                <TableHead className="text-left">الإجمالي</TableHead>
+                <TableHead>{t("sales.orders.product")}</TableHead>
+                <TableHead>{t("common.quantity")}</TableHead>
+                <TableHead>{t("sales.orders.unitPrice")}</TableHead>
+                <TableHead>{t("sales.orders.discount")} %</TableHead>
+                <TableHead className="text-left">{t("sales.orders.lineTotal")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -201,16 +203,16 @@ export default function SalesOrderDetailPage() {
           <div className="mt-4 flex justify-end">
             <div className="w-full max-w-xs space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">عدد المنتجات</span>
+                <span className="text-muted-foreground">{t("sales.orders.itemsCount")}</span>
                 <span>{order.items.length}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span>المجموع الفرعي</span>
+                <span>{t("sales.orders.subtotal")}</span>
                 <span>{formatCurrency(order.subtotal)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span>
-                  الخصم
+                  {t("sales.orders.discount")}
                   {order.discountPct > 0 && (
                     <span className="text-muted-foreground">
                       {" "}
@@ -225,12 +227,12 @@ export default function SalesOrderDetailPage() {
                 </span>
               </div>
               <div className="flex items-center justify-between text-sm">
-                <span>الخاضع للضريبة</span>
+                <span>{t("sales.orders.taxable")}</span>
                 <span>{formatCurrency(order.subtotal - order.discountAmount)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span>
-                  الضريبة
+                  {t("sales.orders.tax")}
                   {order.taxRateName && order.taxPct > 0 && (
                     <span className="text-muted-foreground">
                       {" "}
@@ -245,7 +247,7 @@ export default function SalesOrderDetailPage() {
                 </span>
               </div>
               <div className="flex items-center justify-between border-t border-border pt-2 text-base font-semibold">
-                <span>الإجمالي النهائي</span>
+                <span>{t("sales.orders.grandTotal")}</span>
                 <span className="text-primary">
                   {formatCurrency(order.netAmount)}
                 </span>

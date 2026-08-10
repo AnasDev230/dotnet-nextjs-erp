@@ -11,6 +11,7 @@ import {
 } from "react-hook-form";
 import { Trash2 } from "lucide-react";
 import { Button, Input, Label } from "@/components/ui";
+import { useTranslation } from "@/hooks/use-translation";
 import type { ProductListItem } from "@/features/inventory/types/product.types";
 import type {
   SalesOrderFormData,
@@ -52,6 +53,7 @@ export default function SalesOrderItemRow({
   onRemove,
   canRemove,
 }: SalesOrderItemRowProps) {
+  const { t } = useTranslation();
   const watchedItem = useWatch<SalesOrderFormData, `items.${number}`>({
     control,
     name: `items.${index}`,
@@ -69,12 +71,12 @@ export default function SalesOrderItemRow({
     : undefined;
 
   const stockHint = !warehouseSelected
-    ? "اختر المستودع أولاً لعرض المخزون"
+    ? t("sales.orders.selectWarehouseStockHint")
     : isStockLoading
-      ? "جاري تحميل المخزون..."
+      ? t("sales.orders.loadingStock")
       : availableStock !== undefined
-        ? `المتاح في المستودع: ${availableStock}`
-        : "غير متوفر في المستودع المحدد";
+        ? `${t("sales.orders.availableInWarehouse")} ${availableStock}`
+        : t("sales.orders.notAvailableInWarehouse");
 
   const handleProductChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const productId = event.target.value;
@@ -92,7 +94,7 @@ export default function SalesOrderItemRow({
     if (isDuplicate) {
       setError(`items.${index}.productId`, {
         type: "manual",
-        message: "لا يمكن تكرار نفس المنتج في نفس الأمر",
+        message: t("sales.orders.duplicateProduct"),
       });
       return;
     }
@@ -111,7 +113,7 @@ export default function SalesOrderItemRow({
     <div className="grid gap-3 rounded-lg border border-border bg-background p-3 md:grid-cols-[minmax(0,2fr)_1fr_1fr_1fr_1fr_auto]">
       <div className="space-y-2">
         <Label htmlFor={`items.${index}.productId`} className="text-xs">
-          المنتج
+          {t("sales.orders.product")}
         </Label>
         <select
           id={`items.${index}.productId`}
@@ -119,7 +121,7 @@ export default function SalesOrderItemRow({
           onChange={handleProductChange}
           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <option value="">اختر المنتج</option>
+          <option value="">{t("common.selectProduct")}</option>
           {productOptions.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
@@ -138,7 +140,7 @@ export default function SalesOrderItemRow({
 
       <div className="space-y-2">
         <Label htmlFor={`items.${index}.quantity`} className="text-xs">
-          الكمية
+          {t("common.quantity")}
         </Label>
         <Input
           id={`items.${index}.quantity`}
@@ -157,7 +159,7 @@ export default function SalesOrderItemRow({
 
       <div className="space-y-2">
         <Label htmlFor={`items.${index}.unitPrice`} className="text-xs">
-          سعر الوحدة
+          {t("sales.orders.unitPrice")}
         </Label>
         <Input
           id={`items.${index}.unitPrice`}
@@ -176,7 +178,7 @@ export default function SalesOrderItemRow({
 
       <div className="space-y-2">
         <Label htmlFor={`items.${index}.discountPct`} className="text-xs">
-          الخصم %
+          {t("sales.orders.discount")} %
         </Label>
         <Input
           id={`items.${index}.discountPct`}
@@ -195,7 +197,7 @@ export default function SalesOrderItemRow({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-xs">الإجمالي</Label>
+        <Label className="text-xs">{t("sales.orders.lineTotal")}</Label>
         <div className="flex h-10 items-center rounded-md border border-input bg-muted px-3 text-sm font-medium">
           {lineTotal.toLocaleString("ar-SA", {
             minimumFractionDigits: 2,
@@ -213,7 +215,7 @@ export default function SalesOrderItemRow({
           className="h-10 w-10 text-destructive"
           onClick={onRemove}
           disabled={!canRemove}
-          title={canRemove ? "حذف السطر" : "لا يمكن حذف آخر سطر"}
+          title={canRemove ? t("common.deleteRow") : t("common.cannotDeleteLastRow")}
         >
           <Trash2 className="h-4 w-4" />
         </Button>

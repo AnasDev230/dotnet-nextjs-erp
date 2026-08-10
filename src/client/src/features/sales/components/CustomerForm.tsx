@@ -22,15 +22,16 @@ import {
 import { useCreateCustomer } from "../hooks/useCreateCustomer";
 import { useUpdateCustomer } from "../hooks/useUpdateCustomer";
 import type { CustomerDetail } from "../types/customer.types";
+import { useTranslation } from "@/hooks/use-translation";
 
-const typeOptions = [
-  { value: "Individual", label: "فرد" },
-  { value: "Company", label: "شركة" },
+const typeOptionKeys = [
+  { value: "Individual", labelKey: "sales.customers.individual" },
+  { value: "Company", labelKey: "sales.customers.company" },
 ];
 
-const statusOptions = [
-  { value: "Active", label: "نشط" },
-  { value: "Suspended", label: "موقوف" },
+const statusOptionKeys = [
+  { value: "Active", labelKey: "common.active" },
+  { value: "Suspended", labelKey: "common.suspended" },
 ];
 
 interface CustomerFormProps {
@@ -41,6 +42,7 @@ interface CustomerFormProps {
 export default function CustomerForm({ mode, customer }: CustomerFormProps) {
   const router = useRouter();
   const isEdit = mode === "edit";
+  const { t } = useTranslation();
 
   const createMutation = useCreateCustomer();
   const updateMutation = useUpdateCustomer(customer?.id ?? "");
@@ -93,13 +95,13 @@ export default function CustomerForm({ mode, customer }: CustomerFormProps) {
     <Card className="border-border bg-card">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg">
-          {isEdit ? "تعديل العميل" : "إضافة عميل جديد"}
+          {isEdit ? t("sales.customers.editTitle") : t("sales.customers.newTitle")}
         </CardTitle>
       </CardHeader>
       <CardContent>
         {error && (
           <Alert variant="destructive" className="mb-6">
-            <p>حدث خطأ: {(error as any)?.response?.data?.message || error.message}</p>
+            <p>{t("common.error")}: {(error as any)?.response?.data?.message || error.message}</p>
           </Alert>
         )}
 
@@ -107,17 +109,17 @@ export default function CustomerForm({ mode, customer }: CustomerFormProps) {
           <div className="grid gap-4 md:grid-cols-2">
             {/* Code — disabled on edit */}
             <div className="space-y-2">
-              <Label htmlFor="code">{isEdit ? "الرمز" : "الرمز *"}</Label>
+              <Label htmlFor="code">{isEdit ? t("common.code") : `${t("common.code")} *`}</Label>
               <Input
                 id="code"
                 {...form.register("code")}
-                placeholder="أدخل رمز العميل"
+                placeholder={t("common.enterCustomerCode")}
                 className="h-10"
                 disabled={isEdit}
               />
               {isEdit && (
                 <p className="text-xs text-muted-foreground">
-                  لا يمكن تعديل الرمز بعد الإنشاء
+                  {t("sales.customers.codeLockedHint")}
                 </p>
               )}
               {form.formState.errors.code && (
@@ -129,11 +131,11 @@ export default function CustomerForm({ mode, customer }: CustomerFormProps) {
 
             {/* Name */}
             <div className="space-y-2">
-              <Label htmlFor="name">اسم العميل *</Label>
+              <Label htmlFor="name">{t("sales.customers.customerName")} *</Label>
               <Input
                 id="name"
                 {...form.register("name")}
-                placeholder="أدخل اسم العميل"
+                placeholder={t("common.enterCustomerName")}
                 className="h-10"
               />
               {form.formState.errors.name && (
@@ -145,12 +147,15 @@ export default function CustomerForm({ mode, customer }: CustomerFormProps) {
 
             {/* Type */}
             <div className="space-y-2">
-              <Label htmlFor="type">نوع العميل *</Label>
+              <Label htmlFor="type">{t("sales.customers.customerType")} *</Label>
               <Select
                 id="type"
                 {...form.register("type")}
-                options={typeOptions}
-                placeholder="اختر نوع العميل"
+                options={typeOptionKeys.map((option) => ({
+                  value: option.value,
+                  label: t(option.labelKey),
+                }))}
+                placeholder={t("sales.customers.selectType")}
                 className="h-10"
               />
               {form.formState.errors.type && (
@@ -162,11 +167,11 @@ export default function CustomerForm({ mode, customer }: CustomerFormProps) {
 
             {/* Tax Number */}
             <div className="space-y-2">
-              <Label htmlFor="taxNumber">الرقم الضريبي</Label>
+              <Label htmlFor="taxNumber">{t("sales.customers.taxNumber")}</Label>
               <Input
                 id="taxNumber"
                 {...form.register("taxNumber")}
-                placeholder="أدخل الرقم الضريبي (اختياري)"
+                placeholder={t("common.enterTaxNumber")}
                 className="h-10"
               />
               {form.formState.errors.taxNumber && (
@@ -178,7 +183,7 @@ export default function CustomerForm({ mode, customer }: CustomerFormProps) {
 
             {/* Credit Limit */}
             <div className="space-y-2">
-              <Label htmlFor="creditLimit">حد الائتمان</Label>
+              <Label htmlFor="creditLimit">{t("sales.customers.creditLimit")}</Label>
               <Input
                 id="creditLimit"
                 type="number"
@@ -196,7 +201,7 @@ export default function CustomerForm({ mode, customer }: CustomerFormProps) {
 
             {/* Payment Terms */}
             <div className="space-y-2">
-              <Label htmlFor="paymentTerms">شروط الدفع (أيام)</Label>
+              <Label htmlFor="paymentTerms">{t("sales.customers.paymentTermsDays")}</Label>
               <Input
                 id="paymentTerms"
                 type="number"
@@ -215,12 +220,15 @@ export default function CustomerForm({ mode, customer }: CustomerFormProps) {
             {/* Status — edit only */}
             {isEdit && (
               <div className="space-y-2">
-                <Label htmlFor="status">حالة العميل *</Label>
+                <Label htmlFor="status">{t("sales.customers.customerStatus")} *</Label>
                 <Select
                   id="status"
                   {...form.register("status")}
-                  options={statusOptions}
-                  placeholder="اختر الحالة"
+                  options={statusOptionKeys.map((option) => ({
+                    value: option.value,
+                    label: t(option.labelKey),
+                  }))}
+                  placeholder={t("common.selectStatus")}
                   className="h-10"
                 />
                 {form.formState.errors.status && (
@@ -236,14 +244,14 @@ export default function CustomerForm({ mode, customer }: CustomerFormProps) {
           <div className="flex items-center gap-3 pt-4 border-t border-border">
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              {isEdit ? "حفظ التغييرات" : "إضافة العميل"}
+              {isEdit ? t("common.saveChanges") : t("sales.customers.add")}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.push("/sales/customers")}
             >
-              إلغاء
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

@@ -35,11 +35,12 @@ import type { SalesOrderResponse } from "../types/sales-order.types";
 import type { ProductListItem } from "@/features/inventory/types/product.types";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
+import { useTranslation } from "@/hooks/use-translation";
 
-const statusOptions = [
-  { value: "Draft", label: "مسودة" },
-  { value: "Confirmed", label: "مؤكد" },
-  { value: "Cancelled", label: "ملغي" },
+const statusOptionKeys = [
+  { value: "Draft", labelKey: "sales.orders.draft" },
+  { value: "Confirmed", labelKey: "sales.orders.confirmed" },
+  { value: "Cancelled", labelKey: "sales.orders.cancelled" },
 ];
 
 interface SalesOrderFormProps {
@@ -57,6 +58,7 @@ function todayString(): string {
 export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
   const router = useRouter();
   const isEdit = mode === "edit";
+  const { t } = useTranslation();
 
   const createMutation = useCreateSalesOrder();
   const updateMutation = useUpdateSalesOrder(order?.id ?? "");
@@ -95,13 +97,13 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
 
   const taxRateOptions = useMemo(
     () => [
-      { value: "", label: "بدون ضريبة" },
+      { value: "", label: t("sales.orders.noTax") },
       ...taxRates.map((rate) => ({
         value: rate.id,
         label: `${rate.name} (${rate.rate}%)`,
       })),
     ],
-    [taxRates]
+    [taxRates, t]
   );
 
   const productOptions = useMemo(
@@ -247,7 +249,7 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
     <Card className="border-border bg-card">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg">
-          {isEdit ? "تعديل أمر البيع" : "أمر بيع جديد"}
+          {isEdit ? t("sales.orders.editTitle") : t("sales.orders.newTitle")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -261,12 +263,12 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
           <div className="grid gap-4 md:grid-cols-2">
             {/* Warehouse */}
             <div className="space-y-2">
-              <Label htmlFor="warehouseId">المستودع *</Label>
+              <Label htmlFor="warehouseId">{t("purchasing.receipts.warehouse")} *</Label>
               <Select
                 id="warehouseId"
                 {...form.register("warehouseId")}
                 options={warehouseOptions}
-                placeholder="اختر المستودع"
+                placeholder={t("common.selectWarehouse")}
                 className="h-10"
               />
               {form.formState.errors.warehouseId && (
@@ -275,18 +277,18 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
                 </p>
               )}
               <p className="text-xs text-muted-foreground">
-                اختر المستودع أولاً لعرض الكميات المتاحة للمنتجات
+                {t("sales.orders.warehouseFirstHint")}
               </p>
             </div>
 
             {/* Customer */}
             <div className="space-y-2">
-              <Label htmlFor="customerId">العميل *</Label>
+              <Label htmlFor="customerId">{t("sales.orders.customer")} *</Label>
               <Select
                 id="customerId"
                 {...form.register("customerId")}
                 options={customerOptions}
-                placeholder="اختر العميل"
+                placeholder={t("common.selectCustomer")}
                 className="h-10"
               />
               {form.formState.errors.customerId && (
@@ -298,7 +300,7 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
 
             {/* Order Date */}
             <div className="space-y-2">
-              <Label htmlFor="orderDate">تاريخ الأمر *</Label>
+              <Label htmlFor="orderDate">{t("sales.orders.orderDate")} *</Label>
               <Input
                 id="orderDate"
                 type="date"
@@ -314,7 +316,7 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
 
             {/* Delivery Date */}
             <div className="space-y-2">
-              <Label htmlFor="deliveryDate">تاريخ التسليم</Label>
+              <Label htmlFor="deliveryDate">{t("sales.orders.deliveryDate")}</Label>
               <Input
                 id="deliveryDate"
                 type="date"
@@ -331,12 +333,15 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
             {/* Status — edit only */}
             {isEdit && (
               <div className="space-y-2">
-                <Label htmlFor="status">الحالة</Label>
+                <Label htmlFor="status">{t("common.status")}</Label>
                 <Select
                   id="status"
                   {...form.register("status")}
-                  options={statusOptions}
-                  placeholder="اختر الحالة"
+                  options={statusOptionKeys.map((option) => ({
+                    value: option.value,
+                    label: t(option.labelKey),
+                  }))}
+                  placeholder={t("common.selectStatus")}
                   className="h-10"
                 />
                 {form.formState.errors.status && (
@@ -353,19 +358,19 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
               <AlertCircle className="h-4 w-4" />
               <p>
                 {watchedStatus === "Confirmed"
-                  ? "سيتم تأكيد الأمر ولن تتمكن من تعديله لاحقاً"
-                  : "سيتم إلغاء الأمر ولن تتمكن من تعديله لاحقاً"}
+                  ? t("sales.orders.confirmWarning")
+                  : t("sales.orders.cancelWarning")}
               </p>
             </Alert>
           )}
 
           {/* Notes */}
           <div className="space-y-2">
-            <Label htmlFor="notes">ملاحظات</Label>
+            <Label htmlFor="notes">{t("common.notes")}</Label>
             <Textarea
               id="notes"
               {...form.register("notes")}
-              placeholder="ملاحظات اختيارية..."
+              placeholder={t("common.notesPlaceholder")}
             />
             {form.formState.errors.notes && (
               <p className="text-sm text-destructive">
@@ -394,11 +399,11 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
               {/* Discount & Tax */}
               <Card className="border-border bg-card">
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-lg">الخصم والضريبة</CardTitle>
+                  <CardTitle className="text-lg">{t("sales.orders.discountTax")}</CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="discountPct">خصم على الأمر (%)</Label>
+                    <Label htmlFor="discountPct">{t("sales.orders.orderDiscountPct")}</Label>
                     <Input
                       id="discountPct"
                       type="number"
@@ -418,12 +423,12 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="taxRateId">نسبة الضريبة</Label>
+                    <Label htmlFor="taxRateId">{t("sales.orders.taxRate")}</Label>
                     <Select
                       id="taxRateId"
                       {...form.register("taxRateId")}
                       options={taxRateOptions}
-                      placeholder="اختر نسبة الضريبة"
+                      placeholder={t("sales.orders.selectTaxRate")}
                       className="h-10"
                     />
                     {form.formState.errors.taxRateId && (
@@ -442,14 +447,14 @@ export default function SalesOrderForm({ mode, order }: SalesOrderFormProps) {
           <div className="flex items-center gap-3 pt-4 border-t border-border">
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              {isEdit ? "حفظ التغييرات" : "إنشاء الأمر"}
+              {isEdit ? t("common.saveChanges") : t("sales.orders.create")}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.back()}
             >
-              إلغاء
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

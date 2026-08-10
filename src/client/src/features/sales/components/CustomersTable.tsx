@@ -15,6 +15,7 @@ import {
 } from "@/components/ui";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { useDeleteCustomer } from "../hooks/useDeleteCustomer";
+import { useTranslation } from "@/hooks/use-translation";
 import type { CustomerListItem } from "../types/customer.types";
 
 const typeBadgeVariant = {
@@ -22,9 +23,9 @@ const typeBadgeVariant = {
   Individual: "secondary",
 } as const;
 
-const typeLabel = {
-  Company: "شركة",
-  Individual: "فرد",
+const typeLabelKey = {
+  Company: "sales.customers.company",
+  Individual: "sales.customers.individual",
 } as const;
 
 const statusBadgeVariant = {
@@ -32,9 +33,9 @@ const statusBadgeVariant = {
   Suspended: "destructive",
 } as const;
 
-const statusLabel = {
-  Active: "نشط",
-  Suspended: "موقوف",
+const statusLabelKey = {
+  Active: "common.active",
+  Suspended: "common.suspended",
 } as const;
 
 interface CustomersTableProps {
@@ -59,6 +60,7 @@ export default function CustomersTable({
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeleteCustomer();
+  const { t } = useTranslation();
 
   const handleDelete = () => {
     if (!deleteId) return;
@@ -71,7 +73,7 @@ export default function CustomersTable({
         setErrorMessage(
           error?.response?.data?.message ||
             error?.message ||
-            "حدث خطأ غير متوقع"
+            t("common.unexpectedError")
         );
       },
     });
@@ -83,13 +85,13 @@ export default function CustomersTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>الرمز</TableHead>
-              <TableHead>الاسم</TableHead>
-              <TableHead>النوع</TableHead>
-              <TableHead>حد الائتمان</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead>تاريخ الإنشاء</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("common.code")}</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead>{t("common.type")}</TableHead>
+              <TableHead>{t("sales.customers.creditLimit")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead>{t("common.createdAt")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -114,12 +116,12 @@ export default function CustomersTable({
         <div className="rounded-full bg-muted p-4 mb-4">
           <Users className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-1">لا يوجد عملاء</h3>
-        <p className="text-sm text-muted-foreground mb-4">لم يتم إضافة أي عملاء بعد</p>
+        <h3 className="text-lg font-semibold mb-1">{t("sales.customers.emptyTitle")}</h3>
+        <p className="text-sm text-muted-foreground mb-4">{t("sales.customers.emptyDescription")}</p>
         <Link href="/sales/customers/new">
           <Button>
             <Users className="ml-2 h-4 w-4" />
-            إضافة عميل
+            {t("sales.customers.add")}
           </Button>
         </Link>
       </div>
@@ -132,13 +134,13 @@ export default function CustomersTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>الرمز</TableHead>
-              <TableHead>الاسم</TableHead>
-              <TableHead>النوع</TableHead>
-              <TableHead>حد الائتمان</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead>تاريخ الإنشاء</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("common.code")}</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead>{t("common.type")}</TableHead>
+              <TableHead>{t("sales.customers.creditLimit")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead>{t("common.createdAt")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -148,7 +150,7 @@ export default function CustomersTable({
                 <TableCell>{customer.name}</TableCell>
                 <TableCell>
                   <Badge variant={typeBadgeVariant[customer.type]}>
-                    {typeLabel[customer.type]}
+                    {t(typeLabelKey[customer.type])}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-muted-foreground">
@@ -156,7 +158,7 @@ export default function CustomersTable({
                 </TableCell>
                 <TableCell>
                   <Badge variant={statusBadgeVariant[customer.status]}>
-                    {statusLabel[customer.status]}
+                    {t(statusLabelKey[customer.status])}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-muted-foreground text-xs">
@@ -192,7 +194,7 @@ export default function CustomersTable({
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-4">
           <p className="text-sm text-muted-foreground">
-            عرض {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} من {totalCount}
+            {t("common.showing")} {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} {t("common.of")} {totalCount}
           </p>
           <div className="flex gap-1">
             <Button
@@ -201,7 +203,7 @@ export default function CustomersTable({
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
             >
-              السابق
+              {t("common.previous")}
             </Button>
             <Button
               variant="outline"
@@ -209,7 +211,7 @@ export default function CustomersTable({
               disabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
             >
-              التالي
+              {t("common.next")}
             </Button>
           </div>
         </div>
@@ -223,9 +225,9 @@ export default function CustomersTable({
             setErrorMessage(null);
           }
         }}
-        title="حذف العميل"
-        description="هل أنت متأكد من حذف هذا العميل؟ سيتم تعطيل العميل ولن يمكن استخدامه في الطلبات المستقبلية. لا يمكن التراجع عن هذا الإجراء."
-        confirmLabel="حذف"
+        title={t("sales.customers.deleteTitle")}
+        description={t("sales.customers.deleteDescription")}
+        confirmLabel={t("common.delete")}
         variant="danger"
         isLoading={deleteMutation.isPending}
         errorMessage={errorMessage}

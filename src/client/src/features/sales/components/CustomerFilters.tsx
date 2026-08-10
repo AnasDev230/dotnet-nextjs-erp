@@ -4,21 +4,23 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input, Button } from "@/components/ui";
+import { useTranslation } from "@/hooks/use-translation";
 
-const typeOptions = [
-  { value: "Company", label: "شركة" },
-  { value: "Individual", label: "فرد" },
+const typeOptionKeys = [
+  { value: "Company", labelKey: "sales.customers.company" },
+  { value: "Individual", labelKey: "sales.customers.individual" },
 ];
 
-const statusOptions = [
-  { value: "Active", label: "نشط" },
-  { value: "Suspended", label: "موقوف" },
+const statusOptionKeys = [
+  { value: "Active", labelKey: "common.active" },
+  { value: "Suspended", labelKey: "common.suspended" },
 ];
 
 export default function CustomerFilters() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const searchParamsRef = useRef(searchParams);
   searchParamsRef.current = searchParams;
@@ -64,7 +66,7 @@ export default function CustomerFilters() {
       <div className="relative flex-1 min-w-[200px]">
         <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="بحث برمز أو اسم أو رقم ضريبي..."
+          placeholder={t("sales.customers.searchPlaceholder")}
           className="h-10 pr-10"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -76,10 +78,10 @@ export default function CustomerFilters() {
         onChange={(e) => handleTypeChange(e.target.value)}
         className="flex h-10 w-40 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <option value="">كل الأنواع</option>
-        {typeOptions.map((o) => (
+        <option value="">{t("common.allTypes")}</option>
+        {typeOptionKeys.map((o) => (
           <option key={o.value} value={o.value}>
-            {o.label}
+            {t(o.labelKey)}
           </option>
         ))}
       </select>
@@ -89,10 +91,10 @@ export default function CustomerFilters() {
         onChange={(e) => handleStatusChange(e.target.value)}
         className="flex h-10 w-40 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <option value="">كل الحالات</option>
-        {statusOptions.map((o) => (
+        <option value="">{t("common.allStatuses")}</option>
+        {statusOptionKeys.map((o) => (
           <option key={o.value} value={o.value}>
-            {o.label}
+            {t(o.labelKey)}
           </option>
         ))}
       </select>
@@ -103,7 +105,7 @@ export default function CustomerFilters() {
           size="sm"
           onClick={() => router.push(pathname)}
         >
-          مسح الفلترة
+          {t("common.clearFilters")}
         </Button>
       )}
     </div>

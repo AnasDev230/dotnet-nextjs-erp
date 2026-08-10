@@ -13,6 +13,7 @@ import {
 } from "react-hook-form";
 import { Plus, AlertCircle } from "lucide-react";
 import { Alert, Button, Label } from "@/components/ui";
+import { useTranslation } from "@/hooks/use-translation";
 import SalesOrderItemRow from "./SalesOrderItemRow";
 import type { ProductListItem } from "@/features/inventory/types/product.types";
 import type {
@@ -56,6 +57,7 @@ export default function SalesOrderItemsEditor({
     name: "items",
   });
   const [showCannotRemove, setShowCannotRemove] = useState(false);
+  const { t } = useTranslation();
 
   const handleAdd = () => {
     append({ productId: "", quantity: 1, unitPrice: 0, discountPct: 0 });
@@ -73,7 +75,7 @@ export default function SalesOrderItemsEditor({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <Label className="text-base font-medium">منتجات الأمر</Label>
+        <Label className="text-base font-medium">{t("sales.orders.orderItems")}</Label>
         <Button
           type="button"
           variant="outline"
@@ -82,14 +84,14 @@ export default function SalesOrderItemsEditor({
           className="h-9"
         >
           <Plus className="ml-2 h-4 w-4" />
-          إضافة منتج
+          {t("sales.orders.addProduct")}
         </Button>
       </div>
 
       {showCannotRemove && (
         <Alert className="border-amber-500/20 bg-amber-500/10 text-amber-600">
           <AlertCircle className="h-4 w-4" />
-          <p>يجب أن يحتوي الأمر على منتج واحد على الأقل</p>
+          <p>{t("sales.orders.atLeastOneProduct")}</p>
         </Alert>
       )}
 

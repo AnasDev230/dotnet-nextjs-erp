@@ -5,10 +5,12 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui";
 import CustomerForm from "@/features/sales/components/CustomerForm";
 import { useCustomer } from "@/features/sales/hooks/useCustomer";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function EditCustomerPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
   const { data: customer, isLoading, error } = useCustomer(params.id);
 
   if (isLoading) {
@@ -27,9 +29,9 @@ export default function EditCustomerPage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">العميل غير موجود</h1>
+            <h1 className="text-2xl font-semibold">{t("sales.customers.notFound")}</h1>
             <p className="text-muted-foreground text-sm">
-              لم يتم العثور على العميل المطلوب
+              {t("sales.customers.notFoundDescription")}
             </p>
           </div>
         </div>
@@ -45,7 +47,7 @@ export default function EditCustomerPage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">تعديل العميل</h1>
+            <h1 className="text-2xl font-semibold">{t("sales.customers.editTitle")}</h1>
             <p className="text-muted-foreground text-sm">
               {customer.code} — {customer.name}
             </p>
