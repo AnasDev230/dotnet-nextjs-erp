@@ -44,6 +44,12 @@ export const en: Record<string, string> = {
   "common.type": "Type",
   "common.number": "Number",
   "common.currency": "SAR",
+  "common.refresh": "Refresh",
+  "common.retry": "Retry",
+  "common.loadFailed": "Failed to load data",
+  "common.overdue": "Overdue",
+  "common.brand": "Bunyan ERP",
+  "common.comingSoon": "Coming Soon",
 
   // ─── Navigation / Sidebar ───
   "nav.dashboard": "Dashboard",
@@ -72,6 +78,11 @@ export const en: Record<string, string> = {
   "nav.reportsInventory": "Inventory",
   "nav.reportsEmployees": "Employees",
   "nav.customerStatement": "Customer Statement",
+  "nav.logout": "Log Out",
+  "nav.profile": "Profile",
+  "nav.settings": "Settings",
+  "nav.inventoryLevels": "Inventory Levels",
+  "nav.adjustments": "Adjustments",
 
   // ─── Dashboard ───
   "dashboard.title": "Dashboard",
@@ -84,6 +95,19 @@ export const en: Record<string, string> = {
   "dashboard.recentInvoices": "Recent Invoices",
   "dashboard.lowStockAlerts": "Low Stock Alerts",
   "dashboard.viewAll": "View All",
+  "dashboard.description": "A comprehensive overview of system performance",
+  "dashboard.overdueInvoices": "Overdue Invoices",
+  "dashboard.noOverdueInvoices": "No overdue invoices",
+  "dashboard.recentSalesOrders": "Recent Sales Orders",
+  "dashboard.recentInvoicesTable": "Recent Invoices",
+  "dashboard.noOrders": "No sales orders yet",
+  "dashboard.noInvoices": "No invoices yet",
+  "dashboard.stockSufficient": "All products are sufficiently stocked",
+  "dashboard.collectedPayments": "Collected Payments",
+  "dashboard.totalCollectedPayments": "Total collected payments",
+  "dashboard.confirmedSalesOrders": "confirmed sales orders",
+  "dashboard.invoiceCountLabel": "invoices",
+  "dashboard.overdueInvoicesCountLabel": "overdue invoices",
 
   // ─── Sales ───
   "sales.orders.title": "Sales Orders",

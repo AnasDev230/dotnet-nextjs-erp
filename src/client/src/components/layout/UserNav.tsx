@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { User, LogOut, ChevronDown } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
 export default function UserNav() {
@@ -13,6 +14,7 @@ export default function UserNav() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
+  const { t } = useTranslation();
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -64,14 +66,14 @@ export default function UserNav() {
             className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <User className="h-4 w-4" />
-            الملف الشخصي
+            {t("nav.profile")}
           </Link>
           <button
             onClick={handleLogout}
             className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm text-destructive transition-colors hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <LogOut className="h-4 w-4" />
-            تسجيل الخروج
+            {t("nav.logout")}
           </button>
         </div>
       )}

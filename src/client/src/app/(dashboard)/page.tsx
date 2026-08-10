@@ -14,6 +14,7 @@ import {
   useLowStockItems,
 } from "@/features/dashboard/hooks/useDashboard";
 import type { RecentInvoice } from "@/types/dashboard";
+import { useTranslation } from "@/hooks/use-translation";
 
 function formatCurrency(value: number): string {
   return `${value.toLocaleString("ar-SA", {
@@ -23,19 +24,20 @@ function formatCurrency(value: number): string {
 }
 
 function SectionError({ onRetry }: { onRetry: () => void }) {
+  const { t } = useTranslation();
   return (
     <Alert variant="destructive">
       <AlertCircle className="h-4 w-4" />
-      <AlertTitle>خطأ</AlertTitle>
+      <AlertTitle>{t("common.error")}</AlertTitle>
       <AlertDescription>
-        فشل تحميل البيانات.
+        {t("common.loadFailed")}
         <Button
           variant="outline"
           size="sm"
           className="mr-2"
           onClick={onRetry}
         >
-          إعادة المحاولة
+          {t("common.retry")}
         </Button>
       </AlertDescription>
     </Alert>
@@ -44,13 +46,14 @@ function SectionError({ onRetry }: { onRetry: () => void }) {
 
 function OverdueInvoices({ invoices }: { invoices: RecentInvoice[] }) {
   const overdue = invoices.filter((i) => i.isOverdue);
+  const { t } = useTranslation();
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <FileWarning className="h-5 w-5 text-destructive" />
-          فواتير متأخرة
+          {t("dashboard.overdueInvoices")}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -60,7 +63,7 @@ function OverdueInvoices({ invoices }: { invoices: RecentInvoice[] }) {
               <CheckCircle2 className="h-6 w-6 text-emerald-600" />
             </div>
             <p className="text-sm font-medium text-emerald-600">
-              لا توجد فواتير متأخرة
+              {t("dashboard.noOverdueInvoices")}
             </p>
           </div>
         ) : (
@@ -92,6 +95,7 @@ function OverdueInvoices({ invoices }: { invoices: RecentInvoice[] }) {
 
 export default function DashboardPage() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   const stats = useDashboardStats();
   const recentOrders = useRecentOrders(5);
   const recentInvoices = useRecentInvoices(5);
@@ -108,14 +112,14 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">لوحة التحكم</h1>
+          <h1 className="text-2xl font-semibold">{t("dashboard.title")}</h1>
           <p className="text-muted-foreground text-sm">
-            نظرة شاملة على أداء النظام
+            {t("dashboard.description")}
           </p>
         </div>
         <Button variant="outline" onClick={handleRefresh}>
           <RefreshCw className="ml-2 h-4 w-4" />
-          تحديث
+          {t("common.refresh")}
         </Button>
       </div>
 
@@ -159,7 +163,7 @@ export default function DashboardPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <FileWarning className="h-5 w-5 text-destructive" />
-                فواتير متأخرة
+                {t("dashboard.overdueInvoices")}
               </CardTitle>
             </CardHeader>
             <CardContent>

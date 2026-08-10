@@ -15,6 +15,7 @@ import {
 } from "@/components/ui";
 import { InvoiceStatusBadge } from "@/features/finance/components/InvoiceStatusBadge";
 import type { RecentInvoice } from "@/types/dashboard";
+import { useTranslation } from "@/hooks/use-translation";
 
 function formatCurrency(value: number): string {
   return `${value.toLocaleString("ar-SA", {
@@ -36,21 +37,23 @@ export default function RecentInvoicesTable({
   invoices,
   isLoading,
 }: RecentInvoicesTableProps) {
+  const { t } = useTranslation();
+
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">أحدث الفواتير</CardTitle>
+          <CardTitle className="text-lg">{t("dashboard.recentInvoicesTable")}</CardTitle>
         </CardHeader>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>رقم الفاتورة</TableHead>
-              <TableHead>العميل</TableHead>
-              <TableHead>تاريخ الإصدار</TableHead>
-              <TableHead>المبلغ</TableHead>
-              <TableHead>المدفوع</TableHead>
-              <TableHead>الحالة</TableHead>
+              <TableHead>{t("sales.invoices.invoiceNumber")}</TableHead>
+              <TableHead>{t("sales.orders.customer")}</TableHead>
+              <TableHead>{t("sales.invoices.issueDate")}</TableHead>
+              <TableHead>{t("common.amount")}</TableHead>
+              <TableHead>{t("sales.invoices.paidAmount")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -73,13 +76,13 @@ export default function RecentInvoicesTable({
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">أحدث الفواتير</CardTitle>
+          <CardTitle className="text-lg">{t("dashboard.recentInvoicesTable")}</CardTitle>
         </CardHeader>
         <div className="flex flex-col items-center justify-center py-10 text-center">
           <div className="mb-3 rounded-full bg-muted p-3">
             <FileText className="h-6 w-6 text-muted-foreground" />
           </div>
-          <p className="text-sm text-muted-foreground">لا توجد فواتير بعد</p>
+          <p className="text-sm text-muted-foreground">{t("dashboard.noInvoices")}</p>
         </div>
       </Card>
     );
@@ -88,17 +91,17 @@ export default function RecentInvoicesTable({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">أحدث الفواتير</CardTitle>
+        <CardTitle className="text-lg">{t("dashboard.recentInvoicesTable")}</CardTitle>
       </CardHeader>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>رقم الفاتورة</TableHead>
-            <TableHead>العميل</TableHead>
-            <TableHead>تاريخ الإصدار</TableHead>
-            <TableHead>المبلغ</TableHead>
-            <TableHead>المدفوع</TableHead>
-            <TableHead>الحالة</TableHead>
+            <TableHead>{t("sales.invoices.invoiceNumber")}</TableHead>
+            <TableHead>{t("sales.orders.customer")}</TableHead>
+            <TableHead>{t("sales.invoices.issueDate")}</TableHead>
+            <TableHead>{t("common.amount")}</TableHead>
+            <TableHead>{t("sales.invoices.paidAmount")}</TableHead>
+            <TableHead>{t("common.status")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -123,8 +126,8 @@ export default function RecentInvoicesTable({
                 >
                   {formatDate(invoice.issueDate)}
                   {invoice.isOverdue && (
-                    <span title="متأخرة">
-                      <AlertCircle className="h-3.5 w-3.5" aria-label="متأخرة" />
+                    <span title={t("common.overdue")}>
+                      <AlertCircle className="h-3.5 w-3.5" aria-label={t("common.overdue")} />
                     </span>
                   )}
                 </span>

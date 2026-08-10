@@ -44,6 +44,12 @@ export const ar: Record<string, string> = {
   "common.type": "النوع",
   "common.number": "الرقم",
   "common.currency": "ر.س",
+  "common.refresh": "تحديث",
+  "common.retry": "إعادة المحاولة",
+  "common.loadFailed": "فشل تحميل البيانات",
+  "common.overdue": "متأخرة",
+  "common.brand": "بنيان ERP",
+  "common.comingSoon": "قريباً",
 
   // ─── Navigation / Sidebar ───
   "nav.dashboard": "لوحة التحكم",
@@ -72,6 +78,11 @@ export const ar: Record<string, string> = {
   "nav.reportsInventory": "المخزون",
   "nav.reportsEmployees": "الموظفون",
   "nav.customerStatement": "كشف حساب عميل",
+  "nav.logout": "تسجيل الخروج",
+  "nav.profile": "الملف الشخصي",
+  "nav.settings": "الإعدادات",
+  "nav.inventoryLevels": "مستويات المخزون",
+  "nav.adjustments": "التسويات",
 
   // ─── Dashboard ───
   "dashboard.title": "لوحة التحكم",
@@ -84,6 +95,19 @@ export const ar: Record<string, string> = {
   "dashboard.recentInvoices": "آخر الفواتير",
   "dashboard.lowStockAlerts": "تنبيهات المخزون المنخفض",
   "dashboard.viewAll": "عرض الكل",
+  "dashboard.description": "نظرة شاملة على أداء النظام",
+  "dashboard.overdueInvoices": "فواتير متأخرة",
+  "dashboard.noOverdueInvoices": "لا توجد فواتير متأخرة",
+  "dashboard.recentSalesOrders": "أحدث أوامر البيع",
+  "dashboard.recentInvoicesTable": "أحدث الفواتير",
+  "dashboard.noOrders": "لا توجد أوامر بيع بعد",
+  "dashboard.noInvoices": "لا توجد فواتير بعد",
+  "dashboard.stockSufficient": "جميع المنتجات بمستوى كافٍ",
+  "dashboard.collectedPayments": "المدفوعات المحصلة",
+  "dashboard.totalCollectedPayments": "إجمالي الدفعات المقبوضة",
+  "dashboard.confirmedSalesOrders": "أمر بيع مؤكد",
+  "dashboard.invoiceCountLabel": "فاتورة",
+  "dashboard.overdueInvoicesCountLabel": "فاتورة متأخرة",
 
   // ─── Sales ───
   "sales.orders.title": "أوامر البيع",

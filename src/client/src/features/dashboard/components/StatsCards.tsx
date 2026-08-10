@@ -8,6 +8,7 @@ import {
   CardContent,
 } from "@/components/ui";
 import type { DashboardStats } from "@/types/dashboard";
+import { useTranslation } from "@/hooks/use-translation";
 
 function formatCurrency(value: number): string {
   return `${value.toLocaleString("ar-SA", {
@@ -22,6 +23,8 @@ interface StatsCardsProps {
 }
 
 export default function StatsCards({ stats, isLoading }: StatsCardsProps) {
+  const { t } = useTranslation();
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -39,32 +42,32 @@ export default function StatsCards({ stats, isLoading }: StatsCardsProps) {
 
   const cards = [
     {
-      title: "إجمالي المبيعات",
+      title: t("dashboard.totalSales"),
       icon: TrendingUp,
       iconClassName: "text-primary",
       value: formatCurrency(stats?.totalSalesAmount ?? 0),
-      subtitle: `${stats?.totalSalesCount ?? 0} أمر بيع مؤكد`,
+      subtitle: `${stats?.totalSalesCount ?? 0} ${t("dashboard.confirmedSalesOrders")}`,
     },
     {
-      title: "إجمالي الفواتير",
+      title: t("dashboard.totalInvoices"),
       icon: FileText,
       iconClassName: "text-blue-600",
       value: formatCurrency(stats?.totalInvoicesAmount ?? 0),
-      subtitle: `${stats?.totalInvoicesCount ?? 0} فاتورة`,
+      subtitle: `${stats?.totalInvoicesCount ?? 0} ${t("dashboard.invoiceCountLabel")}`,
     },
     {
-      title: "المدفوعات المحصلة",
+      title: t("dashboard.collectedPayments"),
       icon: CreditCard,
       iconClassName: "text-emerald-600",
       value: formatCurrency(stats?.totalPaidAmount ?? 0),
-      subtitle: "إجمالي الدفعات المقبوضة",
+      subtitle: t("dashboard.totalCollectedPayments"),
     },
     {
-      title: "المستحقات المعلقة",
+      title: t("dashboard.outstandingBalance"),
       icon: AlertCircle,
       iconClassName: "text-amber-600",
       value: formatCurrency(stats?.totalOutstandingAmount ?? 0),
-      subtitle: `${stats?.overdueInvoicesCount ?? 0} فاتورة متأخرة`,
+      subtitle: `${stats?.overdueInvoicesCount ?? 0} ${t("dashboard.overdueInvoicesCountLabel")}`,
     },
   ];
 

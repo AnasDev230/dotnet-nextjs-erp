@@ -15,6 +15,7 @@ import {
 } from "@/components/ui";
 import { OrderStatusBadge } from "@/features/sales/components/OrderStatusBadge";
 import type { RecentOrder } from "@/types/dashboard";
+import { useTranslation } from "@/hooks/use-translation";
 
 function formatCurrency(value: number): string {
   return `${value.toLocaleString("ar-SA", {
@@ -36,20 +37,22 @@ export default function RecentOrdersTable({
   orders,
   isLoading,
 }: RecentOrdersTableProps) {
+  const { t } = useTranslation();
+
   if (isLoading) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">أحدث أوامر البيع</CardTitle>
+          <CardTitle className="text-lg">{t("dashboard.recentSalesOrders")}</CardTitle>
         </CardHeader>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>رقم الأمر</TableHead>
-              <TableHead>العميل</TableHead>
-              <TableHead>التاريخ</TableHead>
-              <TableHead>المبلغ</TableHead>
-              <TableHead>الحالة</TableHead>
+              <TableHead>{t("sales.orders.orderNumber")}</TableHead>
+              <TableHead>{t("sales.orders.customer")}</TableHead>
+              <TableHead>{t("common.date")}</TableHead>
+              <TableHead>{t("common.amount")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -72,13 +75,13 @@ export default function RecentOrdersTable({
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">أحدث أوامر البيع</CardTitle>
+          <CardTitle className="text-lg">{t("dashboard.recentSalesOrders")}</CardTitle>
         </CardHeader>
         <div className="flex flex-col items-center justify-center py-10 text-center">
           <div className="mb-3 rounded-full bg-muted p-3">
             <ShoppingCart className="h-6 w-6 text-muted-foreground" />
           </div>
-          <p className="text-sm text-muted-foreground">لا توجد أوامر بيع بعد</p>
+          <p className="text-sm text-muted-foreground">{t("dashboard.noOrders")}</p>
         </div>
       </Card>
     );
@@ -87,16 +90,16 @@ export default function RecentOrdersTable({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">أحدث أوامر البيع</CardTitle>
+        <CardTitle className="text-lg">{t("dashboard.recentSalesOrders")}</CardTitle>
       </CardHeader>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>رقم الأمر</TableHead>
-            <TableHead>العميل</TableHead>
-            <TableHead>التاريخ</TableHead>
-            <TableHead>المبلغ</TableHead>
-            <TableHead>الحالة</TableHead>
+            <TableHead>{t("sales.orders.orderNumber")}</TableHead>
+            <TableHead>{t("sales.orders.customer")}</TableHead>
+            <TableHead>{t("common.date")}</TableHead>
+            <TableHead>{t("common.amount")}</TableHead>
+            <TableHead>{t("common.status")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
