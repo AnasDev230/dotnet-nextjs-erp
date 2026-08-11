@@ -4,8 +4,16 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input, Button } from "@/components/ui";
-import { invoiceStatusOptions } from "../api/invoices";
+import { useTranslation } from "@/hooks/use-translation";
 import { useCustomersForDropdown } from "@/features/sales/hooks/useCustomersForDropdown";
+
+const statusOptionKeys = [
+  { value: "Draft", labelKey: "finance.invoices.statusDraft" },
+  { value: "Issued", labelKey: "finance.invoices.statusIssued" },
+  { value: "PartiallyPaid", labelKey: "finance.invoices.statusPartiallyPaid" },
+  { value: "Paid", labelKey: "finance.invoices.statusPaid" },
+  { value: "Cancelled", labelKey: "finance.invoices.statusCancelled" },
+];
 
 const selectClass =
   "flex h-10 w-40 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
@@ -14,6 +22,7 @@ export default function InvoiceFilters() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const searchParamsRef = useRef(searchParams);
   searchParamsRef.current = searchParams;
@@ -72,7 +81,7 @@ export default function InvoiceFilters() {
       <div className="relative flex-1 min-w-[200px]">
         <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="بحث برقم الفاتورة أو رقم الأمر أو اسم العميل..."
+          placeholder={t("finance.invoices.searchPlaceholder")}
           className="h-10 pr-10"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -84,7 +93,7 @@ export default function InvoiceFilters() {
         onChange={(e) => handleChange("customerId", e.target.value)}
         className={`${selectClass} w-52`}
       >
-        <option value="">كل العملاء</option>
+        <option value="">{t("common.allCustomers")}</option>
         {customerOptions.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}
@@ -97,10 +106,10 @@ export default function InvoiceFilters() {
         onChange={(e) => handleChange("status", e.target.value)}
         className={selectClass}
       >
-        <option value="">كل الحالات</option>
-        {invoiceStatusOptions.map((option) => (
+        <option value="">{t("common.allStatuses")}</option>
+        {statusOptionKeys.map((option) => (
           <option key={option.value} value={option.value}>
-            {option.label}
+            {t(option.labelKey)}
           </option>
         ))}
       </select>
@@ -110,7 +119,7 @@ export default function InvoiceFilters() {
         value={fromDate}
         onChange={(e) => handleChange("fromDate", e.target.value)}
         className="h-10 w-40"
-        title="من تاريخ"
+        title={t("reports.fromDate")}
       />
 
       <Input
@@ -118,7 +127,7 @@ export default function InvoiceFilters() {
         value={toDate}
         onChange={(e) => handleChange("toDate", e.target.value)}
         className="h-10 w-40"
-        title="إلى تاريخ"
+        title={t("reports.toDate")}
       />
 
       {searchParams.toString() && (
@@ -127,7 +136,7 @@ export default function InvoiceFilters() {
           size="sm"
           onClick={() => router.push(pathname)}
         >
-          مسح الفلترة
+          {t("common.clearFilters")}
         </Button>
       )}
     </div>

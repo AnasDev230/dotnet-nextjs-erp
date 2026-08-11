@@ -32,6 +32,7 @@ import { useSalesOrder } from "@/features/sales/hooks/useSalesOrder";
 import { useCustomer } from "@/features/sales/hooks/useCustomer";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
+import { useTranslation } from "@/hooks/use-translation";
 
 function todayString(): string {
   const now = new Date();
@@ -57,6 +58,7 @@ function addDays(dateString: string, days: number): string {
 
 export default function InvoiceForm() {
   const router = useRouter();
+  const { t } = useTranslation();
   const createMutation = useCreateInvoice();
   const isPending = createMutation.isPending;
   const error = createMutation.error;
@@ -119,9 +121,9 @@ export default function InvoiceForm() {
   return (
     <Card className="border-border bg-card">
       <CardHeader className="pb-3">
-        <CardTitle className="text-lg">فاتورة جديدة</CardTitle>
+        <CardTitle className="text-lg">{t("finance.invoices.createTitle")}</CardTitle>
         <p className="text-sm text-muted-foreground">
-          أنشئ فاتورة من أمر بيع مؤكد
+          {t("finance.invoices.createSubtitle")}
         </p>
       </CardHeader>
       <CardContent>
@@ -134,12 +136,12 @@ export default function InvoiceForm() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="orderId">أمر البيع المؤكد *</Label>
+              <Label htmlFor="orderId">{t("finance.invoices.confirmedOrder")} *</Label>
               <Select
                 id="orderId"
                 {...form.register("orderId")}
                 options={orderOptions}
-                placeholder="اختر أمر البيع"
+                placeholder={t("finance.invoices.selectOrder")}
                 className="h-10"
               />
               {form.formState.errors.orderId && (
@@ -150,7 +152,7 @@ export default function InvoiceForm() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="issueDate">تاريخ الإصدار *</Label>
+              <Label htmlFor="issueDate">{t("finance.invoices.issueDate")} *</Label>
               <Input
                 id="issueDate"
                 type="date"
@@ -168,7 +170,7 @@ export default function InvoiceForm() {
           {watchedOrderId && (
             <Card className="border-border bg-card">
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg">ملخص أمر البيع</CardTitle>
+                <CardTitle className="text-lg">{t("finance.invoices.orderSummary")}</CardTitle>
               </CardHeader>
               <CardContent>
                 {isOrderLoading ? (
@@ -180,7 +182,7 @@ export default function InvoiceForm() {
                     <div className="grid gap-4 md:grid-cols-3">
                       <div>
                         <Label className="text-xs text-muted-foreground">
-                          العميل
+                          {t("finance.invoices.customer")}
                         </Label>
                         <div className="mt-1 text-sm font-medium">
                           {order.customerName}
@@ -188,7 +190,7 @@ export default function InvoiceForm() {
                       </div>
                       <div>
                         <Label className="text-xs text-muted-foreground">
-                          تاريخ الأمر
+                          {t("finance.invoices.orderDate")}
                         </Label>
                         <div className="mt-1 text-sm font-medium">
                           {order.orderDate}
@@ -196,7 +198,7 @@ export default function InvoiceForm() {
                       </div>
                       <div>
                         <Label className="text-xs text-muted-foreground">
-                          تاريخ الاستحقاق المتوقع
+                          {t("finance.invoices.expectedDueDate")}
                         </Label>
                         <div className="mt-1 text-sm font-medium">
                           {dueDate
@@ -207,7 +209,7 @@ export default function InvoiceForm() {
                           {paymentTerms > 0 && (
                             <span className="text-xs text-muted-foreground">
                               {" "}
-                              (شروط السداد: {paymentTerms} يوم)
+                              ({t("finance.invoices.paymentTerms")}: {paymentTerms} {t("common.days")})
                             </span>
                           )}
                         </div>
@@ -217,10 +219,10 @@ export default function InvoiceForm() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>المنتج</TableHead>
-                          <TableHead>الكمية</TableHead>
-                          <TableHead>سعر الوحدة</TableHead>
-                          <TableHead className="text-left">الإجمالي</TableHead>
+                          <TableHead>{t("finance.invoices.product")}</TableHead>
+                          <TableHead>{t("finance.invoices.quantity")}</TableHead>
+                          <TableHead>{t("finance.invoices.unitPrice")}</TableHead>
+                          <TableHead className="text-left">{t("finance.invoices.total")}</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -250,12 +252,12 @@ export default function InvoiceForm() {
                       <div className="w-full max-w-xs space-y-2">
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-muted-foreground">
-                            المجموع الفرعي
+                            {t("finance.invoices.subtotal")}
                           </span>
                           <span>{formatCurrency(order.subtotal)}</span>
                         </div>
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">الخصم</span>
+                          <span className="text-muted-foreground">{t("finance.invoices.discount")}</span>
                           <span className="text-destructive">
                             {order.discountAmount > 0
                               ? `-${formatCurrency(order.discountAmount)}`
@@ -263,7 +265,7 @@ export default function InvoiceForm() {
                           </span>
                         </div>
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">الضريبة</span>
+                          <span className="text-muted-foreground">{t("finance.invoices.tax")}</span>
                           <span>
                             {order.taxAmount > 0
                               ? `+${formatCurrency(order.taxAmount)}`
@@ -271,7 +273,7 @@ export default function InvoiceForm() {
                           </span>
                         </div>
                         <div className="flex items-center justify-between border-t border-border pt-2 text-base font-semibold">
-                          <span>الإجمالي النهائي</span>
+                          <span>{t("finance.invoices.finalTotal")}</span>
                           <span className="text-primary">
                             {formatCurrency(order.netAmount)}
                           </span>
@@ -282,7 +284,7 @@ export default function InvoiceForm() {
                 ) : (
                   <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
                     <AlertCircle className="h-4 w-4 ml-2" />
-                    لم يتم العثور على أمر البيع
+                    {t("finance.invoices.orderNotFound")}
                   </div>
                 )}
               </CardContent>
@@ -292,14 +294,14 @@ export default function InvoiceForm() {
           <div className="flex items-center gap-3 pt-4 border-t border-border">
             <Button type="submit" disabled={isPending || !watchedOrderId}>
               {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              إنشاء الفاتورة
+              {t("finance.invoices.createButton")}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.back()}
             >
-              إلغاء
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

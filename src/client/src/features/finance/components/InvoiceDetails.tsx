@@ -26,6 +26,7 @@ import { useInvoice, useIssueInvoice, useCancelInvoice } from "../hooks/useInvoi
 import { useSalesOrder } from "@/features/sales/hooks/useSalesOrder";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
+import { useTranslation } from "@/hooks/use-translation";
 
 function formatCurrency(value: number): string {
   return `${value.toLocaleString("ar-SA", {
@@ -49,6 +50,7 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 
 export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [confirmAction, setConfirmAction] = useState<"issue" | "cancel" | null>(
     null
   );
@@ -75,7 +77,7 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
           setErrorMessage(
             error?.response?.data?.message ||
               error?.message ||
-              "حدث خطأ غير متوقع"
+              t("common.unexpectedError")
           );
         },
       });
@@ -86,7 +88,7 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
           setErrorMessage(
             error?.response?.data?.message ||
               error?.message ||
-              "حدث خطأ غير متوقع"
+              t("common.unexpectedError")
           );
         },
       });
@@ -110,9 +112,9 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">الفاتورة غير موجودة</h1>
+            <h1 className="text-2xl font-semibold">{t("finance.invoices.notFound")}</h1>
             <p className="text-muted-foreground text-sm">
-              لم يتم العثور على الفاتورة المطلوبة
+              {t("finance.invoices.notFoundDescription")}
             </p>
           </div>
         </div>
@@ -142,9 +144,9 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
           </Button>
           <div>
             <h1 className="text-2xl font-semibold">
-              الفاتورة {invoice.invoiceNumber}
+              {t("finance.invoices.invoiceLabel")} {invoice.invoiceNumber}
             </h1>
-            <p className="text-muted-foreground text-sm">تفاصيل الفاتورة</p>
+            <p className="text-muted-foreground text-sm">{t("finance.invoices.detailsSubtitle")}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -157,7 +159,7 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
               }}
             >
               <Send className="ml-2 h-4 w-4" />
-              إصدار الفاتورة
+              {t("finance.invoices.issueButton")}
             </Button>
           )}
           {canCancel && (
@@ -171,20 +173,20 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
               }}
             >
               <XCircle className="ml-2 h-4 w-4" />
-              إلغاء الفاتورة
+              {t("finance.invoices.cancelButton")}
             </Button>
           )}
           {canRecordPayment && (
             <Link href={`/finance/invoices/${invoice.id}/payments/new`}>
               <Button>
                 <Wallet className="ml-2 h-4 w-4" />
-                تسجيل دفعة
+                {t("finance.invoices.recordPayment")}
               </Button>
             </Link>
           )}
           {invoice.orderId && (
             <Link href={`/sales/orders/${invoice.orderId}`}>
-              <Button variant="outline">أمر البيع</Button>
+              <Button variant="outline">{t("finance.invoices.viewOrder")}</Button>
             </Link>
           )}
         </div>
@@ -193,32 +195,32 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
       {canRecordPayment && invoice.isOverdue && (
         <Alert className="border-red-500/20 bg-red-500/10 text-red-600">
           <AlertCircle className="h-4 w-4" />
-          <p>هذه الفاتورة متأخرة عن تاريخ الاستحقاق.</p>
+          <p>{t("finance.invoices.overdueAlert")}</p>
         </Alert>
       )}
 
       <Card className="border-border bg-card">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">بيانات الفاتورة</CardTitle>
+          <CardTitle className="text-lg">{t("finance.invoices.dataCard")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <InfoRow
-              label="رقم الفاتورة"
+              label={t("finance.invoices.invoiceNumber")}
               value={
                 <span className="font-mono">{invoice.invoiceNumber}</span>
               }
             />
             <InfoRow
-              label="أمر البيع"
+              label={t("finance.invoices.salesOrder")}
               value={
                 <span className="font-mono">{invoice.orderNumber}</span>
               }
             />
-            <InfoRow label="العميل" value={invoice.customerName} />
-            <InfoRow label="تاريخ الإصدار" value={formatDate(invoice.issueDate)} />
+            <InfoRow label={t("finance.invoices.customer")} value={invoice.customerName} />
+            <InfoRow label={t("finance.invoices.issueDate")} value={formatDate(invoice.issueDate)} />
             <InfoRow
-              label="تاريخ الاستحقاق"
+              label={t("finance.invoices.dueDate")}
               value={
                 invoice.dueDate ? (
                   <span
@@ -239,7 +241,7 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
               }
             />
             <InfoRow
-              label="الحالة"
+              label={t("common.status")}
               value={<InvoiceStatusBadge status={invoice.status} />}
             />
           </div>
@@ -248,20 +250,20 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
 
       <Card className="border-border bg-card">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">الملخص المالي</CardTitle>
+          <CardTitle className="text-lg">{t("finance.invoices.financialSummary")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div className="rounded-lg border border-border p-4">
               <Label className="text-xs text-muted-foreground">
-                المجموع الفرعي
+                {t("finance.invoices.subtotal")}
               </Label>
               <div className="mt-1 text-base font-semibold">
                 {formatCurrency(invoice.subtotal)}
               </div>
             </div>
             <div className="rounded-lg border border-border p-4">
-              <Label className="text-xs text-muted-foreground">الخصم</Label>
+              <Label className="text-xs text-muted-foreground">{t("finance.invoices.discount")}</Label>
               <div className="mt-1 text-base font-semibold text-destructive">
                 {invoice.discountAmount > 0
                   ? `-${formatCurrency(invoice.discountAmount)}`
@@ -269,7 +271,7 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
               </div>
             </div>
             <div className="rounded-lg border border-border p-4">
-              <Label className="text-xs text-muted-foreground">الضريبة</Label>
+              <Label className="text-xs text-muted-foreground">{t("finance.invoices.tax")}</Label>
               <div className="mt-1 text-base font-semibold">
                 {invoice.taxAmount > 0
                   ? `+${formatCurrency(invoice.taxAmount)}`
@@ -277,13 +279,13 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
               </div>
             </div>
             <div className="rounded-lg border border-primary/30 bg-primary/5 p-4">
-              <Label className="text-xs text-muted-foreground">صافي المبلغ</Label>
+              <Label className="text-xs text-muted-foreground">{t("finance.invoices.netAmount")}</Label>
               <div className="mt-1 text-base font-semibold text-primary">
                 {formatCurrency(invoice.netAmount)}
               </div>
             </div>
             <div className="rounded-lg border border-border p-4">
-              <Label className="text-xs text-muted-foreground">المدفوع</Label>
+              <Label className="text-xs text-muted-foreground">{t("finance.invoices.paid")}</Label>
               <div className="mt-1 text-base font-semibold text-emerald-600">
                 {formatCurrency(invoice.paidAmount)}
               </div>
@@ -296,7 +298,7 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
               }
             >
               <Label className="text-xs text-muted-foreground">
-                المبلغ المتبقي
+                {t("finance.invoices.remainingAmount")}
               </Label>
               <div
                 className={
@@ -314,7 +316,7 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
 
       <Card className="border-border bg-card">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">منتجات الفاتورة</CardTitle>
+          <CardTitle className="text-lg">{t("finance.invoices.productsCard")}</CardTitle>
         </CardHeader>
         <CardContent>
           {!order ? (
@@ -326,10 +328,10 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>المنتج</TableHead>
-                    <TableHead>الكمية</TableHead>
-                    <TableHead>سعر الوحدة</TableHead>
-                    <TableHead className="text-left">الإجمالي</TableHead>
+                    <TableHead>{t("finance.invoices.product")}</TableHead>
+                    <TableHead>{t("finance.invoices.quantity")}</TableHead>
+                    <TableHead>{t("finance.invoices.unitPrice")}</TableHead>
+                    <TableHead className="text-left">{t("finance.invoices.total")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -356,17 +358,17 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
                 <div className="w-full max-w-xs space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">
-                      عدد المنتجات
+                      {t("finance.invoices.itemsCount")}
                     </span>
                     <span>{order.items.length}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
-                    <span>المجموع الفرعي</span>
+                    <span>{t("finance.invoices.subtotal")}</span>
                     <span>{formatCurrency(order.subtotal)}</span>
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span>
-                      الخصم
+                      {t("finance.invoices.discount")}
                       {order.discountPct > 0 && (
                         <span className="text-muted-foreground">
                           {" "}
@@ -382,7 +384,7 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span>
-                      الضريبة
+                      {t("finance.invoices.tax")}
                       {order.taxRateName && order.taxPct > 0 && (
                         <span className="text-muted-foreground">
                           {" "}
@@ -397,7 +399,7 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
                     </span>
                   </div>
                   <div className="flex items-center justify-between border-t border-border pt-2 text-base font-semibold">
-                    <span>الإجمالي النهائي</span>
+                    <span>{t("finance.invoices.finalTotal")}</span>
                     <span className="text-primary">
                       {formatCurrency(order.netAmount)}
                     </span>
@@ -412,12 +414,12 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
       <Card className="border-border bg-card">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">الدفعات</CardTitle>
+            <CardTitle className="text-lg">{t("finance.invoices.paymentsCard")}</CardTitle>
             {canRecordPayment && (
               <Link href={`/finance/invoices/${invoice.id}/payments/new`}>
                 <Button size="sm" variant="outline">
                   <Wallet className="ml-2 h-4 w-4" />
-                  تسجيل دفعة
+                  {t("finance.invoices.recordPayment")}
                 </Button>
               </Link>
             )}
@@ -435,14 +437,20 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
         open={confirmAction !== null}
         onOpenChange={(open) => !open && closeConfirm()}
         title={
-          confirmAction === "issue" ? "إصدار الفاتورة" : "إلغاء الفاتورة"
+          confirmAction === "issue"
+            ? t("finance.invoices.issueTitle")
+            : t("finance.invoices.cancelTitle")
         }
         description={
           confirmAction === "issue"
-            ? "هل أنت متأكد من إصدار هذه الفاتورة؟ سيصبح من غير الممكن تعديلها أو حذفها بعد الإصدار."
-            : "هل أنت متأكد من إلغاء هذه الفاتورة؟ لا يمكن إلغاء الفواتير المدفوعة بالكامل أو التي عليها دفعات."
+            ? t("finance.invoices.issueDescription")
+            : t("finance.invoices.cancelDescription")
         }
-        confirmLabel={confirmAction === "issue" ? "إصدار" : "إلغاء"}
+        confirmLabel={
+          confirmAction === "issue"
+            ? t("finance.invoices.issueConfirmLabel")
+            : t("finance.invoices.cancelConfirmLabel")
+        }
         variant={confirmAction === "issue" ? "info" : "danger"}
         isLoading={isLoadingAction}
         errorMessage={errorMessage}

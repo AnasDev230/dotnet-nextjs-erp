@@ -13,13 +13,14 @@ import {
 } from "@/components/ui";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { usePayments, useDeletePayment } from "../hooks/usePayments";
+import { useTranslation } from "@/hooks/use-translation";
 import type { PaymentMethod } from "../types/payment.types";
 
-const paymentMethodLabel: Record<PaymentMethod, string> = {
-  Cash: "نقدي",
-  BankTransfer: "تحويل بنكي",
-  Card: "بطاقة",
-  Cheque: "شيك",
+const paymentMethodLabelKeys: Record<PaymentMethod, string> = {
+  Cash: "finance.paymentMethods.cash",
+  BankTransfer: "finance.paymentMethods.bankTransfer",
+  Card: "finance.paymentMethods.card",
+  Cheque: "finance.paymentMethods.cheque",
 };
 
 function formatCurrency(value: number): string {
@@ -42,6 +43,7 @@ export default function PaymentsList({
   invoiceId,
   canDelete,
 }: PaymentsListProps) {
+  const { t } = useTranslation();
   const { data: payments, isLoading } = usePayments(invoiceId);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -58,7 +60,7 @@ export default function PaymentsList({
         setErrorMessage(
           error?.response?.data?.message ||
             error?.message ||
-            "حدث خطأ غير متوقع"
+            t("common.unexpectedError")
         );
       },
     });
@@ -70,11 +72,11 @@ export default function PaymentsList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>التاريخ</TableHead>
-              <TableHead>المبلغ</TableHead>
-              <TableHead>طريقة الدفع</TableHead>
-              <TableHead>المرجع</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("finance.payments.date")}</TableHead>
+              <TableHead>{t("finance.payments.amount")}</TableHead>
+              <TableHead>{t("finance.payments.method")}</TableHead>
+              <TableHead>{t("finance.payments.reference")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -99,9 +101,9 @@ export default function PaymentsList({
         <div className="rounded-full bg-muted p-4 mb-4">
           <Wallet className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-1">لا توجد دفعات</h3>
+        <h3 className="text-lg font-semibold mb-1">{t("finance.payments.emptyTitle")}</h3>
         <p className="text-sm text-muted-foreground">
-          لم يتم تسجيل أي دفعات على هذه الفاتورة بعد
+          {t("finance.payments.emptyDescription")}
         </p>
       </div>
     );
@@ -113,11 +115,11 @@ export default function PaymentsList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>التاريخ</TableHead>
-              <TableHead>المبلغ</TableHead>
-              <TableHead>طريقة الدفع</TableHead>
-              <TableHead>المرجع</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("finance.payments.date")}</TableHead>
+              <TableHead>{t("finance.payments.amount")}</TableHead>
+              <TableHead>{t("finance.payments.method")}</TableHead>
+              <TableHead>{t("finance.payments.reference")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -130,7 +132,7 @@ export default function PaymentsList({
                   {formatCurrency(payment.amount)}
                 </TableCell>
                 <TableCell>
-                  {paymentMethodLabel[payment.paymentMethod]}
+                  {t(paymentMethodLabelKeys[payment.paymentMethod])}
                 </TableCell>
                 <TableCell className="text-muted-foreground text-xs font-mono">
                   {payment.reference || "—"}
@@ -162,7 +164,7 @@ export default function PaymentsList({
             .filter((p) => p.notes)
             .map((payment) => (
               <p key={payment.id} className="text-xs text-muted-foreground">
-                {payment.reference || "دفعة"}: {payment.notes}
+                {payment.reference || t("finance.payments.paymentFallback")}: {payment.notes}
               </p>
             ))}
         </div>
@@ -176,9 +178,9 @@ export default function PaymentsList({
             setErrorMessage(null);
           }
         }}
-        title="حذف الدفعة"
-        description="هل أنت متأكد من حذف هذه الدفعة؟ سيتم إعادة احتساب حالة الفاتورة. لا يمكن التراجع عن هذا الإجراء."
-        confirmLabel="حذف"
+        title={t("finance.payments.deleteTitle")}
+        description={t("finance.payments.deleteDescription")}
+        confirmLabel={t("common.delete")}
         variant="danger"
         isLoading={deleteMutation.isPending}
         errorMessage={errorMessage}

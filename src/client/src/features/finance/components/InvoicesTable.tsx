@@ -24,6 +24,7 @@ import { InvoiceStatusBadge } from "./InvoiceStatusBadge";
 import { useIssueInvoice } from "../hooks/useInvoices";
 import { useCancelInvoice } from "../hooks/useInvoices";
 import { useDeleteInvoice } from "../hooks/useInvoices";
+import { useTranslation } from "@/hooks/use-translation";
 import type { InvoiceListItem } from "../types/invoice.types";
 
 type ConfirmAction = "delete" | "issue" | "cancel" | null;
@@ -58,6 +59,7 @@ export default function InvoicesTable({
   totalPages,
   onPageChange,
 }: InvoicesTableProps) {
+  const { t } = useTranslation();
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(
     null
@@ -93,7 +95,7 @@ export default function InvoicesTable({
           setErrorMessage(
             error?.response?.data?.message ||
               error?.message ||
-              "حدث خطأ غير متوقع"
+              t("common.unexpectedError")
           );
         },
       });
@@ -104,7 +106,7 @@ export default function InvoicesTable({
           setErrorMessage(
             error?.response?.data?.message ||
               error?.message ||
-              "حدث خطأ غير متوقع"
+              t("common.unexpectedError")
           );
         },
       });
@@ -115,7 +117,7 @@ export default function InvoicesTable({
           setErrorMessage(
             error?.response?.data?.message ||
               error?.message ||
-              "حدث خطأ غير متوقع"
+              t("common.unexpectedError")
           );
         },
       });
@@ -128,15 +130,15 @@ export default function InvoicesTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>رقم الفاتورة</TableHead>
-              <TableHead>رقم الأمر</TableHead>
-              <TableHead>العميل</TableHead>
-              <TableHead>تاريخ الإصدار</TableHead>
-              <TableHead>تاريخ الاستحقاق</TableHead>
-              <TableHead>صافي المبلغ</TableHead>
-              <TableHead>المدفوع</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("finance.invoices.invoiceNumber")}</TableHead>
+              <TableHead>{t("finance.invoices.orderNumber")}</TableHead>
+              <TableHead>{t("finance.invoices.customer")}</TableHead>
+              <TableHead>{t("finance.invoices.issueDate")}</TableHead>
+              <TableHead>{t("finance.invoices.dueDate")}</TableHead>
+              <TableHead>{t("finance.invoices.netAmount")}</TableHead>
+              <TableHead>{t("finance.invoices.paid")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -161,14 +163,14 @@ export default function InvoicesTable({
         <div className="rounded-full bg-muted p-4 mb-4">
           <FileText className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-1">لا توجد فواتير</h3>
+        <h3 className="text-lg font-semibold mb-1">{t("finance.invoices.emptyTitle")}</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          لم يتم إنشاء أي فواتير بعد
+          {t("finance.invoices.emptyDescription")}
         </p>
         <Link href="/finance/invoices/new">
           <Button>
             <FileText className="ml-2 h-4 w-4" />
-            فاتورة جديدة
+            {t("finance.invoices.new")}
           </Button>
         </Link>
       </div>
@@ -178,26 +180,23 @@ export default function InvoicesTable({
   const confirmConfig = {
     delete: {
       open: confirmAction === "delete",
-      title: "حذف الفاتورة",
-      description:
-        "هل أنت متأكد من حذف هذه الفاتورة؟ لا يمكن حذف الفواتير بعد إصدارها. لا يمكن التراجع عن هذا الإجراء.",
-      confirmLabel: "حذف",
+      title: t("finance.invoices.deleteTitle"),
+      description: t("finance.invoices.deleteDescription"),
+      confirmLabel: t("common.delete"),
       variant: "danger" as const,
     },
     issue: {
       open: confirmAction === "issue",
-      title: "إصدار الفاتورة",
-      description:
-        "هل أنت متأكد من إصدار هذه الفاتورة؟ سيصبح من غير الممكن تعديلها أو حذفها بعد الإصدار.",
-      confirmLabel: "إصدار",
+      title: t("finance.invoices.issueTitle"),
+      description: t("finance.invoices.issueDescription"),
+      confirmLabel: t("finance.invoices.issueConfirmLabel"),
       variant: "info" as const,
     },
     cancel: {
       open: confirmAction === "cancel",
-      title: "إلغاء الفاتورة",
-      description:
-        "هل أنت متأكد من إلغاء هذه الفاتورة؟ لا يمكن إلغاء الفواتير المدفوعة بالكامل أو التي عليها دفعات.",
-      confirmLabel: "إلغاء",
+      title: t("finance.invoices.cancelTitle"),
+      description: t("finance.invoices.cancelDescription"),
+      confirmLabel: t("finance.invoices.cancelConfirmLabel"),
       variant: "danger" as const,
     },
   };
@@ -210,15 +209,15 @@ export default function InvoicesTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>رقم الفاتورة</TableHead>
-              <TableHead>رقم الأمر</TableHead>
-              <TableHead>العميل</TableHead>
-              <TableHead>تاريخ الإصدار</TableHead>
-              <TableHead>تاريخ الاستحقاق</TableHead>
-              <TableHead>صافي المبلغ</TableHead>
-              <TableHead>المدفوع</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("finance.invoices.invoiceNumber")}</TableHead>
+              <TableHead>{t("finance.invoices.orderNumber")}</TableHead>
+              <TableHead>{t("finance.invoices.customer")}</TableHead>
+              <TableHead>{t("finance.invoices.issueDate")}</TableHead>
+              <TableHead>{t("finance.invoices.dueDate")}</TableHead>
+              <TableHead>{t("finance.invoices.netAmount")}</TableHead>
+              <TableHead>{t("finance.invoices.paid")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -269,7 +268,7 @@ export default function InvoicesTable({
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
-                        title="إصدار الفاتورة"
+                        title={t("finance.invoices.issueTitle")}
                         disabled={isLoadingAction}
                         onClick={() => openConfirm("issue", invoice.id)}
                       >
@@ -283,7 +282,7 @@ export default function InvoicesTable({
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 text-destructive"
-                          title="إلغاء الفاتورة"
+                          title={t("finance.invoices.cancelTitle")}
                           disabled={isLoadingAction}
                           onClick={() => openConfirm("cancel", invoice.id)}
                         >
@@ -311,8 +310,8 @@ export default function InvoicesTable({
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-4">
           <p className="text-sm text-muted-foreground">
-            عرض {(page - 1) * pageSize + 1}–
-            {Math.min(page * pageSize, totalCount)} من {totalCount}
+            {t("common.showing")} {(page - 1) * pageSize + 1}–
+            {Math.min(page * pageSize, totalCount)} {t("common.of")} {totalCount}
           </p>
           <div className="flex gap-1">
             <Button
@@ -321,7 +320,7 @@ export default function InvoicesTable({
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
             >
-              السابق
+              {t("common.previous")}
             </Button>
             <Button
               variant="outline"
@@ -329,7 +328,7 @@ export default function InvoicesTable({
               disabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
             >
-              التالي
+              {t("common.next")}
             </Button>
           </div>
         </div>

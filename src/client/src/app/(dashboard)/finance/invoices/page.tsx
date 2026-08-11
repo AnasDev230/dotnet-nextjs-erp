@@ -7,10 +7,12 @@ import { Button } from "@/components/ui";
 import InvoicesTable from "@/features/finance/components/InvoicesTable";
 import InvoiceFilters from "@/features/finance/components/InvoiceFilters";
 import { useInvoices } from "@/features/finance/hooks/useInvoices";
+import { useTranslation } from "@/hooks/use-translation";
 
 function InvoicesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const page = parseInt(searchParams.get("page") ?? "1", 10);
   const pageSize = 20;
@@ -40,14 +42,14 @@ function InvoicesContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">الفواتير</h1>
+          <h1 className="text-2xl font-semibold">{t("finance.invoices.title")}</h1>
           <p className="text-muted-foreground text-sm">
-            إدارة فواتير المبيعات وتحصيل المدفوعات
+            {t("finance.invoices.listPageDescription")}
           </p>
         </div>
         <Button onClick={() => router.push("/finance/invoices/new")}>
           <Plus className="ml-2 h-4 w-4" />
-          فاتورة جديدة
+          {t("finance.invoices.new")}
         </Button>
       </div>
 

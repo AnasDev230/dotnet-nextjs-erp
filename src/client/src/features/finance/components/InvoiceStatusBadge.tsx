@@ -1,20 +1,22 @@
 "use client";
 
 import { Badge } from "@/components/ui";
+import { useTranslation } from "@/hooks/use-translation";
 import type { InvoiceStatus } from "../types/invoice.types";
 
 const statusConfig: Record<
   InvoiceStatus,
-  { label: string; variant: "secondary" | "default" | "warning" | "success" | "destructive" }
+  { labelKey: string; variant: "secondary" | "default" | "warning" | "success" | "destructive" }
 > = {
-  Draft: { label: "مسودة", variant: "secondary" },
-  Issued: { label: "صادرة", variant: "default" },
-  PartiallyPaid: { label: "مدفوعة جزئياً", variant: "warning" },
-  Paid: { label: "مدفوعة", variant: "success" },
-  Cancelled: { label: "ملغاة", variant: "destructive" },
+  Draft: { labelKey: "finance.invoices.statusDraft", variant: "secondary" },
+  Issued: { labelKey: "finance.invoices.statusIssued", variant: "default" },
+  PartiallyPaid: { labelKey: "finance.invoices.statusPartiallyPaid", variant: "warning" },
+  Paid: { labelKey: "finance.invoices.statusPaid", variant: "success" },
+  Cancelled: { labelKey: "finance.invoices.statusCancelled", variant: "destructive" },
 };
 
 export function InvoiceStatusBadge({ status }: { status: InvoiceStatus }) {
+  const { t } = useTranslation();
   const config = statusConfig[status];
-  return <Badge variant={config.variant}>{config.label}</Badge>;
+  return <Badge variant={config.variant}>{t(config.labelKey)}</Badge>;
 }

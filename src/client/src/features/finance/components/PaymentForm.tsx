@@ -27,12 +27,13 @@ import { InvoiceStatusBadge } from "./InvoiceStatusBadge";
 import type { PaymentMethod } from "../types/payment.types";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
+import { useTranslation } from "@/hooks/use-translation";
 
-const paymentMethodOptions: { value: PaymentMethod; label: string }[] = [
-  { value: "Cash", label: "نقدي" },
-  { value: "BankTransfer", label: "تحويل بنكي" },
-  { value: "Card", label: "بطاقة" },
-  { value: "Cheque", label: "شيك" },
+const paymentMethodOptionKeys: { value: PaymentMethod; labelKey: string }[] = [
+  { value: "Cash", labelKey: "finance.paymentMethods.cash" },
+  { value: "BankTransfer", labelKey: "finance.paymentMethods.bankTransfer" },
+  { value: "Card", labelKey: "finance.paymentMethods.card" },
+  { value: "Cheque", labelKey: "finance.paymentMethods.cheque" },
 ];
 
 function todayString(): string {
@@ -55,6 +56,7 @@ interface PaymentFormProps {
 
 export default function PaymentForm({ invoiceId }: PaymentFormProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const recordMutation = useRecordPayment();
   const { data: invoice, isLoading: invoiceLoading } = useInvoice(invoiceId);
 
@@ -63,6 +65,11 @@ export default function PaymentForm({ invoiceId }: PaymentFormProps) {
   const remainingAmount = invoice?.remainingAmount ?? 0;
   const canRecord =
     invoice?.status === "Issued" || invoice?.status === "PartiallyPaid";
+
+  const paymentMethodOptions = paymentMethodOptionKeys.map((opt) => ({
+    value: opt.value,
+    label: t(opt.labelKey),
+  }));
 
   const resolver = useMemo(
     () =>
@@ -121,9 +128,9 @@ export default function PaymentForm({ invoiceId }: PaymentFormProps) {
         <div className="rounded-full bg-muted p-4 mb-4">
           <Wallet className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-1">الفاتورة غير موجودة</h3>
+        <h3 className="text-lg font-semibold mb-1">{t("finance.invoices.notFound")}</h3>
         <p className="text-sm text-muted-foreground">
-          لم يتم العثور على الفاتورة المطلوبة
+          {t("finance.invoices.notFoundDescription")}
         </p>
       </div>
     );
@@ -133,36 +140,36 @@ export default function PaymentForm({ invoiceId }: PaymentFormProps) {
     <>
       <Card className="border-border bg-card">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">ملخص الفاتورة</CardTitle>
+          <CardTitle className="text-lg">{t("finance.payments.summaryTitle")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             <div>
-              <Label className="text-xs text-muted-foreground">رقم الفاتورة</Label>
+              <Label className="text-xs text-muted-foreground">{t("finance.invoices.invoiceNumber")}</Label>
               <div className="mt-1 text-sm font-medium font-mono">
                 {invoice.invoiceNumber}
               </div>
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground">العميل</Label>
+              <Label className="text-xs text-muted-foreground">{t("finance.invoices.customer")}</Label>
               <div className="mt-1 text-sm font-medium">
                 {invoice.customerName}
               </div>
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground">صافي المبلغ</Label>
+              <Label className="text-xs text-muted-foreground">{t("finance.invoices.netAmount")}</Label>
               <div className="mt-1 text-sm font-medium">
                 {formatCurrency(invoice.netAmount)}
               </div>
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground">المدفوع</Label>
+              <Label className="text-xs text-muted-foreground">{t("finance.invoices.paid")}</Label>
               <div className="mt-1 text-sm font-medium text-emerald-600">
                 {formatCurrency(invoice.paidAmount)}
               </div>
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground">المتبقي</Label>
+              <Label className="text-xs text-muted-foreground">{t("finance.payments.remaining")}</Label>
               <div
                 className={
                   remainingAmount > 0
@@ -179,9 +186,9 @@ export default function PaymentForm({ invoiceId }: PaymentFormProps) {
 
       <Card className="border-border bg-card">
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">تسجيل دفعة</CardTitle>
+          <CardTitle className="text-lg">{t("finance.payments.recordTitle")}</CardTitle>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            الحالة:
+            {t("finance.payments.statusLabel")}
             <InvoiceStatusBadge status={invoice.status} />
           </div>
         </CardHeader>
@@ -194,13 +201,13 @@ export default function PaymentForm({ invoiceId }: PaymentFormProps) {
 
           {!canRecord && (
             <Alert variant="destructive" className="mb-6">
-              <p>لا يمكن تسجيل دفعة على هذه الفاتورة في حالتها الحالية.</p>
+              <p>{t("finance.payments.blockedAlert")}</p>
             </Alert>
           )}
 
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="amount">المبلغ *</Label>
+              <Label htmlFor="amount">{t("finance.payments.amountLabel")} *</Label>
               <Input
                 id="amount"
                 type="number"
@@ -220,12 +227,12 @@ export default function PaymentForm({ invoiceId }: PaymentFormProps) {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="paymentMethod">طريقة الدفع *</Label>
+                <Label htmlFor="paymentMethod">{t("finance.payments.methodLabel")} *</Label>
                 <Select
                   id="paymentMethod"
                   {...form.register("paymentMethod")}
                   options={paymentMethodOptions}
-                  placeholder="اختر طريقة الدفع"
+                  placeholder={t("finance.payments.selectMethod")}
                   className="h-10"
                 />
                 {form.formState.errors.paymentMethod && (
@@ -236,7 +243,7 @@ export default function PaymentForm({ invoiceId }: PaymentFormProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="paymentDate">تاريخ الدفع *</Label>
+                <Label htmlFor="paymentDate">{t("finance.payments.dateLabel")} *</Label>
                 <Input
                   id="paymentDate"
                   type="date"
@@ -252,10 +259,10 @@ export default function PaymentForm({ invoiceId }: PaymentFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="reference">المرجع</Label>
+              <Label htmlFor="reference">{t("finance.payments.referenceLabel")}</Label>
               <Input
                 id="reference"
-                placeholder="رقم الحوالة / رقم الشيك"
+                placeholder={t("finance.payments.referencePlaceholder")}
                 {...form.register("reference")}
                 className="h-10"
               />
@@ -267,10 +274,10 @@ export default function PaymentForm({ invoiceId }: PaymentFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="notes">ملاحظات</Label>
+              <Label htmlFor="notes">{t("finance.payments.notesLabel")}</Label>
               <Textarea
                 id="notes"
-                placeholder="ملاحظات اختيارية..."
+                placeholder={t("finance.payments.notesPlaceholder")}
                 {...form.register("notes")}
                 rows={3}
               />
@@ -284,7 +291,7 @@ export default function PaymentForm({ invoiceId }: PaymentFormProps) {
             <div className="flex items-center gap-3 pt-4 border-t border-border">
               <Button type="submit" disabled={isPending || !canRecord}>
                 {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-                تسجيل الدفعة
+                {t("finance.payments.submit")}
               </Button>
               <Button
                 type="button"
@@ -292,7 +299,7 @@ export default function PaymentForm({ invoiceId }: PaymentFormProps) {
                 onClick={() => router.back()}
               >
                 <ArrowRight className="ml-2 h-4 w-4" />
-                رجوع
+                {t("finance.payments.back")}
               </Button>
             </div>
           </form>
