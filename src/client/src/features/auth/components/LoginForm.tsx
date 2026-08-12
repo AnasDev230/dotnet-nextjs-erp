@@ -12,8 +12,10 @@ import {
   type LoginFormData,
 } from "../schemas/auth.schema";
 import { useLogin } from "../hooks/useAuth";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function LoginForm() {
+  const { t } = useTranslation();
   const {
     register,
     handleSubmit,
@@ -33,13 +35,13 @@ export default function LoginForm() {
       {loginMutation.isError && (
         <Alert variant="destructive">
           <AlertDescription>
-            {loginMutation.error?.message || "فشل تسجيل الدخول. تحقق من البيانات."}
+            {loginMutation.error?.message || t("auth.loginFailed")}
           </AlertDescription>
         </Alert>
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="email">البريد الإلكتروني</Label>
+        <Label htmlFor="email">{t("common.email")}</Label>
         <Input
           id="email"
           type="email"
@@ -54,7 +56,7 @@ export default function LoginForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">كلمة المرور</Label>
+        <Label htmlFor="password">{t("auth.password")}</Label>
         <Input
           id="password"
           type="password"
@@ -76,12 +78,12 @@ export default function LoginForm() {
         {loginMutation.isPending ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            جاري تسجيل الدخول...
+            {t("auth.loggingIn")}
           </>
         ) : (
           <>
             <LogIn className="h-4 w-4" />
-            تسجيل الدخول
+            {t("auth.login")}
           </>
         )}
       </Button>

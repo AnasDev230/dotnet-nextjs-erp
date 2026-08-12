@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardHeader,
@@ -6,8 +8,10 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import LoginForm from "@/features/auth/components/LoginForm";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted p-4">
       <Card className="w-full max-w-sm">
@@ -19,9 +23,9 @@ export default function LoginPage() {
               </span>
             </div>
           </div>
-          <CardTitle>تسجيل الدخول</CardTitle>
+          <CardTitle>{t("auth.loginTitle")}</CardTitle>
           <CardDescription>
-            أدخل بيانات الدخول للوصول إلى النظام
+            {t("auth.loginDescription")}
           </CardDescription>
         </CardHeader>
         <CardContent>

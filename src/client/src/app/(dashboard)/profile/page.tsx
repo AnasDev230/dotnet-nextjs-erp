@@ -4,18 +4,20 @@ import { useAuthStore } from "@/stores/auth-store";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { User, Mail, Shield, Lock } from "lucide-react";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
 
   if (!user) {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-semibold">الملف الشخصي</h1>
+          <h1 className="text-2xl font-semibold">{t("profile.title")}</h1>
         </div>
         <div className="flex items-center justify-center py-12">
-          <p className="text-sm text-muted-foreground">جاري تحميل البيانات...</p>
+          <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
         </div>
       </div>
     );
@@ -24,13 +26,13 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold">الملف الشخصي</h1>
-        <p className="text-sm text-muted-foreground">معلومات الحساب الشخصية</p>
+        <h1 className="text-2xl font-semibold">{t("profile.title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("profile.description")}</p>
       </div>
 
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-lg">معلومات المستخدم</CardTitle>
+          <CardTitle className="text-lg">{t("profile.userInfo")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center gap-3">
@@ -39,7 +41,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <p className="font-medium">{user.fullName}</p>
-              <p className="text-xs text-muted-foreground">الاسم الكامل</p>
+              <p className="text-xs text-muted-foreground">{t("profile.fullName")}</p>
             </div>
           </div>
 
@@ -49,7 +51,7 @@ export default function ProfilePage() {
             </div>
             <div>
               <p className="font-medium" dir="ltr">{user.email}</p>
-              <p className="text-xs text-muted-foreground">البريد الإلكتروني</p>
+              <p className="text-xs text-muted-foreground">{t("common.email")}</p>
             </div>
           </div>
 
@@ -68,18 +70,18 @@ export default function ProfilePage() {
                   </span>
                 ))}
               </div>
-              <p className="text-xs text-muted-foreground mt-1">الأدوار والصلاحيات</p>
+              <p className="text-xs text-muted-foreground mt-1">{t("profile.roles")}</p>
             </div>
           </div>
         </CardContent>
       </Card>
 
       <div>
-        <Button disabled variant="outline" className="gap-2" title="قريباً">
+        <Button disabled variant="outline" className="gap-2" title={t("common.comingSoon")}>
           <Lock className="h-4 w-4" />
-          تغيير كلمة المرور
+          {t("profile.changePassword")}
         </Button>
-        <p className="mt-1 text-xs text-muted-foreground">هذه الميزة ستتوفر قريباً</p>
+        <p className="mt-1 text-xs text-muted-foreground">{t("profile.comingSoonDescription")}</p>
       </div>
     </div>
   );

@@ -74,6 +74,23 @@ export const en: Record<string, string> = {
   "common.allProducts": "All products",
   "common.selectSupplier": "Select supplier",
 
+  // ─── Auth / Login ───
+  "auth.login": "Sign In",
+  "auth.loginTitle": "Sign In",
+  "auth.loginDescription": "Enter your credentials to access the system",
+  "auth.loginFailed": "Login failed. Please check your credentials.",
+  "auth.loggingIn": "Signing in...",
+  "auth.password": "Password",
+
+  // ─── Profile ───
+  "profile.title": "Profile",
+  "profile.description": "Personal account information",
+  "profile.userInfo": "User Information",
+  "profile.fullName": "Full Name",
+  "profile.roles": "Roles & Permissions",
+  "profile.changePassword": "Change Password",
+  "profile.comingSoonDescription": "This feature will be available soon",
+
   // ─── Theme ───
   "theme.toggleAria": "Toggle theme",
   "theme.light": "Light",

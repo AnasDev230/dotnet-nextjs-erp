@@ -74,6 +74,23 @@ export const ar: Record<string, string> = {
   "common.allProducts": "كل المنتجات",
   "common.selectSupplier": "اختر المورد",
 
+  // ─── Auth / Login ───
+  "auth.login": "تسجيل الدخول",
+  "auth.loginTitle": "تسجيل الدخول",
+  "auth.loginDescription": "أدخل بيانات الدخول للوصول إلى النظام",
+  "auth.loginFailed": "فشل تسجيل الدخول. تحقق من البيانات.",
+  "auth.loggingIn": "جاري تسجيل الدخول...",
+  "auth.password": "كلمة المرور",
+
+  // ─── Profile ───
+  "profile.title": "الملف الشخصي",
+  "profile.description": "معلومات الحساب الشخصية",
+  "profile.userInfo": "معلومات المستخدم",
+  "profile.fullName": "الاسم الكامل",
+  "profile.roles": "الأدوار والصلاحيات",
+  "profile.changePassword": "تغيير كلمة المرور",
+  "profile.comingSoonDescription": "هذه الميزة ستتوفر قريباً",
+
   // ─── Theme ───
   "theme.toggleAria": "تبديل المظهر",
   "theme.light": "فاتح",

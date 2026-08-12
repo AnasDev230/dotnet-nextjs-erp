@@ -187,7 +187,7 @@ export default function PurchaseOrderForm({
               <Input
                 id="currency"
                 {...form.register("currency")}
-                placeholder="SAR"
+                placeholder={t("common.currency")}
                 className="h-10"
               />
               {form.formState.errors.currency && (
