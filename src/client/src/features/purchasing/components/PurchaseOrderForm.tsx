@@ -259,8 +259,8 @@ export default function PurchaseOrderForm({
           </div>
 
           <div className="flex items-center gap-3 pt-4 border-t border-border">
-            <Button type="submit" disabled={isPending}>
-              {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+            <Button type="submit" disabled={isPending} className="gap-2">
+              {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               {isEdit ? t("common.saveChanges") : t("purchasing.orders.create")}
             </Button>
             <Button

@@ -111,8 +111,8 @@ export default function PurchaseOrdersTable({
           {t("purchasing.orders.emptyDescription")}
         </p>
         <Link href="/purchasing/orders/new">
-          <Button>
-            <ShoppingCart className="ml-2 h-4 w-4" />
+          <Button className="gap-2">
+            <ShoppingCart className="h-4 w-4" />
             {t("purchasing.orders.createTitle")}
           </Button>
         </Link>

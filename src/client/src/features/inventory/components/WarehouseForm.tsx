@@ -129,12 +129,12 @@ export default function WarehouseForm({ mode, warehouse }: WarehouseFormProps) {
             <div className="space-y-2">
               <Label htmlFor="location">{t("inventory.warehouses.location")}</Label>
               <div className="relative">
-                <MapPin className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <MapPin className="absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   id="location"
                   {...form.register("location")}
                   placeholder={t("inventory.warehouses.enterLocation")}
-                  className="h-10 pr-10"
+                  className="h-10 ps-10"
                 />
               </div>
               {form.formState.errors.location && (
@@ -178,8 +178,8 @@ export default function WarehouseForm({ mode, warehouse }: WarehouseFormProps) {
 
           {/* Actions */}
           <div className="flex items-center gap-3 pt-4 border-t border-border">
-            <Button type="submit" disabled={isPending}>
-              {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+            <Button type="submit" disabled={isPending} className="gap-2">
+              {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               {isEdit ? t("common.saveChanges") : t("inventory.warehouses.create")}
             </Button>
             <Button

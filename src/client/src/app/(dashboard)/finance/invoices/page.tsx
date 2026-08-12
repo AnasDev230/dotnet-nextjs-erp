@@ -47,8 +47,8 @@ function InvoicesContent() {
             {t("finance.invoices.listPageDescription")}
           </p>
         </div>
-        <Button onClick={() => router.push("/finance/invoices/new")}>
-          <Plus className="ml-2 h-4 w-4" />
+        <Button onClick={() => router.push("/finance/invoices/new")} className="gap-2">
+          <Plus className="h-4 w-4" />
           {t("finance.invoices.new")}
         </Button>
       </div>

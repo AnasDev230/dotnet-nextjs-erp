@@ -42,8 +42,8 @@ function ProductsContent() {
           <h1 className="text-2xl font-semibold">{t("inventory.products.title")}</h1>
           <p className="text-muted-foreground text-sm">{t("inventory.products.listPageDescription")}</p>
         </div>
-        <Button onClick={() => router.push("/inventory/products/new")}>
-          <Plus className="ml-2 h-4 w-4" />
+        <Button onClick={() => router.push("/inventory/products/new")} className="gap-2">
+          <Plus className="h-4 w-4" />
           {t("inventory.products.new")}
         </Button>
       </div>

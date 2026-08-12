@@ -34,7 +34,7 @@ function SectionError({ onRetry }: { onRetry: () => void }) {
         <Button
           variant="outline"
           size="sm"
-          className="mr-2"
+          className="ms-2"
           onClick={onRetry}
         >
           {t("common.retry")}
@@ -117,8 +117,8 @@ export default function DashboardPage() {
             {t("dashboard.description")}
           </p>
         </div>
-        <Button variant="outline" onClick={handleRefresh}>
-          <RefreshCw className="ml-2 h-4 w-4" />
+        <Button variant="outline" onClick={handleRefresh} className="gap-2">
+          <RefreshCw className="h-4 w-4" />
           {t("common.refresh")}
         </Button>
       </div>

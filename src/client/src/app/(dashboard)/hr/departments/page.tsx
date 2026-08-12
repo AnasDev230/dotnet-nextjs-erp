@@ -39,8 +39,8 @@ function DepartmentsContent() {
           <h1 className="text-2xl font-semibold">{t("hr.departments.title")}</h1>
           <p className="text-muted-foreground text-sm">{t("hr.departments.listPageDescription")}</p>
         </div>
-        <Button onClick={() => router.push("/hr/departments/new")}>
-          <Plus className="ml-2 h-4 w-4" />
+        <Button onClick={() => router.push("/hr/departments/new")} className="gap-2">
+          <Plus className="h-4 w-4" />
           {t("hr.departments.new")}
         </Button>
       </div>

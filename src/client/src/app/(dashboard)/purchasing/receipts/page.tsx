@@ -43,8 +43,8 @@ function GoodsReceiptsContent() {
             {t("purchasing.receipts.listPageDescription")}
           </p>
         </div>
-        <Button onClick={() => router.push("/purchasing/receipts/new")}>
-          <Plus className="ml-2 h-4 w-4" />
+        <Button onClick={() => router.push("/purchasing/receipts/new")} className="gap-2">
+          <Plus className="h-4 w-4" />
           {t("purchasing.receipts.new")}
         </Button>
       </div>

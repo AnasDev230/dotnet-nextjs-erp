@@ -282,8 +282,8 @@ export default function InvoiceForm() {
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
-                    <AlertCircle className="h-4 w-4 ml-2" />
+                  <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
+                    <AlertCircle className="h-4 w-4" />
                     {t("finance.invoices.orderNotFound")}
                   </div>
                 )}
@@ -292,8 +292,8 @@ export default function InvoiceForm() {
           )}
 
           <div className="flex items-center gap-3 pt-4 border-t border-border">
-            <Button type="submit" disabled={isPending || !watchedOrderId}>
-              {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+            <Button type="submit" disabled={isPending || !watchedOrderId} className="gap-2">
+              {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               {t("finance.invoices.createButton")}
             </Button>
             <Button

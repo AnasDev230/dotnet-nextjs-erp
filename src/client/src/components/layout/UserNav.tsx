@@ -44,7 +44,7 @@ export default function UserNav() {
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
           {initial}
         </div>
-        <div className="flex-1 overflow-hidden text-right">
+        <div className="flex-1 overflow-hidden text-start">
           <p className="truncate text-sm font-medium leading-tight">
             {user.fullName}
           </p>
@@ -59,7 +59,7 @@ export default function UserNav() {
       </button>
 
       {open && (
-        <div className="absolute bottom-full right-0 mb-2 w-full min-w-40 rounded-lg border border-border bg-card p-1 shadow-lg">
+        <div className="absolute bottom-full end-0 mb-2 w-full min-w-40 rounded-lg border border-border bg-card p-1 shadow-lg">
           <Link
             href="/profile"
             onClick={() => setOpen(false)}

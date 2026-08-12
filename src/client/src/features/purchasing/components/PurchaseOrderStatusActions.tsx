@@ -135,32 +135,36 @@ export function PurchaseOrderStatusActions({
             <Button
               onClick={() => setConfirmDialog("submit")}
               disabled={isLoading}
+              className="gap-2"
             >
-              <Send className="ml-2 h-4 w-4" />
+              <Send className="h-4 w-4" />
               {t("purchasing.orders.submit")}
             </Button>
             <Button
               variant="outline"
               onClick={() => router.push(`/purchasing/orders/${orderId}/edit`)}
               disabled={isLoading}
+              className="gap-2"
             >
-              <Pencil className="ml-2 h-4 w-4" />
+              <Pencil className="h-4 w-4" />
               {t("common.edit")}
             </Button>
             <Button
               variant="outline"
               onClick={() => setConfirmDialog("cancel")}
               disabled={isLoading}
+              className="gap-2"
             >
-              <XCircle className="ml-2 h-4 w-4" />
+              <XCircle className="h-4 w-4" />
               {t("common.cancel")}
             </Button>
             <Button
               variant="destructive"
               onClick={() => setConfirmDialog("delete")}
               disabled={isLoading}
+              className="gap-2"
             >
-              <Trash2 className="ml-2 h-4 w-4" />
+              <Trash2 className="h-4 w-4" />
               {t("common.delete")}
             </Button>
           </>
@@ -171,16 +175,18 @@ export function PurchaseOrderStatusActions({
             <Button
               onClick={() => setConfirmDialog("approve")}
               disabled={isLoading}
+              className="gap-2"
             >
-              <CheckCircle className="ml-2 h-4 w-4" />
+              <CheckCircle className="h-4 w-4" />
               {t("purchasing.orders.approve")}
             </Button>
             <Button
               variant="outline"
               onClick={() => setConfirmDialog("cancel")}
               disabled={isLoading}
+              className="gap-2"
             >
-              <XCircle className="ml-2 h-4 w-4" />
+              <XCircle className="h-4 w-4" />
               {t("common.cancel")}
             </Button>
           </>
@@ -193,16 +199,18 @@ export function PurchaseOrderStatusActions({
                 router.push(`/purchasing/receipts/new?orderId=${orderId}`)
               }
               disabled={isLoading}
+              className="gap-2"
             >
-              <PackageCheck className="ml-2 h-4 w-4" />
+              <PackageCheck className="h-4 w-4" />
               {t("purchasing.orders.createReceipt")}
             </Button>
             <Button
               variant="outline"
               onClick={() => setConfirmDialog("cancel")}
               disabled={isLoading}
+              className="gap-2"
             >
-              <XCircle className="ml-2 h-4 w-4" />
+              <XCircle className="h-4 w-4" />
               {t("common.cancel")}
             </Button>
           </>
@@ -214,8 +222,9 @@ export function PurchaseOrderStatusActions({
               router.push(`/purchasing/receipts/new?orderId=${orderId}`)
             }
             disabled={isLoading}
+            className="gap-2"
           >
-            <PackageCheck className="ml-2 h-4 w-4" />
+            <PackageCheck className="h-4 w-4" />
             {t("purchasing.orders.receiveRemaining")}
           </Button>
         )}

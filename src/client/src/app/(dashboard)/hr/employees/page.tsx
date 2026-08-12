@@ -46,8 +46,8 @@ function EmployeesContent() {
           <h1 className="text-2xl font-semibold">{t("hr.employees.title")}</h1>
           <p className="text-muted-foreground text-sm">{t("hr.employees.listPageDescription")}</p>
         </div>
-        <Button onClick={() => router.push("/hr/employees/new")}>
-          <Plus className="ml-2 h-4 w-4" />
+        <Button onClick={() => router.push("/hr/employees/new")} className="gap-2">
+          <Plus className="h-4 w-4" />
           {t("hr.employees.new")}
         </Button>
       </div>

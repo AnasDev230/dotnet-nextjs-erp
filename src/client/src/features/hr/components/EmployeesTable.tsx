@@ -111,8 +111,8 @@ export default function EmployeesTable({
         <h3 className="text-lg font-semibold mb-1">{t("hr.employees.emptyTitle")}</h3>
         <p className="text-sm text-muted-foreground mb-4">{t("hr.employees.emptyDescription")}</p>
         <Link href="/hr/employees/new">
-          <Button>
-            <Users className="ml-2 h-4 w-4" />
+          <Button className="gap-2">
+            <Users className="h-4 w-4" />
             {t("hr.employees.new")}
           </Button>
         </Link>

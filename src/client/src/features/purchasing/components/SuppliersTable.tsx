@@ -149,8 +149,8 @@ export default function SuppliersTable({
           {t("purchasing.suppliers.emptyDescription")}
         </p>
         <Link href="/purchasing/suppliers/new">
-          <Button>
-            <Truck className="ml-2 h-4 w-4" />
+          <Button className="gap-2">
+            <Truck className="h-4 w-4" />
             {t("purchasing.suppliers.addNew")}
           </Button>
         </Link>

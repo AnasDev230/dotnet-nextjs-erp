@@ -305,8 +305,8 @@ export default function GoodsReceiptForm() {
                     </TableBody>
                   </Table>
                 ) : (
-                  <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
-                    <AlertCircle className="h-4 w-4 ml-2" />
+                  <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
+                    <AlertCircle className="h-4 w-4" />
                     {order
                       ? t("purchasing.receipts.noRemainingLines")
                       : t("purchasing.receipts.purchaseOrderNotFound")}
@@ -323,8 +323,8 @@ export default function GoodsReceiptForm() {
           )}
 
           <div className="flex items-center gap-3 pt-4 border-t border-border">
-            <Button type="submit" disabled={isPending || !watchedOrderId}>
-              {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+            <Button type="submit" disabled={isPending || !watchedOrderId} className="gap-2">
+              {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               {t("purchasing.receipts.record")}
             </Button>
             <Button

@@ -51,7 +51,7 @@ function InventoryReportContent() {
         <AlertTitle>{t("reports.error")}</AlertTitle>
         <AlertDescription>
           {t("reports.inventoryLoadFailed")}
-          <Button variant="outline" size="sm" className="mr-2" onClick={() => refetch()}>
+          <Button variant="outline" size="sm" className="ms-2" onClick={() => refetch()}>
             {t("reports.retry")}
           </Button>
         </AlertDescription>

@@ -100,8 +100,8 @@ export default function ProductsTable({
         <h3 className="text-lg font-semibold mb-1">{t("inventory.products.emptyTitle")}</h3>
         <p className="text-sm text-muted-foreground mb-4">{t("inventory.products.emptyDescription")}</p>
         <Link href="/inventory/products/new">
-          <Button>
-            <Package className="ml-2 h-4 w-4" />
+          <Button className="gap-2">
+            <Package className="h-4 w-4" />
             {t("inventory.products.addNew")}
           </Button>
         </Link>

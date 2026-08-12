@@ -58,12 +58,12 @@ function LevelsContent() {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" onClick={() => router.push("/inventory/adjustments/new")}>
-            <Scale className="ml-2 h-4 w-4" />
+          <Button variant="outline" onClick={() => router.push("/inventory/adjustments/new")} className="gap-2">
+            <Scale className="h-4 w-4" />
             {t("inventory.levels.newAdjustment")}
           </Button>
-          <Button onClick={() => router.push("/inventory/levels/new")}>
-            <Plus className="ml-2 h-4 w-4" />
+          <Button onClick={() => router.push("/inventory/levels/new")} className="gap-2">
+            <Plus className="h-4 w-4" />
             {t("inventory.levels.new")}
           </Button>
         </div>

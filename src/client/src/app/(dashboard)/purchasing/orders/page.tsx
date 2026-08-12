@@ -47,8 +47,8 @@ function PurchaseOrdersContent() {
             {t("purchasing.orders.listPageDescription")}
           </p>
         </div>
-        <Button onClick={() => router.push("/purchasing/orders/new")}>
-          <Plus className="ml-2 h-4 w-4" />
+        <Button onClick={() => router.push("/purchasing/orders/new")} className="gap-2">
+          <Plus className="h-4 w-4" />
           {t("purchasing.orders.newOrder")}
         </Button>
       </div>

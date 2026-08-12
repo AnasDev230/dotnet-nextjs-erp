@@ -105,8 +105,8 @@ export default function GoodsReceiptsTable({
           {t("purchasing.receipts.emptyDescription")}
         </p>
         <Link href="/purchasing/receipts/new">
-          <Button>
-            <PackageCheck className="ml-2 h-4 w-4" />
+          <Button className="gap-2">
+            <PackageCheck className="h-4 w-4" />
             {t("purchasing.receipts.new")}
           </Button>
         </Link>

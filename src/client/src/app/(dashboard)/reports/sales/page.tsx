@@ -82,7 +82,7 @@ function SalesReportContent() {
         <AlertTitle>{t("reports.error")}</AlertTitle>
         <AlertDescription>
           {t("reports.salesLoadFailed")}
-          <Button variant="outline" size="sm" className="mr-2" onClick={() => refetch()}>
+          <Button variant="outline" size="sm" className="ms-2" onClick={() => refetch()}>
             {t("reports.retry")}
           </Button>
         </AlertDescription>

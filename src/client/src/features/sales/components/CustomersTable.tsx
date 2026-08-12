@@ -119,8 +119,8 @@ export default function CustomersTable({
         <h3 className="text-lg font-semibold mb-1">{t("sales.customers.emptyTitle")}</h3>
         <p className="text-sm text-muted-foreground mb-4">{t("sales.customers.emptyDescription")}</p>
         <Link href="/sales/customers/new">
-          <Button>
-            <Users className="ml-2 h-4 w-4" />
+          <Button className="gap-2">
+            <Users className="h-4 w-4" />
             {t("sales.customers.add")}
           </Button>
         </Link>

@@ -99,8 +99,8 @@ export default function DepartmentsTable({
         <h3 className="text-lg font-semibold mb-1">{t("inventory.categories.emptyTitle")}</h3>
         <p className="text-sm text-muted-foreground mb-4">{t("inventory.categories.emptyDescription")}</p>
         <Link href="/hr/departments/new">
-          <Button>
-            <Building2 className="ml-2 h-4 w-4" />
+          <Button className="gap-2">
+            <Building2 className="h-4 w-4" />
             {t("hr.departments.new")}
           </Button>
         </Link>

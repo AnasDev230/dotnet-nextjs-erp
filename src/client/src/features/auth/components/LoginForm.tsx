@@ -70,17 +70,17 @@ export default function LoginForm() {
 
       <Button
         type="submit"
-        className="w-full"
+        className="w-full gap-2"
         disabled={loginMutation.isPending}
       >
         {loginMutation.isPending ? (
           <>
-            <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin" />
             جاري تسجيل الدخول...
           </>
         ) : (
           <>
-            <LogIn className="ml-2 h-4 w-4" />
+            <LogIn className="h-4 w-4" />
             تسجيل الدخول
           </>
         )}

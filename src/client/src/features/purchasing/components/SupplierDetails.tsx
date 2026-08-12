@@ -133,34 +133,34 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
         </div>
         <div className="flex items-center gap-2">
           <Link href={`/purchasing/suppliers/${supplier.id}/edit`}>
-            <Button variant="outline">
-              <Pencil className="ml-2 h-4 w-4" />
+            <Button variant="outline" className="gap-2">
+              <Pencil className="h-4 w-4" />
               {t("common.edit")}
             </Button>
           </Link>
           {supplier.status === "Active" ? (
             <Button
               variant="outline"
-              className="text-destructive"
+              className="gap-2 text-destructive"
               disabled={isLoadingAction}
               onClick={() => {
                 setErrorMessage(null);
                 setConfirmAction("suspend");
               }}
             >
-              <Ban className="ml-2 h-4 w-4" />
+              <Ban className="h-4 w-4" />
               {t("purchasing.suppliers.suspend")}
             </Button>
           ) : (
             <Button
-              className="text-emerald-600"
+              className="gap-2 text-emerald-600"
               disabled={isLoadingAction}
               onClick={() => {
                 setErrorMessage(null);
                 setConfirmAction("activate");
               }}
             >
-              <CheckCircle className="ml-2 h-4 w-4" />
+              <CheckCircle className="h-4 w-4" />
               {t("purchasing.suppliers.activate")}
             </Button>
           )}
@@ -200,8 +200,8 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
         </CardHeader>
         <CardContent>
           {!linkedProducts || linkedProducts.length === 0 ? (
-            <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
-              <AlertCircle className="h-4 w-4 ml-2" />
+            <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
+              <AlertCircle className="h-4 w-4" />
               {t("purchasing.suppliers.noLinkedProducts")}
             </div>
           ) : (

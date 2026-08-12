@@ -41,8 +41,8 @@ function NewAdjustmentContent() {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="sm" onClick={() => router.back()}>
-          <ArrowRight className="ml-2 h-4 w-4" />
+        <Button variant="ghost" size="sm" onClick={() => router.back()} className="gap-2">
+          <ArrowRight className="h-4 w-4" />
           {t("inventory.adjustments.back")}
         </Button>
         <div>

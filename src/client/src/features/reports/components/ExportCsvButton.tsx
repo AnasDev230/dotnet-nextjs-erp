@@ -34,11 +34,12 @@ export default function ExportCsvButton({
       variant="outline"
       onClick={handleClick}
       disabled={disabled || isExporting}
+      className="gap-2"
     >
       {isExporting ? (
-        <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+        <Loader2 className="h-4 w-4 animate-spin" />
       ) : (
-        <Download className="ml-2 h-4 w-4" />
+        <Download className="h-4 w-4" />
       )}
       {isExporting ? t("common.exporting") : label ?? t("common.exportCsv")}
     </Button>

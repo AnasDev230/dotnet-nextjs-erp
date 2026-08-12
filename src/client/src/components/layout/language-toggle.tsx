@@ -46,7 +46,7 @@ export default function LanguageToggle() {
       {open && (
         <div
           role="menu"
-          className="absolute left-0 top-full z-50 mt-2 w-40 rounded-lg border border-border bg-card p-1 shadow-lg"
+          className="absolute end-0 top-full z-50 mt-2 w-40 rounded-lg border border-border bg-card p-1 shadow-lg"
         >
           {languageOptions.map(({ value, labelKey }) => (
             <button
@@ -62,7 +62,7 @@ export default function LanguageToggle() {
                 language === value && "bg-accent font-medium"
               )}
             >
-              <span className="flex-1 text-right">{t(labelKey)}</span>
+              <span className="flex-1 text-start">{t(labelKey)}</span>
               {language === value && <Check className="h-4 w-4 text-primary" />}
             </button>
           ))}

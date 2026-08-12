@@ -289,16 +289,17 @@ export default function PaymentForm({ invoiceId }: PaymentFormProps) {
             </div>
 
             <div className="flex items-center gap-3 pt-4 border-t border-border">
-              <Button type="submit" disabled={isPending || !canRecord}>
-                {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+              <Button type="submit" disabled={isPending || !canRecord} className="gap-2">
+                {isPending && <Loader2 className="h-4 w-4 animate-spin" />}
                 {t("finance.payments.submit")}
               </Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => router.back()}
+                className="gap-2"
               >
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="h-4 w-4" />
                 {t("finance.payments.back")}
               </Button>
             </div>

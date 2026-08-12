@@ -81,9 +81,9 @@ export default function SalesOrderItemsEditor({
           variant="outline"
           size="sm"
           onClick={handleAdd}
-          className="h-9"
+          className="h-9 gap-2"
         >
-          <Plus className="ml-2 h-4 w-4" />
+          <Plus className="h-4 w-4" />
           {t("sales.orders.addProduct")}
         </Button>
       </div>

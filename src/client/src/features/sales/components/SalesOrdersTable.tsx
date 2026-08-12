@@ -127,8 +127,8 @@ export default function SalesOrdersTable({
           {t("sales.orders.emptyDescription")}
         </p>
         <Link href="/sales/orders/new">
-          <Button>
-            <ShoppingCart className="ml-2 h-4 w-4" />
+          <Button className="gap-2">
+            <ShoppingCart className="h-4 w-4" />
             {t("sales.orders.new")}
           </Button>
         </Link>

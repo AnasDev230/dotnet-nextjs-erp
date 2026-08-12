@@ -157,29 +157,30 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
                 setErrorMessage(null);
                 setConfirmAction("issue");
               }}
+              className="gap-2"
             >
-              <Send className="ml-2 h-4 w-4" />
+              <Send className="h-4 w-4" />
               {t("finance.invoices.issueButton")}
             </Button>
           )}
           {canCancel && (
             <Button
               variant="outline"
-              className="text-destructive"
+              className="gap-2 text-destructive"
               disabled={isLoadingAction}
               onClick={() => {
                 setErrorMessage(null);
                 setConfirmAction("cancel");
               }}
             >
-              <XCircle className="ml-2 h-4 w-4" />
+              <XCircle className="h-4 w-4" />
               {t("finance.invoices.cancelButton")}
             </Button>
           )}
           {canRecordPayment && (
             <Link href={`/finance/invoices/${invoice.id}/payments/new`}>
-              <Button>
-                <Wallet className="ml-2 h-4 w-4" />
+              <Button className="gap-2">
+                <Wallet className="h-4 w-4" />
                 {t("finance.invoices.recordPayment")}
               </Button>
             </Link>
@@ -417,8 +418,8 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
             <CardTitle className="text-lg">{t("finance.invoices.paymentsCard")}</CardTitle>
             {canRecordPayment && (
               <Link href={`/finance/invoices/${invoice.id}/payments/new`}>
-                <Button size="sm" variant="outline">
-                  <Wallet className="ml-2 h-4 w-4" />
+                <Button size="sm" variant="outline" className="gap-2">
+                  <Wallet className="h-4 w-4" />
                   {t("finance.invoices.recordPayment")}
                 </Button>
               </Link>

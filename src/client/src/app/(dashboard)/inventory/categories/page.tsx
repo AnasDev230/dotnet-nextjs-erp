@@ -33,8 +33,8 @@ function CategoriesContent() {
           <h1 className="text-2xl font-semibold">{t("inventory.categories.title")}</h1>
           <p className="text-muted-foreground text-sm">{t("inventory.categories.description")}</p>
         </div>
-        <Button onClick={() => router.push("/inventory/categories/new")}>
-          <Plus className="ml-2 h-4 w-4" />
+        <Button onClick={() => router.push("/inventory/categories/new")} className="gap-2">
+          <Plus className="h-4 w-4" />
           {t("inventory.categories.new")}
         </Button>
       </div>

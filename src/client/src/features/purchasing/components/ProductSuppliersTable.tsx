@@ -148,8 +148,8 @@ export default function ProductSuppliersTable({
                 </TableCell>
                 <TableCell>
                   {link.isPrimary ? (
-                    <Badge variant="success">
-                      <Star className="ml-1 h-3 w-3" />
+                    <Badge variant="success" className="gap-1">
+                      <Star className="h-3 w-3" />
                       {t("purchasing.productSuppliers.primary")}
                     </Badge>
                   ) : (

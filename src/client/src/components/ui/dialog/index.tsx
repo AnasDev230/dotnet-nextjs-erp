@@ -74,7 +74,7 @@ export const DialogContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivEl
       >
         <button
           onClick={onClose}
-          className="absolute left-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+          className="absolute end-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
         >
           <X className="h-4 w-4" />
           <span className="sr-only">{t("common.close")}</span>
@@ -90,7 +90,7 @@ export const DialogHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivEle
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("flex flex-col space-y-1.5 text-center sm:text-right mb-4", className)}
+      className={cn("flex flex-col space-y-1.5 text-center sm:text-start mb-4", className)}
       {...props}
     />
   )

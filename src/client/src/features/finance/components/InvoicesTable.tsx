@@ -168,8 +168,8 @@ export default function InvoicesTable({
           {t("finance.invoices.emptyDescription")}
         </p>
         <Link href="/finance/invoices/new">
-          <Button>
-            <FileText className="ml-2 h-4 w-4" />
+          <Button className="gap-2">
+            <FileText className="h-4 w-4" />
             {t("finance.invoices.new")}
           </Button>
         </Link>

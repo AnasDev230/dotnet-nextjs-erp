@@ -115,7 +115,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="fixed inset-y-0 right-0 z-30 flex w-64 flex-col border-l border-border bg-card max-lg:hidden">
+    <aside className="fixed inset-y-0 start-0 z-30 flex w-64 flex-col border-e border-border bg-card max-lg:hidden">
       <div className="flex h-14 items-center justify-center border-b border-border px-4">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">

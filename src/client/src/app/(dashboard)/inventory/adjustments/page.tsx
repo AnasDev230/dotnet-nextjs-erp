@@ -33,8 +33,8 @@ function AdjustmentsContent() {
             {t("inventory.adjustments.listPageDescription")}
           </p>
         </div>
-        <Button onClick={() => router.push("/inventory/adjustments/new")}>
-          <Plus className="ml-2 h-4 w-4" />
+        <Button onClick={() => router.push("/inventory/adjustments/new")} className="gap-2">
+          <Plus className="h-4 w-4" />
           {t("inventory.adjustments.new")}
         </Button>
       </div>

@@ -51,7 +51,7 @@ export default function ThemeToggle() {
       {open && (
         <div
           role="menu"
-          className="absolute left-0 top-full z-50 mt-2 w-40 rounded-lg border border-border bg-card p-1 shadow-lg"
+          className="absolute end-0 top-full z-50 mt-2 w-40 rounded-lg border border-border bg-card p-1 shadow-lg"
         >
           {themeOptions.map(({ value, labelKey, icon: Icon }) => (
             <button
@@ -67,8 +67,8 @@ export default function ThemeToggle() {
                 theme === value && "bg-accent font-medium"
               )}
             >
-              <Icon className="ml-2 h-4 w-4" />
-              <span className="flex-1 text-right">{t(labelKey)}</span>
+              <Icon className="h-4 w-4" />
+              <span className="flex-1 text-start">{t(labelKey)}</span>
               {theme === value && <Check className="h-4 w-4 text-primary" />}
             </button>
           ))}

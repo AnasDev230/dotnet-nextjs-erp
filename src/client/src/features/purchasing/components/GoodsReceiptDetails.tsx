@@ -120,14 +120,14 @@ export default function GoodsReceiptDetails({
           {receipt.status === "Received" && (
             <Button
               variant="outline"
-              className="text-destructive"
+              className="gap-2 text-destructive"
               disabled={cancelMutation.isPending}
               onClick={() => {
                 setErrorMessage(null);
                 setCancelOpen(true);
               }}
             >
-              <XCircle className="ml-2 h-4 w-4" />
+              <XCircle className="h-4 w-4" />
               {t("purchasing.receipts.cancelReceipt")}
             </Button>
           )}

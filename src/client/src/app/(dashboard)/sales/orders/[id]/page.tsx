@@ -110,8 +110,8 @@ export default function SalesOrderDetailPage() {
           </div>
         </div>
         <Link href={`/sales/orders/${order.id}/edit`}>
-          <Button>
-            <Pencil className="ml-2 h-4 w-4" />
+          <Button className="gap-2">
+            <Pencil className="h-4 w-4" />
             {t("common.edit")}
           </Button>
         </Link>
