@@ -16,6 +16,7 @@ import {
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { useDeleteEmployee } from "../hooks/useDeleteEmployee";
 import { useTranslation } from "@/hooks/use-translation";
+import { formatDate } from "@/lib/formatters";
 import { EmployeeStatus, type EmployeeListItem } from "@/types/hr";
 
 const statusBadgeVariant: Record<EmployeeStatus, "success" | "warning" | "neutral"> = {
@@ -43,7 +44,7 @@ export default function EmployeesTable({
   totalPages,
   onPageChange,
 }: EmployeesTableProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeleteEmployee();
@@ -145,7 +146,7 @@ export default function EmployeesTable({
                 </TableCell>
                 <TableCell>{employee.jobTitle ?? "—"}</TableCell>
                 <TableCell className="text-muted-foreground text-xs">
-                  {new Date(employee.hireDate).toLocaleDateString("ar-SA")}
+                  {formatDate(employee.hireDate, language)}
                 </TableCell>
                 <TableCell>
                   <Badge variant={statusBadgeVariant[employee.status]}>

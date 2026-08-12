@@ -13,16 +13,10 @@ import { useInventorySummary } from "@/features/reports/hooks/useReports";
 import { downloadInventoryCsv } from "@/features/reports/api/reports";
 import type { StockByWarehouseItem } from "@/types/reports";
 import { useTranslation } from "@/hooks/use-translation";
-
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ر.س`;
-}
+import { formatCurrency, formatNumber } from "@/lib/formatters";
 
 function InventoryReportContent() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { data, isLoading, isError, refetch } = useInventorySummary();
 
   const warehouseColumns: ReportColumn<StockByWarehouseItem>[] = [
@@ -34,13 +28,13 @@ function InventoryReportContent() {
     {
       key: "productCount",
       header: t("reports.productCount"),
-      render: (item) => item.productCount.toLocaleString("ar-SA"),
+      render: (item) => formatNumber(item.productCount),
     },
     {
       key: "totalValue",
       header: t("reports.totalValue"),
       render: (item) => (
-        <span className="font-medium">{formatCurrency(item.totalValue)}</span>
+        <span className="font-medium">{formatCurrency(item.totalValue, language)}</span>
       ),
     },
   ];
@@ -74,28 +68,28 @@ function InventoryReportContent() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <ReportSummaryCard
           title={t("reports.totalProducts")}
-          value={(data?.totalProducts ?? 0).toLocaleString("ar-SA")}
+          value={formatNumber(data?.totalProducts ?? 0)}
           icon={Package}
           iconClassName="text-primary"
           isLoading={isLoading}
         />
         <ReportSummaryCard
           title={t("reports.totalWarehouses")}
-          value={(data?.totalWarehouses ?? 0).toLocaleString("ar-SA")}
+          value={formatNumber(data?.totalWarehouses ?? 0)}
           icon={Warehouse}
           iconClassName="text-blue-600"
           isLoading={isLoading}
         />
         <ReportSummaryCard
           title={t("reports.totalInventoryValue")}
-          value={formatCurrency(data?.totalInventoryValue ?? 0)}
+          value={formatCurrency(data?.totalInventoryValue ?? 0, language)}
           icon={Coins}
           iconClassName="text-emerald-600"
           isLoading={isLoading}
         />
         <ReportSummaryCard
           title={t("reports.lowStockCount")}
-          value={(data?.lowStockCount ?? 0).toLocaleString("ar-SA")}
+          value={formatNumber(data?.lowStockCount ?? 0)}
           icon={AlertTriangle}
           iconClassName="text-amber-600"
           isLoading={isLoading}

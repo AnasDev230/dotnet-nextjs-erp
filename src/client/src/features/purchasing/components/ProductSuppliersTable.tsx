@@ -13,18 +13,12 @@ import {
   Badge,
 } from "@/components/ui";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
+import { formatCurrency } from "@/lib/formatters";
 import { useTranslation } from "@/hooks/use-translation";
 import { useDeleteProductSupplier } from "../hooks/useDeleteProductSupplier";
 import type { ProductSupplierListItem } from "../types/product-supplier.types";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
-
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
-}
 
 interface ProductSuppliersTableProps {
   links: ProductSupplierListItem[];
@@ -49,7 +43,7 @@ export default function ProductSuppliersTable({
   totalPages,
   onPageChange,
 }: ProductSuppliersTableProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeleteProductSupplier();
@@ -144,7 +138,7 @@ export default function ProductSuppliersTable({
                 </TableCell>
                 <TableCell className="tabular-nums">{link.leadTimeDays} {t("common.days")}</TableCell>
                 <TableCell className="text-end font-mono text-xs tabular-nums">
-                  {formatCurrency(link.unitCost)}
+                  {formatCurrency(link.unitCost, language)}
                 </TableCell>
                 <TableCell>
                   {link.isPrimary ? (

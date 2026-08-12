@@ -16,6 +16,7 @@ import {
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { useDeleteSalesOrder } from "../hooks/useDeleteSalesOrder";
 import { useTranslation } from "@/hooks/use-translation";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import type {
   SalesOrderListItem,
   SalesOrderStatus,
@@ -35,13 +36,6 @@ const statusLabelKey: Record<SalesOrderStatus, string> = {
   Confirmed: "sales.orders.confirmed",
   Cancelled: "sales.orders.cancelled",
 };
-
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ر.س`;
-}
 
 interface SalesOrdersTableProps {
   orders: SalesOrderListItem[];
@@ -65,7 +59,7 @@ export default function SalesOrdersTable({
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeleteSalesOrder();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   const handleDelete = () => {
     if (!deleteId) return;
@@ -163,13 +157,11 @@ export default function SalesOrdersTable({
                   {order.warehouseName}
                 </TableCell>
                 <TableCell className="text-muted-foreground text-xs">
-                  {new Date(`${order.orderDate}T00:00:00`).toLocaleDateString(
-                    "ar-SA"
-                  )}
+                  {formatDate(`${order.orderDate}T00:00:00`, language)}
                 </TableCell>
                 <TableCell className="tabular-nums">{order.itemsCount}</TableCell>
                 <TableCell className="text-muted-foreground tabular-nums">
-                  {formatCurrency(order.netAmount)}
+                  {formatCurrency(order.netAmount, language)}
                 </TableCell>
                 <TableCell>
                   <Badge variant={statusBadgeVariant[order.status]}>

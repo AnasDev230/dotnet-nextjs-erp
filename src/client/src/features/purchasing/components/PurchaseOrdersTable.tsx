@@ -13,21 +13,11 @@ import {
   Button,
 } from "@/components/ui";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import { useTranslation } from "@/hooks/use-translation";
 import { PurchaseOrderStatusBadge } from "./PurchaseOrderStatusBadge";
 import { useDeletePurchaseOrder } from "../hooks/useDeletePurchaseOrder";
 import type { PurchaseOrderListItem } from "../types/purchase-order.types";
-
-function formatCurrency(value: number, currency: string = "ر.س"): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ${currency}`;
-}
-
-function formatDate(value: string): string {
-  return new Date(`${value}T00:00:00`).toLocaleDateString("ar-SA");
-}
 
 interface PurchaseOrdersTableProps {
   orders: PurchaseOrderListItem[];
@@ -48,7 +38,7 @@ export default function PurchaseOrdersTable({
   totalPages,
   onPageChange,
 }: PurchaseOrdersTableProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeletePurchaseOrder();
@@ -142,13 +132,13 @@ export default function PurchaseOrdersTable({
                 </TableCell>
                 <TableCell>{order.supplierName}</TableCell>
                 <TableCell className="text-muted-foreground text-xs">
-                  {formatDate(order.orderDate)}
+                  {formatDate(order.orderDate, language)}
                 </TableCell>
                 <TableCell>
                   <PurchaseOrderStatusBadge status={order.status} />
                 </TableCell>
                 <TableCell className="text-end font-mono text-xs tabular-nums">
-                  {formatCurrency(order.totalAmount)}
+                  {formatCurrency(order.totalAmount, language)}
                 </TableCell>
                 <TableCell className="text-end">
                   <div className="flex items-center justify-end gap-1">

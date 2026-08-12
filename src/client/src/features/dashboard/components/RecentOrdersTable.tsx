@@ -16,17 +16,7 @@ import {
 import { OrderStatusBadge } from "@/features/sales/components/OrderStatusBadge";
 import type { RecentOrder } from "@/types/dashboard";
 import { useTranslation } from "@/hooks/use-translation";
-
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ر.س`;
-}
-
-function formatDate(value: string): string {
-  return new Date(`${value}T00:00:00`).toLocaleDateString("ar-SA");
-}
+import { formatCurrency, formatDate } from "@/lib/formatters";
 
 interface RecentOrdersTableProps {
   orders: RecentOrder[] | undefined;
@@ -37,7 +27,7 @@ export default function RecentOrdersTable({
   orders,
   isLoading,
 }: RecentOrdersTableProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   if (isLoading) {
     return (
@@ -115,10 +105,10 @@ export default function RecentOrdersTable({
               </TableCell>
               <TableCell>{order.customerName}</TableCell>
               <TableCell className="text-xs text-muted-foreground">
-                {formatDate(order.orderDate)}
+                {formatDate(order.orderDate, language)}
               </TableCell>
               <TableCell className="text-muted-foreground tabular-nums">
-                {formatCurrency(order.netAmount)}
+                {formatCurrency(order.netAmount, language)}
               </TableCell>
               <TableCell>
                 <OrderStatusBadge status={order.status} />

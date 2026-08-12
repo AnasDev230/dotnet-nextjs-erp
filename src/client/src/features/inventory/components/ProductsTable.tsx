@@ -16,6 +16,7 @@ import {
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { useDeleteProduct } from "../hooks/useDeleteProduct";
 import { useTranslation } from "@/hooks/use-translation";
+import { formatCurrency } from "@/lib/formatters";
 import type { ProductListItem } from "../types/product.types";
 
 interface ProductsTableProps {
@@ -37,7 +38,7 @@ export default function ProductsTable({
   totalPages,
   onPageChange,
 }: ProductsTableProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeleteProduct();
@@ -136,7 +137,7 @@ export default function ProductsTable({
                 <TableCell>{product.unitOfMeasure}</TableCell>
                 <TableCell className="tabular-nums">{product.reorderLevel}</TableCell>
                 <TableCell className="text-end font-mono text-xs tabular-nums">
-                  {product.salePrice.toFixed(2)}
+                  {formatCurrency(product.salePrice, language)}
                 </TableCell>
                 <TableCell>
                   <Badge variant={product.isActive ? "success" : "neutral"}>

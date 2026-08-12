@@ -3,6 +3,7 @@
 import { ClipboardList } from "lucide-react";
 import { Badge, Button } from "@/components/ui";
 import { useTranslation } from "@/hooks/use-translation";
+import { formatDate } from "@/lib/formatters";
 import type { StockAdjustmentItem } from "../types/stock-adjustment.types";
 
 interface StockAdjustmentsTableProps {
@@ -61,7 +62,7 @@ export default function StockAdjustmentsTable({
   totalPages,
   onPageChange,
 }: StockAdjustmentsTableProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   if (isLoading) {
     return (
@@ -132,7 +133,7 @@ export default function StockAdjustmentsTable({
                 {adj.reason}
               </td>
               <td className="px-4 py-3 text-sm text-muted-foreground">
-                {new Date(adj.createdAt).toLocaleDateString("ar-SA")}
+                {formatDate(adj.createdAt, language)}
               </td>
             </tr>
           ))}

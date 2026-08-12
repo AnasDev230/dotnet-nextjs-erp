@@ -15,6 +15,7 @@ import {
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { useDeleteCategory } from "../hooks/useDeleteCategory";
 import { useTranslation } from "@/hooks/use-translation";
+import { formatDate } from "@/lib/formatters";
 import type { CategoryListItem } from "../types/category.types";
 
 interface CategoriesTableProps {
@@ -36,7 +37,7 @@ export default function CategoriesTable({
   totalPages,
   onPageChange,
 }: CategoriesTableProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeleteCategory();
@@ -130,7 +131,7 @@ export default function CategoriesTable({
                 </TableCell>
                 <TableCell className="tabular-nums">{category.productsCount}</TableCell>
                 <TableCell className="text-muted-foreground text-xs">
-                  {new Date(category.createdAt).toLocaleDateString("ar-SA")}
+                  {formatDate(category.createdAt, language)}
                 </TableCell>
                 <TableCell className="text-end">
                   <div className="flex items-center justify-end gap-1">

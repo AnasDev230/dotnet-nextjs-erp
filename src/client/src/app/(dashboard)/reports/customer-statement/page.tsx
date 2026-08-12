@@ -10,19 +10,13 @@ import { useCustomerStatement } from "@/features/reports/hooks/useReports";
 import { downloadCustomerStatementCsv } from "@/features/reports/api/reports";
 import { useCustomersForDropdown } from "@/features/sales/hooks/useCustomersForDropdown";
 import { useTranslation } from "@/hooks/use-translation";
-
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ر.س`;
-}
+import { formatCurrency } from "@/lib/formatters";
 
 const selectClass =
   "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:w-80";
 
 function CustomerStatementContent() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [customerId, setCustomerId] = useState("");
   const { data: customers } = useCustomersForDropdown();
 
@@ -103,19 +97,19 @@ function CustomerStatementContent() {
               <div>
                 <p className="text-xs text-muted-foreground">{t("reports.totalBilledLabel")}</p>
                 <p className="text-sm font-semibold">
-                  {formatCurrency(data?.totalBilled ?? 0)}
+                  {formatCurrency(data?.totalBilled ?? 0, language)}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">{t("reports.totalPaidLabel")}</p>
                 <p className="text-sm font-semibold">
-                  {formatCurrency(data?.totalPaid ?? 0)}
+                  {formatCurrency(data?.totalPaid ?? 0, language)}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">{t("reports.outstandingBalanceLabel")}</p>
                 <p className="text-sm font-semibold text-amber-600">
-                  {formatCurrency(data?.outstandingBalance ?? 0)}
+                  {formatCurrency(data?.outstandingBalance ?? 0, language)}
                 </p>
               </div>
             </div>
@@ -124,21 +118,21 @@ function CustomerStatementContent() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <ReportSummaryCard
               title={t("reports.totalBilledLabel")}
-              value={formatCurrency(data?.totalBilled ?? 0)}
+              value={formatCurrency(data?.totalBilled ?? 0, language)}
               icon={FileText}
               iconClassName="text-primary"
               isLoading={isLoading}
             />
             <ReportSummaryCard
               title={t("reports.totalPaidLabel")}
-              value={formatCurrency(data?.totalPaid ?? 0)}
+              value={formatCurrency(data?.totalPaid ?? 0, language)}
               icon={CreditCard}
               iconClassName="text-emerald-600"
               isLoading={isLoading}
             />
             <ReportSummaryCard
               title={t("reports.outstandingBalanceLabel")}
-              value={formatCurrency(data?.outstandingBalance ?? 0)}
+              value={formatCurrency(data?.outstandingBalance ?? 0, language)}
               icon={Landmark}
               iconClassName="text-amber-600"
               isLoading={isLoading}

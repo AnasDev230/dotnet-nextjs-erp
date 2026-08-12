@@ -15,17 +15,7 @@ import {
 } from "@/components/ui";
 import type { StatementLineItem } from "@/types/reports";
 import { useTranslation } from "@/hooks/use-translation";
-
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ر.س`;
-}
-
-function formatDate(value: string): string {
-  return new Date(`${value}T00:00:00`).toLocaleDateString("ar-SA");
-}
+import { formatCurrency, formatDate } from "@/lib/formatters";
 
 interface CustomerStatementTableProps {
   transactions: StatementLineItem[] | undefined;
@@ -36,7 +26,7 @@ export default function CustomerStatementTable({
   transactions,
   isLoading,
 }: CustomerStatementTableProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   return (
     <Card>
@@ -85,7 +75,7 @@ export default function CustomerStatementTable({
             transactions.map((transaction, index) => (
               <TableRow key={`${transaction.date}-${transaction.reference}-${index}`}>
                 <TableCell className="text-xs text-muted-foreground">
-                  {formatDate(transaction.date)}
+                  {formatDate(transaction.date, language)}
                 </TableCell>
                 <TableCell>
                   <span
@@ -100,13 +90,13 @@ export default function CustomerStatementTable({
                 </TableCell>
                 <TableCell className="text-xs">{transaction.reference}</TableCell>
                 <TableCell className="text-xs text-muted-foreground tabular-nums">
-                  {transaction.debit > 0 ? formatCurrency(transaction.debit) : "—"}
+                  {transaction.debit > 0 ? formatCurrency(transaction.debit, language) : "—"}
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground tabular-nums">
-                  {transaction.credit > 0 ? formatCurrency(transaction.credit) : "—"}
+                  {transaction.credit > 0 ? formatCurrency(transaction.credit, language) : "—"}
                 </TableCell>
                 <TableCell className="text-xs font-semibold tabular-nums">
-                  {formatCurrency(transaction.runningBalance)}
+                  {formatCurrency(transaction.runningBalance, language)}
                 </TableCell>
               </TableRow>
             ))

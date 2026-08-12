@@ -2,18 +2,12 @@
 
 import { useWatch, type Control } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
+import { formatCurrency } from "@/lib/formatters";
 import { useTranslation } from "@/hooks/use-translation";
 import type { PurchaseOrderFormData } from "../schemas/purchase-order.schema";
 
 interface PurchaseOrderSummaryProps {
   control: Control<PurchaseOrderFormData>;
-}
-
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })}`;
 }
 
 function roundMoney(value: number): number {
@@ -23,7 +17,7 @@ function roundMoney(value: number): number {
 export default function PurchaseOrderSummary({
   control,
 }: PurchaseOrderSummaryProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const items = useWatch<PurchaseOrderFormData, "items">({
     control,
     name: "items",
@@ -60,7 +54,7 @@ export default function PurchaseOrderSummary({
         <div className="border-t border-border" />
         <div className="flex items-center justify-between text-sm">
           <span>{t("purchasing.orders.subtotal")}</span>
-          <span className="font-medium">{formatCurrency(subtotal)}</span>
+          <span className="font-medium">{formatCurrency(subtotal, language)}</span>
         </div>
       </CardContent>
     </Card>

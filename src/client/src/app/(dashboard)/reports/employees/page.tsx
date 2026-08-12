@@ -12,16 +12,10 @@ import { useEmployeesSummary } from "@/features/reports/hooks/useReports";
 import { downloadEmployeesCsv } from "@/features/reports/api/reports";
 import type { EmployeesByDepartmentItem } from "@/types/reports";
 import { useTranslation } from "@/hooks/use-translation";
-
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ر.س`;
-}
+import { formatCurrency, formatNumber } from "@/lib/formatters";
 
 function EmployeesReportContent() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { data, isLoading, isError, refetch } = useEmployeesSummary();
 
   const departmentColumns: ReportColumn<EmployeesByDepartmentItem>[] = [
@@ -36,13 +30,13 @@ function EmployeesReportContent() {
     {
       key: "employeeCount",
       header: t("hr.departments.employeeCount"),
-      render: (item) => item.employeeCount.toLocaleString("ar-SA"),
+      render: (item) => formatNumber(item.employeeCount),
     },
     {
       key: "totalSalaries",
       header: t("reports.totalSalaries"),
       render: (item) => (
-        <span className="font-medium">{formatCurrency(item.totalSalaries)}</span>
+        <span className="font-medium">{formatCurrency(item.totalSalaries, language)}</span>
       ),
     },
   ];
@@ -76,28 +70,28 @@ function EmployeesReportContent() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <ReportSummaryCard
           title={t("reports.totalEmployees")}
-          value={(data?.totalEmployees ?? 0).toLocaleString("ar-SA")}
+          value={formatNumber(data?.totalEmployees ?? 0)}
           icon={Users}
           iconClassName="text-primary"
           isLoading={isLoading}
         />
         <ReportSummaryCard
           title={t("reports.activeEmployees")}
-          value={(data?.activeCount ?? 0).toLocaleString("ar-SA")}
+          value={formatNumber(data?.activeCount ?? 0)}
           icon={UserCheck}
           iconClassName="text-emerald-600"
           isLoading={isLoading}
         />
         <ReportSummaryCard
           title={t("reports.onLeaveEmployees")}
-          value={(data?.onLeaveCount ?? 0).toLocaleString("ar-SA")}
+          value={formatNumber(data?.onLeaveCount ?? 0)}
           icon={Briefcase}
           iconClassName="text-amber-600"
           isLoading={isLoading}
         />
         <ReportSummaryCard
           title={t("reports.terminatedEmployees")}
-          value={(data?.terminatedCount ?? 0).toLocaleString("ar-SA")}
+          value={formatNumber(data?.terminatedCount ?? 0)}
           icon={UserMinus}
           iconClassName="text-red-600"
           isLoading={isLoading}
@@ -106,7 +100,7 @@ function EmployeesReportContent() {
 
       <ReportSummaryCard
         title={t("reports.totalMonthlySalaries")}
-        value={formatCurrency(data?.totalSalaries ?? 0)}
+        value={formatCurrency(data?.totalSalaries ?? 0, language)}
         icon={Users}
         iconClassName="text-blue-600"
         subtitle={t("reports.totalSalariesSubtitle")}

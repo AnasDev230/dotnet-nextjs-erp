@@ -21,6 +21,7 @@ import {
 import { useSalesOrder } from "@/features/sales/hooks/useSalesOrder";
 import { useTranslation } from "@/hooks/use-translation";
 import type { SalesOrderStatus } from "@/features/sales/types/sales-order.types";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 
 const statusBadgeVariant: Record<
   SalesOrderStatus,
@@ -36,17 +37,6 @@ const statusLabelKey: Record<SalesOrderStatus, string> = {
   Confirmed: "sales.orders.confirmed",
   Cancelled: "sales.orders.cancelled",
 };
-
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ر.س`;
-}
-
-function formatDate(value: string): string {
-  return new Date(value).toLocaleDateString("ar-SA");
-}
 
 function InfoRow({
   label,
@@ -66,7 +56,7 @@ function InfoRow({
 export default function SalesOrderDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { data: order, isLoading, error } = useSalesOrder(params.id);
 
   if (isLoading) {
@@ -126,10 +116,10 @@ export default function SalesOrderDetailPage() {
             <InfoRow label={t("sales.orders.orderNumber")} value={order.orderNumber} />
             <InfoRow label={t("sales.orders.customer")} value={order.customerName} />
             <InfoRow label={t("purchasing.receipts.warehouse")} value={order.warehouseName || "—"} />
-            <InfoRow label={t("sales.orders.orderDate")} value={formatDate(order.orderDate)} />
+            <InfoRow label={t("sales.orders.orderDate")} value={formatDate(order.orderDate, language)} />
             <InfoRow
               label={t("sales.orders.deliveryDate")}
-              value={order.deliveryDate ? formatDate(order.deliveryDate) : "—"}
+              value={order.deliveryDate ? formatDate(order.deliveryDate, language) : "—"}
             />
             <InfoRow
               label={t("common.status")}
@@ -141,7 +131,7 @@ export default function SalesOrderDetailPage() {
             />
             <InfoRow
               label={t("common.createdAt")}
-              value={formatDate(order.createdAt)}
+              value={formatDate(order.createdAt, language)}
             />
             <InfoRow
               label={t("sales.orders.taxRate")}
@@ -187,13 +177,13 @@ export default function SalesOrderDetailPage() {
                   </TableCell>
                   <TableCell className="tabular-nums">{item.quantity}</TableCell>
                   <TableCell className="text-muted-foreground tabular-nums">
-                    {formatCurrency(item.unitPrice)}
+                    {formatCurrency(item.unitPrice, language)}
                   </TableCell>
                   <TableCell className="tabular-nums">
                     {item.discountPct > 0 ? `${item.discountPct}%` : "—"}
                   </TableCell>
                   <TableCell className="text-end font-medium tabular-nums">
-                    {formatCurrency(item.lineTotal)}
+                    {formatCurrency(item.lineTotal, language)}
                   </TableCell>
                 </TableRow>
               ))}
@@ -208,7 +198,7 @@ export default function SalesOrderDetailPage() {
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span>{t("sales.orders.subtotal")}</span>
-                <span>{formatCurrency(order.subtotal)}</span>
+                <span>{formatCurrency(order.subtotal, language)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span>
@@ -222,13 +212,13 @@ export default function SalesOrderDetailPage() {
                 </span>
                 <span className="text-destructive">
                   {order.discountAmount > 0
-                    ? `-${formatCurrency(order.discountAmount)}`
-                    : formatCurrency(order.discountAmount)}
+                    ? `-${formatCurrency(order.discountAmount, language)}`
+                    : formatCurrency(order.discountAmount, language)}
                 </span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span>{t("sales.orders.taxable")}</span>
-                <span>{formatCurrency(order.subtotal - order.discountAmount)}</span>
+                <span>{formatCurrency(order.subtotal - order.discountAmount, language)}</span>
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span>
@@ -242,14 +232,14 @@ export default function SalesOrderDetailPage() {
                 </span>
                 <span>
                   {order.taxAmount > 0
-                    ? `+${formatCurrency(order.taxAmount)}`
-                    : formatCurrency(order.taxAmount)}
+                    ? `+${formatCurrency(order.taxAmount, language)}`
+                    : formatCurrency(order.taxAmount, language)}
                 </span>
               </div>
               <div className="flex items-center justify-between border-t border-border pt-2 text-base font-semibold">
                 <span>{t("sales.orders.grandTotal")}</span>
                 <span className="text-primary">
-                  {formatCurrency(order.netAmount)}
+                  {formatCurrency(order.netAmount, language)}
                 </span>
               </div>
             </div>

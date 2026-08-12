@@ -15,13 +15,7 @@ import {
 } from "@/features/dashboard/hooks/useDashboard";
 import type { RecentInvoice } from "@/types/dashboard";
 import { useTranslation } from "@/hooks/use-translation";
-
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ر.س`;
-}
+import { formatCurrency } from "@/lib/formatters";
 
 function SectionError({ onRetry }: { onRetry: () => void }) {
   const { t } = useTranslation();
@@ -46,7 +40,7 @@ function SectionError({ onRetry }: { onRetry: () => void }) {
 
 function OverdueInvoices({ invoices }: { invoices: RecentInvoice[] }) {
   const overdue = invoices.filter((i) => i.isOverdue);
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   return (
     <Card>
@@ -82,7 +76,7 @@ function OverdueInvoices({ invoices }: { invoices: RecentInvoice[] }) {
                   </p>
                 </div>
                 <span className="text-sm font-semibold text-destructive">
-                  {formatCurrency(invoice.netAmount - invoice.paidAmount)}
+                  {formatCurrency(invoice.netAmount - invoice.paidAmount, language)}
                 </span>
               </div>
             ))}

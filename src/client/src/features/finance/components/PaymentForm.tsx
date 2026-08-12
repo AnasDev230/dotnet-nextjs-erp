@@ -28,6 +28,7 @@ import type { PaymentMethod } from "../types/payment.types";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
 import { useTranslation } from "@/hooks/use-translation";
+import { formatCurrency } from "@/lib/formatters";
 
 const paymentMethodOptionKeys: { value: PaymentMethod; labelKey: string }[] = [
   { value: "Cash", labelKey: "finance.paymentMethods.cash" },
@@ -43,20 +44,13 @@ function todayString(): string {
   return local.toISOString().slice(0, 10);
 }
 
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ر.س`;
-}
-
 interface PaymentFormProps {
   invoiceId: string;
 }
 
 export default function PaymentForm({ invoiceId }: PaymentFormProps) {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const recordMutation = useRecordPayment();
   const { data: invoice, isLoading: invoiceLoading } = useInvoice(invoiceId);
 
@@ -159,13 +153,13 @@ export default function PaymentForm({ invoiceId }: PaymentFormProps) {
             <div>
               <Label className="text-xs text-muted-foreground">{t("finance.invoices.netAmount")}</Label>
               <div className="mt-1 text-sm font-medium">
-                {formatCurrency(invoice.netAmount)}
+                {formatCurrency(invoice.netAmount, language)}
               </div>
             </div>
             <div>
               <Label className="text-xs text-muted-foreground">{t("finance.invoices.paid")}</Label>
               <div className="mt-1 text-sm font-medium text-emerald-600">
-                {formatCurrency(invoice.paidAmount)}
+                {formatCurrency(invoice.paidAmount, language)}
               </div>
             </div>
             <div>
@@ -177,7 +171,7 @@ export default function PaymentForm({ invoiceId }: PaymentFormProps) {
                     : "mt-1 text-sm font-medium"
                 }
               >
-                {formatCurrency(remainingAmount)}
+                {formatCurrency(remainingAmount, language)}
               </div>
             </div>
           </div>

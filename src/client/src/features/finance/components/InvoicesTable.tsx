@@ -25,20 +25,10 @@ import { useIssueInvoice } from "../hooks/useInvoices";
 import { useCancelInvoice } from "../hooks/useInvoices";
 import { useDeleteInvoice } from "../hooks/useInvoices";
 import { useTranslation } from "@/hooks/use-translation";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import type { InvoiceListItem } from "../types/invoice.types";
 
 type ConfirmAction = "delete" | "issue" | "cancel" | null;
-
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ر.س`;
-}
-
-function formatDate(value: string): string {
-  return new Date(`${value}T00:00:00`).toLocaleDateString("ar-SA");
-}
 
 interface InvoicesTableProps {
   invoices: InvoiceListItem[];
@@ -59,7 +49,7 @@ export default function InvoicesTable({
   totalPages,
   onPageChange,
 }: InvoicesTableProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
   const [selectedInvoiceId, setSelectedInvoiceId] = useState<string | null>(
     null
@@ -231,7 +221,7 @@ export default function InvoicesTable({
                 </TableCell>
                 <TableCell>{invoice.customerName}</TableCell>
                 <TableCell className="text-muted-foreground text-xs">
-                  {formatDate(invoice.issueDate)}
+                  {formatDate(invoice.issueDate, language)}
                 </TableCell>
                 <TableCell className="text-muted-foreground text-xs">
                   <span
@@ -241,17 +231,17 @@ export default function InvoicesTable({
                         : undefined
                     }
                   >
-                    {invoice.dueDate ? formatDate(invoice.dueDate) : "—"}
+                    {invoice.dueDate ? formatDate(invoice.dueDate, language) : "—"}
                     {invoice.isOverdue && (
                       <AlertCircle className="h-3.5 w-3.5" />
                     )}
                   </span>
                 </TableCell>
                 <TableCell className="text-muted-foreground tabular-nums">
-                  {formatCurrency(invoice.netAmount)}
+                  {formatCurrency(invoice.netAmount, language)}
                 </TableCell>
                 <TableCell className="text-muted-foreground tabular-nums">
-                  {formatCurrency(invoice.paidAmount)}
+                  {formatCurrency(invoice.paidAmount, language)}
                 </TableCell>
                 <TableCell>
                   <InvoiceStatusBadge status={invoice.status} />

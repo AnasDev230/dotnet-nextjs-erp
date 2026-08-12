@@ -23,13 +23,10 @@ import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { GoodsReceiptStatusBadge } from "./GoodsReceiptStatusBadge";
 import { useGoodsReceipt } from "../hooks/useGoodsReceipt";
 import { useCancelGoodsReceipt } from "../hooks/useCancelGoodsReceipt";
+import { formatDate } from "@/lib/formatters";
 import { useTranslation } from "@/hooks/use-translation";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
-
-function formatDate(value: string): string {
-  return new Date(`${value}T00:00:00`).toLocaleDateString("ar-SA");
-}
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -46,7 +43,7 @@ export default function GoodsReceiptDetails({
   receiptId: string;
 }) {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [cancelOpen, setCancelOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { data: receipt, isLoading, error } = useGoodsReceipt(receiptId);
@@ -159,7 +156,7 @@ export default function GoodsReceiptDetails({
               }
             />
             <InfoRow label={t("purchasing.orders.supplier")} value={receipt.supplierName} />
-            <InfoRow label={t("purchasing.receipts.receiptDate")} value={formatDate(receipt.receiptDate)} />
+            <InfoRow label={t("purchasing.receipts.receiptDate")} value={formatDate(receipt.receiptDate, language)} />
             <InfoRow label={t("purchasing.receipts.warehouse")} value={receipt.warehouseName} />
             <InfoRow
               label={t("common.status")}

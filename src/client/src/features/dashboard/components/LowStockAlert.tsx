@@ -4,6 +4,7 @@ import { AlertTriangle, PackageCheck } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 import type { LowStockItem } from "@/types/dashboard";
 import { useTranslation } from "@/hooks/use-translation";
+import { formatNumber } from "@/lib/formatters";
 
 interface LowStockAlertProps {
   items: LowStockItem[] | undefined;
@@ -11,7 +12,7 @@ interface LowStockAlertProps {
 }
 
 export default function LowStockAlert({ items, isLoading }: LowStockAlertProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   if (isLoading) {
     return (
@@ -85,11 +86,11 @@ export default function LowStockAlert({ items, isLoading }: LowStockAlertProps) 
             </div>
             <div className="text-end">
               <span className="text-sm font-semibold text-amber-600 tabular-nums">
-                {item.quantityOnHand.toLocaleString("ar-SA")}
+                {formatNumber(item.quantityOnHand)}
               </span>
               <span className="text-xs text-muted-foreground tabular-nums">
                 {" "}
-                / {item.reorderLevel.toLocaleString("ar-SA")}
+                / {formatNumber(item.reorderLevel)}
               </span>
             </div>
           </div>

@@ -16,17 +16,7 @@ import {
 import { InvoiceStatusBadge } from "@/features/finance/components/InvoiceStatusBadge";
 import type { RecentInvoice } from "@/types/dashboard";
 import { useTranslation } from "@/hooks/use-translation";
-
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ر.س`;
-}
-
-function formatDate(value: string): string {
-  return new Date(`${value}T00:00:00`).toLocaleDateString("ar-SA");
-}
+import { formatCurrency, formatDate } from "@/lib/formatters";
 
 interface RecentInvoicesTableProps {
   invoices: RecentInvoice[] | undefined;
@@ -37,7 +27,7 @@ export default function RecentInvoicesTable({
   invoices,
   isLoading,
 }: RecentInvoicesTableProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   if (isLoading) {
     return (
@@ -124,7 +114,7 @@ export default function RecentInvoicesTable({
                       : undefined
                   }
                 >
-                  {formatDate(invoice.issueDate)}
+                  {formatDate(invoice.issueDate, language)}
                   {invoice.isOverdue && (
                     <span title={t("common.overdue")}>
                       <AlertCircle className="h-3.5 w-3.5" aria-label={t("common.overdue")} />
@@ -133,10 +123,10 @@ export default function RecentInvoicesTable({
                 </span>
               </TableCell>
               <TableCell className="text-muted-foreground tabular-nums">
-                {formatCurrency(invoice.netAmount)}
+                {formatCurrency(invoice.netAmount, language)}
               </TableCell>
               <TableCell className="text-muted-foreground tabular-nums">
-                {formatCurrency(invoice.paidAmount)}
+                {formatCurrency(invoice.paidAmount, language)}
               </TableCell>
               <TableCell>
                 <InvoiceStatusBadge status={invoice.status} />

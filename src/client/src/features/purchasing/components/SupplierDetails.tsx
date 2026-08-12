@@ -26,6 +26,7 @@ import { useSupplier } from "../hooks/useSupplier";
 import { useSuspendSupplier } from "../hooks/useSuspendSupplier";
 import { useActivateSupplier } from "../hooks/useActivateSupplier";
 import { useProductSuppliersBySupplier } from "../hooks/useProductSuppliersBySupplier";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import { useTranslation } from "@/hooks/use-translation";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
@@ -41,7 +42,7 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 
 export default function SupplierDetails({ supplierId }: { supplierId: string }) {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [confirmAction, setConfirmAction] = useState<"suspend" | "activate" | null>(
     null
   );
@@ -187,7 +188,7 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
               label={t("common.status")}
               value={<SupplierStatusBadge status={supplier.status} />}
             />
-            <InfoRow label={t("common.createdAt")} value={new Date(supplier.createdAt).toLocaleDateString("ar-SA")} />
+            <InfoRow label={t("common.createdAt")} value={formatDate(supplier.createdAt, language)} />
           </div>
         </CardContent>
       </Card>
@@ -219,10 +220,7 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
                   </div>
                   <div className="text-end">
                     <div className="text-sm font-medium tabular-nums">
-                      {link.unitCost.toLocaleString("ar-SA", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {formatCurrency(link.unitCost, language)}
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {link.leadTimeDays} {t("common.days")}

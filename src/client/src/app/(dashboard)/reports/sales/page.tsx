@@ -16,16 +16,10 @@ import type {
   TopCustomerItem,
 } from "@/types/reports";
 import { useTranslation } from "@/hooks/use-translation";
-
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ر.س`;
-}
+import { formatCurrency, formatNumber } from "@/lib/formatters";
 
 function SalesReportContent() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
@@ -46,13 +40,13 @@ function SalesReportContent() {
       key: "revenue",
       header: t("reports.revenue"),
       render: (item) => (
-        <span className="font-medium">{formatCurrency(item.revenue)}</span>
+        <span className="font-medium">{formatCurrency(item.revenue, language)}</span>
       ),
     },
     {
       key: "orderCount",
       header: t("reports.orderCount"),
-      render: (item) => item.orderCount.toLocaleString("ar-SA"),
+      render: (item) => formatNumber(item.orderCount),
     },
   ];
 
@@ -66,13 +60,13 @@ function SalesReportContent() {
       key: "totalAmount",
       header: t("reports.totalAmount"),
       render: (item) => (
-        <span className="font-medium">{formatCurrency(item.totalAmount)}</span>
+        <span className="font-medium">{formatCurrency(item.totalAmount, language)}</span>
       ),
     },
     {
       key: "orderCount",
       header: t("reports.orderCount"),
-      render: (item) => item.orderCount.toLocaleString("ar-SA"),
+      render: (item) => formatNumber(item.orderCount),
     },
   ];
 
@@ -112,28 +106,28 @@ function SalesReportContent() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <ReportSummaryCard
           title={t("reports.totalRevenue")}
-          value={formatCurrency(data?.totalRevenue ?? 0)}
+          value={formatCurrency(data?.totalRevenue ?? 0, language)}
           icon={TrendingUp}
           iconClassName="text-primary"
           isLoading={isLoading}
         />
         <ReportSummaryCard
           title={t("reports.totalOrders")}
-          value={(data?.totalOrders ?? 0).toLocaleString("ar-SA")}
+          value={formatNumber(data?.totalOrders ?? 0)}
           icon={ShoppingCart}
           iconClassName="text-blue-600"
           isLoading={isLoading}
         />
         <ReportSummaryCard
           title={t("reports.averageOrderValue")}
-          value={formatCurrency(data?.averageOrderValue ?? 0)}
+          value={formatCurrency(data?.averageOrderValue ?? 0, language)}
           icon={ShoppingCart}
           iconClassName="text-violet-600"
           isLoading={isLoading}
         />
         <ReportSummaryCard
           title={t("reports.totalCustomers")}
-          value={(data?.totalCustomers ?? 0).toLocaleString("ar-SA")}
+          value={formatNumber(data?.totalCustomers ?? 0)}
           icon={Users}
           iconClassName="text-emerald-600"
           isLoading={isLoading}

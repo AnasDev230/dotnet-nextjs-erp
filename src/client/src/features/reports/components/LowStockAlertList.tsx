@@ -15,6 +15,7 @@ import {
 } from "@/components/ui";
 import type { LowStockItem } from "@/types/reports";
 import { useTranslation } from "@/hooks/use-translation";
+import { formatNumber } from "@/lib/formatters";
 
 interface LowStockAlertListProps {
   items: LowStockItem[] | undefined;
@@ -25,7 +26,7 @@ export default function LowStockAlertList({
   items,
   isLoading,
 }: LowStockAlertListProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   return (
     <Card>
@@ -85,10 +86,10 @@ export default function LowStockAlertList({
                   {item.warehouseName}
                 </TableCell>
                 <TableCell className="text-sm font-semibold text-amber-600 tabular-nums">
-                  {item.quantityOnHand.toLocaleString("ar-SA")}
+                  {formatNumber(item.quantityOnHand)}
                 </TableCell>
                 <TableCell className="text-xs text-muted-foreground tabular-nums">
-                  {item.reorderLevel.toLocaleString("ar-SA")}
+                  {formatNumber(item.reorderLevel)}
                 </TableCell>
               </TableRow>
             ))}

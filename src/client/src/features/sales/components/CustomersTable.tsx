@@ -16,6 +16,7 @@ import {
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { useDeleteCustomer } from "../hooks/useDeleteCustomer";
 import { useTranslation } from "@/hooks/use-translation";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import type { CustomerListItem } from "../types/customer.types";
 
 const typeBadgeVariant = {
@@ -60,7 +61,7 @@ export default function CustomersTable({
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeleteCustomer();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   const handleDelete = () => {
     if (!deleteId) return;
@@ -154,7 +155,7 @@ export default function CustomersTable({
                   </Badge>
                 </TableCell>
                 <TableCell className="text-muted-foreground tabular-nums">
-                  {customer.creditLimit.toLocaleString("ar-SA")} ر.س
+                  {formatCurrency(customer.creditLimit, language)}
                 </TableCell>
                 <TableCell>
                   <Badge variant={statusBadgeVariant[customer.status]}>
@@ -162,7 +163,7 @@ export default function CustomersTable({
                   </Badge>
                 </TableCell>
                 <TableCell className="text-muted-foreground text-xs">
-                  {new Date(customer.createdAt).toLocaleDateString("ar-SA")}
+                  {formatDate(customer.createdAt, language)}
                 </TableCell>
                 <TableCell className="text-end">
                   <div className="flex items-center justify-end gap-1">

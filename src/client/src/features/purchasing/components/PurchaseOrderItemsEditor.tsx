@@ -13,6 +13,7 @@ import {
 } from "react-hook-form";
 import { Plus, Trash2, AlertCircle } from "lucide-react";
 import { Alert, Button, Input, Label } from "@/components/ui";
+import { formatCurrency } from "@/lib/formatters";
 import { useTranslation } from "@/hooks/use-translation";
 import type { ProductListItem } from "@/features/inventory/types/product.types";
 import type {
@@ -41,7 +42,7 @@ export default function PurchaseOrderItemsEditor({
   productOptions,
   productById,
 }: PurchaseOrderItemsEditorProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "items",
@@ -209,10 +210,7 @@ export default function PurchaseOrderItemsEditor({
               <div className="space-y-2">
                 <Label className="text-xs">{t("purchasing.orders.lineTotal")}</Label>
                 <div className="flex h-10 items-center rounded-md border border-input bg-muted px-3 text-sm font-medium">
-                  {lineTotal.toLocaleString("ar-SA", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
+                  {formatCurrency(lineTotal, language)}
                 </div>
               </div>
 

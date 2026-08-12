@@ -9,13 +9,7 @@ import {
 } from "@/components/ui";
 import type { DashboardStats } from "@/types/dashboard";
 import { useTranslation } from "@/hooks/use-translation";
-
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ر.س`;
-}
+import { formatCurrency } from "@/lib/formatters";
 
 interface StatsCardsProps {
   stats: DashboardStats | undefined;
@@ -23,7 +17,7 @@ interface StatsCardsProps {
 }
 
 export default function StatsCards({ stats, isLoading }: StatsCardsProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   if (isLoading) {
     return (
@@ -45,28 +39,28 @@ export default function StatsCards({ stats, isLoading }: StatsCardsProps) {
       title: t("dashboard.totalSales"),
       icon: TrendingUp,
       iconClassName: "text-primary",
-      value: formatCurrency(stats?.totalSalesAmount ?? 0),
+      value: formatCurrency(stats?.totalSalesAmount ?? 0, language),
       subtitle: `${stats?.totalSalesCount ?? 0} ${t("dashboard.confirmedSalesOrders")}`,
     },
     {
       title: t("dashboard.totalInvoices"),
       icon: FileText,
       iconClassName: "text-blue-600",
-      value: formatCurrency(stats?.totalInvoicesAmount ?? 0),
+      value: formatCurrency(stats?.totalInvoicesAmount ?? 0, language),
       subtitle: `${stats?.totalInvoicesCount ?? 0} ${t("dashboard.invoiceCountLabel")}`,
     },
     {
       title: t("dashboard.collectedPayments"),
       icon: CreditCard,
       iconClassName: "text-emerald-600",
-      value: formatCurrency(stats?.totalPaidAmount ?? 0),
+      value: formatCurrency(stats?.totalPaidAmount ?? 0, language),
       subtitle: t("dashboard.totalCollectedPayments"),
     },
     {
       title: t("dashboard.outstandingBalance"),
       icon: AlertCircle,
       iconClassName: "text-amber-600",
-      value: formatCurrency(stats?.totalOutstandingAmount ?? 0),
+      value: formatCurrency(stats?.totalOutstandingAmount ?? 0, language),
       subtitle: `${stats?.overdueInvoicesCount ?? 0} ${t("dashboard.overdueInvoicesCountLabel")}`,
     },
   ];

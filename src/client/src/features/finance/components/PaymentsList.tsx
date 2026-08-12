@@ -14,6 +14,7 @@ import {
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { usePayments, useDeletePayment } from "../hooks/usePayments";
 import { useTranslation } from "@/hooks/use-translation";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import type { PaymentMethod } from "../types/payment.types";
 
 const paymentMethodLabelKeys: Record<PaymentMethod, string> = {
@@ -22,17 +23,6 @@ const paymentMethodLabelKeys: Record<PaymentMethod, string> = {
   Card: "finance.paymentMethods.card",
   Cheque: "finance.paymentMethods.cheque",
 };
-
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ر.س`;
-}
-
-function formatDate(value: string): string {
-  return new Date(`${value}T00:00:00`).toLocaleDateString("ar-SA");
-}
 
 interface PaymentsListProps {
   invoiceId: string;
@@ -43,7 +33,7 @@ export default function PaymentsList({
   invoiceId,
   canDelete,
 }: PaymentsListProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { data: payments, isLoading } = usePayments(invoiceId);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -126,10 +116,10 @@ export default function PaymentsList({
             {payments.map((payment) => (
               <TableRow key={payment.id}>
                 <TableCell className="text-muted-foreground text-xs">
-                  {formatDate(payment.paymentDate)}
+                  {formatDate(payment.paymentDate, language)}
                 </TableCell>
                 <TableCell className="font-medium tabular-nums">
-                  {formatCurrency(payment.amount)}
+                  {formatCurrency(payment.amount, language)}
                 </TableCell>
                 <TableCell>
                   {t(paymentMethodLabelKeys[payment.paymentMethod])}

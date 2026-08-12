@@ -13,14 +13,11 @@ import {
   Button,
 } from "@/components/ui";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
+import { formatDate } from "@/lib/formatters";
 import { useTranslation } from "@/hooks/use-translation";
 import { GoodsReceiptStatusBadge } from "./GoodsReceiptStatusBadge";
 import { useCancelGoodsReceipt } from "../hooks/useCancelGoodsReceipt";
 import type { GoodsReceiptListItem } from "../types/goods-receipt.types";
-
-function formatDate(value: string): string {
-  return new Date(`${value}T00:00:00`).toLocaleDateString("ar-SA");
-}
 
 interface GoodsReceiptsTableProps {
   receipts: GoodsReceiptListItem[];
@@ -41,7 +38,7 @@ export default function GoodsReceiptsTable({
   totalPages,
   onPageChange,
 }: GoodsReceiptsTableProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [cancelId, setCancelId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const cancelMutation = useCancelGoodsReceipt();
@@ -140,7 +137,7 @@ export default function GoodsReceiptsTable({
                 </TableCell>
                 <TableCell>{receipt.supplierName}</TableCell>
                 <TableCell className="text-muted-foreground text-xs">
-                  {formatDate(receipt.receiptDate)}
+                  {formatDate(receipt.receiptDate, language)}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
                   {receipt.warehouseName}

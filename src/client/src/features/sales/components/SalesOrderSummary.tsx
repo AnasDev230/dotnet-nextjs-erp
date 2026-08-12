@@ -6,17 +6,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui";
 import type { SalesOrderFormData } from "../schemas/sales-order.schema";
 import type { TaxRate } from "../types/sales-order.types";
 import { useTranslation } from "@/hooks/use-translation";
+import { formatCurrency } from "@/lib/formatters";
 
 interface SalesOrderSummaryProps {
   control: Control<SalesOrderFormData>;
   taxRates: TaxRate[];
-}
-
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ر.س`;
 }
 
 function roundMoney(value: number): number {
@@ -27,7 +21,7 @@ export default function SalesOrderSummary({
   control,
   taxRates,
 }: SalesOrderSummaryProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const items = useWatch<SalesOrderFormData, "items">({
     control,
     name: "items",
@@ -88,7 +82,7 @@ export default function SalesOrderSummary({
         <div className="border-t border-border" />
         <div className="flex items-center justify-between text-sm">
           <span>{t("sales.orders.subtotal")}</span>
-          <span>{formatCurrency(subtotal)}</span>
+          <span>{formatCurrency(subtotal, language)}</span>
         </div>
         <div className="flex items-center justify-between text-sm">
           <span>
@@ -101,14 +95,14 @@ export default function SalesOrderSummary({
             )}
           </span>
           <span className="text-destructive">
-            {orderDiscount > 0 ? `-${formatCurrency(orderDiscount)}` : formatCurrency(orderDiscount)}
+            {orderDiscount > 0 ? `-${formatCurrency(orderDiscount, language)}` : formatCurrency(orderDiscount, language)}
           </span>
         </div>
 
         <div className="border-t border-border" />
         <div className="flex items-center justify-between text-sm">
           <span>{t("sales.orders.taxable")}</span>
-          <span>{formatCurrency(taxableAmount)}</span>
+          <span>{formatCurrency(taxableAmount, language)}</span>
         </div>
         <div className="flex items-center justify-between text-sm">
           <span>
@@ -121,13 +115,13 @@ export default function SalesOrderSummary({
             )}
           </span>
           <span>
-            {taxAmount > 0 ? `+${formatCurrency(taxAmount)}` : formatCurrency(taxAmount)}
+            {taxAmount > 0 ? `+${formatCurrency(taxAmount, language)}` : formatCurrency(taxAmount, language)}
           </span>
         </div>
 
         <div className="flex items-center justify-between border-t border-border pt-3 text-base font-semibold">
           <span>{t("sales.orders.grandTotal")}</span>
-          <span className="text-primary">{formatCurrency(netAmount)}</span>
+          <span className="text-primary">{formatCurrency(netAmount, language)}</span>
         </div>
       </CardContent>
     </Card>

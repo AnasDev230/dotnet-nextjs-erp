@@ -33,19 +33,13 @@ import { useCustomer } from "@/features/sales/hooks/useCustomer";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
 import { useTranslation } from "@/hooks/use-translation";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 
 function todayString(): string {
   const now = new Date();
   const offset = now.getTimezoneOffset();
   const local = new Date(now.getTime() - offset * 60000);
   return local.toISOString().slice(0, 10);
-}
-
-function formatCurrency(value: number): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ر.س`;
 }
 
 function addDays(dateString: string, days: number): string {
@@ -58,7 +52,7 @@ function addDays(dateString: string, days: number): string {
 
 export default function InvoiceForm() {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const createMutation = useCreateInvoice();
   const isPending = createMutation.isPending;
   const error = createMutation.error;
@@ -90,7 +84,7 @@ export default function InvoiceForm() {
     () =>
       (confirmedOrdersData?.items ?? []).map((o) => ({
         value: o.id,
-        label: `${o.orderNumber} — ${o.customerName} (${formatCurrency(o.netAmount)})`,
+        label: `${o.orderNumber} — ${o.customerName} (${formatCurrency(o.netAmount, language)})`,
       })),
     [confirmedOrdersData]
   );
@@ -193,7 +187,7 @@ export default function InvoiceForm() {
                           {t("finance.invoices.orderDate")}
                         </Label>
                         <div className="mt-1 text-sm font-medium">
-                          {order.orderDate}
+                          {formatDate(order.orderDate, language)}
                         </div>
                       </div>
                       <div>
@@ -202,9 +196,7 @@ export default function InvoiceForm() {
                         </Label>
                         <div className="mt-1 text-sm font-medium">
                           {dueDate
-                            ? new Date(`${dueDate}T00:00:00`).toLocaleDateString(
-                                "ar-SA"
-                              )
+                            ? formatDate(`${dueDate}T00:00:00`, language)
                             : "—"}
                           {paymentTerms > 0 && (
                             <span className="text-xs text-muted-foreground">
@@ -238,10 +230,10 @@ export default function InvoiceForm() {
                             </TableCell>
                             <TableCell className="tabular-nums">{item.quantity}</TableCell>
                             <TableCell className="text-muted-foreground tabular-nums">
-                              {formatCurrency(item.unitPrice)}
+                              {formatCurrency(item.unitPrice, language)}
                             </TableCell>
                             <TableCell className="text-end font-medium tabular-nums">
-                              {formatCurrency(item.lineTotal)}
+                              {formatCurrency(item.lineTotal, language)}
                             </TableCell>
                           </TableRow>
                         ))}
@@ -254,28 +246,28 @@ export default function InvoiceForm() {
                           <span className="text-muted-foreground">
                             {t("finance.invoices.subtotal")}
                           </span>
-                          <span>{formatCurrency(order.subtotal)}</span>
+                          <span>{formatCurrency(order.subtotal, language)}</span>
                         </div>
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-muted-foreground">{t("finance.invoices.discount")}</span>
                           <span className="text-destructive">
                             {order.discountAmount > 0
-                              ? `-${formatCurrency(order.discountAmount)}`
-                              : formatCurrency(order.discountAmount)}
+                              ? `-${formatCurrency(order.discountAmount, language)}`
+                              : formatCurrency(order.discountAmount, language)}
                           </span>
                         </div>
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-muted-foreground">{t("finance.invoices.tax")}</span>
                           <span>
                             {order.taxAmount > 0
-                              ? `+${formatCurrency(order.taxAmount)}`
-                              : formatCurrency(order.taxAmount)}
+                              ? `+${formatCurrency(order.taxAmount, language)}`
+                              : formatCurrency(order.taxAmount, language)}
                           </span>
                         </div>
                         <div className="flex items-center justify-between border-t border-border pt-2 text-base font-semibold">
                           <span>{t("finance.invoices.finalTotal")}</span>
                           <span className="text-primary">
-                            {formatCurrency(order.netAmount)}
+                            {formatCurrency(order.netAmount, language)}
                           </span>
                         </div>
                       </div>

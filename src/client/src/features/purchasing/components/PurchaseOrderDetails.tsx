@@ -20,20 +20,10 @@ import {
 import { PurchaseOrderStatusBadge } from "./PurchaseOrderStatusBadge";
 import { PurchaseOrderStatusActions } from "./PurchaseOrderStatusActions";
 import { usePurchaseOrder } from "../hooks/usePurchaseOrder";
+import { formatCurrency, formatDate } from "@/lib/formatters";
 import { useTranslation } from "@/hooks/use-translation";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
-
-function formatCurrency(value: number, currency: string = "ر.س"): string {
-  return `${value.toLocaleString("ar-SA", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  })} ${currency}`;
-}
-
-function formatDate(value: string): string {
-  return new Date(`${value}T00:00:00`).toLocaleDateString("ar-SA");
-}
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -50,7 +40,7 @@ export default function PurchaseOrderDetails({
   orderId: string;
 }) {
   const router = useRouter();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { data: order, isLoading, error } = usePurchaseOrder(orderId);
 
   if (isLoading) {
@@ -113,21 +103,21 @@ export default function PurchaseOrderDetails({
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <InfoRow label={t("purchasing.orders.supplier")} value={order.supplierName} />
-            <InfoRow label={t("purchasing.orders.orderDate")} value={formatDate(order.orderDate)} />
+            <InfoRow label={t("purchasing.orders.orderDate")} value={formatDate(order.orderDate, language)} />
             <InfoRow
               label={t("purchasing.orders.expectedDate")}
-              value={order.expectedDate ? formatDate(order.expectedDate) : "—"}
+              value={order.expectedDate ? formatDate(order.expectedDate, language) : "—"}
             />
             <InfoRow label={t("purchasing.orders.currency")} value={order.currency} />
             <InfoRow
               label={t("common.status")}
               value={<PurchaseOrderStatusBadge status={order.status} />}
             />
-            <InfoRow label={t("purchasing.orders.totalAmount")} value={formatCurrency(order.totalAmount, order.currency)} />
+            <InfoRow label={t("purchasing.orders.totalAmount")} value={formatCurrency(order.totalAmount, language)} />
             {order.approvedByName && (
               <InfoRow
                 label={t("purchasing.orders.approvedBy")}
-                value={`${order.approvedByName}${order.approvedAt ? ` (${new Date(order.approvedAt).toLocaleDateString("ar-SA")})` : ""}`}
+                value={`${order.approvedByName}${order.approvedAt ? ` (${formatDate(order.approvedAt, language)})` : ""}`}
               />
             )}
             {order.terms && (
@@ -166,10 +156,10 @@ export default function PurchaseOrderDetails({
                   <TableCell className="tabular-nums">{item.receivedQty}</TableCell>
                   <TableCell className="tabular-nums">{item.remainingQty}</TableCell>
                   <TableCell className="text-muted-foreground tabular-nums">
-                    {formatCurrency(item.unitPrice, order.currency)}
+                    {formatCurrency(item.unitPrice, language)}
                   </TableCell>
                   <TableCell className="text-end font-medium tabular-nums">
-                    {formatCurrency(item.lineTotal, order.currency)}
+                    {formatCurrency(item.lineTotal, language)}
                   </TableCell>
                 </TableRow>
               ))}

@@ -12,6 +12,7 @@ import {
 import { Trash2 } from "lucide-react";
 import { Button, Input, Label } from "@/components/ui";
 import { useTranslation } from "@/hooks/use-translation";
+import { formatCurrency } from "@/lib/formatters";
 import type { ProductListItem } from "@/features/inventory/types/product.types";
 import type {
   SalesOrderFormData,
@@ -53,7 +54,7 @@ export default function SalesOrderItemRow({
   onRemove,
   canRemove,
 }: SalesOrderItemRowProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const watchedItem = useWatch<SalesOrderFormData, `items.${number}`>({
     control,
     name: `items.${index}`,
@@ -199,11 +200,7 @@ export default function SalesOrderItemRow({
       <div className="space-y-2">
         <Label className="text-xs">{t("sales.orders.lineTotal")}</Label>
         <div className="flex h-10 items-center rounded-md border border-input bg-muted px-3 text-sm font-medium">
-          {lineTotal.toLocaleString("ar-SA", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}{" "}
-          ر.س
+          {formatCurrency(lineTotal, language)}
         </div>
       </div>
 
