@@ -5,19 +5,13 @@ import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input, Button, Select } from "@/components/ui";
 import { useDepartmentsForDropdown } from "../hooks/useDepartmentsForDropdown";
-import { EmployeeStatus } from "@/types/hr";
-
-const statusOptions = [
-  { value: "all", label: "كل الحالات" },
-  { value: "0", label: "نشط" },
-  { value: "1", label: "في إجازة" },
-  { value: "2", label: "مفصول" },
-];
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function EmployeeFilters() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const searchParamsRef = useRef(searchParams);
   searchParamsRef.current = searchParams;
@@ -62,11 +56,18 @@ export default function EmployeeFilters() {
   }, [status, updateParams, searchParams]);
 
   const departmentOptions = [
-    { value: "all", label: "كل الأقسام" },
+    { value: "all", label: t("hr.employees.allDepartments") },
     ...(allDepartments ?? []).map((d) => ({
       value: d.id,
       label: d.name,
     })),
+  ];
+
+  const statusOptions = [
+    { value: "all", label: t("common.allStatuses") },
+    { value: "0", label: t("hr.employees.active") },
+    { value: "1", label: t("hr.employees.onLeave") },
+    { value: "2", label: t("hr.employees.terminated") },
   ];
 
   return (
@@ -74,7 +75,7 @@ export default function EmployeeFilters() {
       <div className="relative flex-1 min-w-[200px]">
         <Search className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="بحث بالاسم أو الرقم الوظيفي..."
+          placeholder={t("hr.employees.searchPlaceholder")}
           className="h-10 pr-10"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -106,7 +107,7 @@ export default function EmployeeFilters() {
             router.push(pathname);
           }}
         >
-          مسح الفلترة
+          {t("common.clearFilters")}
         </Button>
       )}
     </div>

@@ -24,20 +24,8 @@ import { useCreateEmployee } from "../hooks/useCreateEmployee";
 import { useUpdateEmployee } from "../hooks/useUpdateEmployee";
 import { useDepartmentsForDropdown } from "../hooks/useDepartmentsForDropdown";
 import { useEmployeesForDropdown } from "../hooks/useEmployeesForDropdown";
+import { useTranslation } from "@/hooks/use-translation";
 import type { EmployeeDetail } from "@/types/hr";
-
-const employmentTypeOptions = [
-  { value: "0", label: "دوام كامل" },
-  { value: "1", label: "دوام جزئي" },
-  { value: "2", label: "عقد" },
-  { value: "3", label: "تدريب" },
-];
-
-const statusOptions = [
-  { value: "0", label: "نشط" },
-  { value: "1", label: "في إجازة" },
-  { value: "2", label: "مفصول" },
-];
 
 interface EmployeeFormProps {
   mode: "create" | "edit";
@@ -46,6 +34,7 @@ interface EmployeeFormProps {
 
 export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const isEdit = mode === "edit";
 
   const createMutation = useCreateEmployee();
@@ -77,7 +66,7 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
   });
 
   const departmentOptions = [
-    { value: "", label: "بدون قسم" },
+    { value: "", label: t("hr.employees.withoutDepartment") },
     ...(allDepartments ?? []).map((d) => ({
       value: d.id,
       label: `${d.code} — ${d.name}`,
@@ -85,13 +74,26 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
   ];
 
   const managerOptions = [
-    { value: "", label: "بدون مدير" },
+    { value: "", label: t("hr.employees.withoutManager") },
     ...(allEmployees ?? [])
       .filter((e) => e.id !== employee?.id)
       .map((e) => ({
         value: e.id,
         label: e.fullName,
       })),
+  ];
+
+  const employmentTypeOptions = [
+    { value: "0", label: t("hr.employees.fullTime") },
+    { value: "1", label: t("hr.employees.partTime") },
+    { value: "2", label: t("hr.employees.contract") },
+    { value: "3", label: t("hr.employees.intern") },
+  ];
+
+  const statusOptions = [
+    { value: "0", label: t("hr.employees.active") },
+    { value: "1", label: t("hr.employees.onLeave") },
+    { value: "2", label: t("hr.employees.terminated") },
   ];
 
   const onSubmit = async (data: EmployeeFormData) => {
@@ -128,13 +130,13 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
     <Card className="border-border bg-card">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg">
-          {isEdit ? "تعديل الموظف" : "إضافة موظف جديد"}
+          {isEdit ? t("hr.employees.editTitle") : t("hr.employees.newTitle")}
         </CardTitle>
       </CardHeader>
       <CardContent>
         {error && (
           <Alert variant="destructive" className="mb-6">
-            <p>حدث خطأ: {(error as any)?.response?.data?.message || error.message}</p>
+            <p>{t("common.error")}: {(error as any)?.response?.data?.message || error.message}</p>
           </Alert>
         )}
 
@@ -142,11 +144,11 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
           <div className="grid gap-4 md:grid-cols-2">
             {/* First Name */}
             <div className="space-y-2">
-              <Label htmlFor="firstName">الاسم الأول *</Label>
+              <Label htmlFor="firstName">{t("hr.employees.firstNameRequired")}</Label>
               <Input
                 id="firstName"
                 {...form.register("firstName")}
-                placeholder="أدخل الاسم الأول"
+                placeholder={t("hr.employees.enterFirstName")}
                 className="h-10"
               />
               {form.formState.errors.firstName && (
@@ -158,11 +160,11 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
 
             {/* Last Name */}
             <div className="space-y-2">
-              <Label htmlFor="lastName">اسم العائلة *</Label>
+              <Label htmlFor="lastName">{t("hr.employees.lastNameRequired")}</Label>
               <Input
                 id="lastName"
                 {...form.register("lastName")}
-                placeholder="أدخل اسم العائلة"
+                placeholder={t("hr.employees.enterLastName")}
                 className="h-10"
               />
               {form.formState.errors.lastName && (
@@ -174,7 +176,7 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
 
             {/* Email */}
             <div className="space-y-2">
-              <Label htmlFor="email">البريد الإلكتروني</Label>
+              <Label htmlFor="email">{t("common.email")}</Label>
               <Input
                 id="email"
                 type="email"
@@ -191,7 +193,7 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
 
             {/* Phone */}
             <div className="space-y-2">
-              <Label htmlFor="phone">رقم الهاتف</Label>
+              <Label htmlFor="phone">{t("common.phone")}</Label>
               <Input
                 id="phone"
                 {...form.register("phone")}
@@ -202,7 +204,7 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
 
             {/* Hire Date */}
             <div className="space-y-2">
-              <Label htmlFor="hireDate">تاريخ التعيين *</Label>
+              <Label htmlFor="hireDate">{t("hr.employees.hireDateRequired")}</Label>
               <Input
                 id="hireDate"
                 type="date"
@@ -218,35 +220,35 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
 
             {/* Job Title */}
             <div className="space-y-2">
-              <Label htmlFor="jobTitle">المسمى الوظيفي</Label>
+              <Label htmlFor="jobTitle">{t("hr.employees.jobTitle")}</Label>
               <Input
                 id="jobTitle"
                 {...form.register("jobTitle")}
-                placeholder="مثال: مهندس برمجيات"
+                placeholder={t("hr.employees.enterJobTitle")}
                 className="h-10"
               />
             </div>
 
             {/* Department */}
             <div className="space-y-2">
-              <Label htmlFor="departmentId">القسم</Label>
+              <Label htmlFor="departmentId">{t("hr.employees.department")}</Label>
               <Select
                 id="departmentId"
                 {...form.register("departmentId")}
                 options={departmentOptions}
-                placeholder="اختر القسم"
+                placeholder={t("hr.employees.selectDepartment")}
                 className="h-10"
               />
             </div>
 
             {/* Employment Type */}
             <div className="space-y-2">
-              <Label htmlFor="employmentType">نوع التوظيف *</Label>
+              <Label htmlFor="employmentType">{t("hr.employees.employmentTypeLabel")}</Label>
               <Select
                 id="employmentType"
                 {...form.register("employmentType", { valueAsNumber: true })}
                 options={employmentTypeOptions}
-                placeholder="اختر نوع التوظيف"
+                placeholder={t("hr.employees.selectEmploymentType")}
                 className="h-10"
               />
               {form.formState.errors.employmentType && (
@@ -258,7 +260,7 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
 
             {/* Salary */}
             <div className="space-y-2">
-              <Label htmlFor="salary">الراتب *</Label>
+              <Label htmlFor="salary">{t("hr.employees.salaryRequired")}</Label>
               <Input
                 id="salary"
                 type="number"
@@ -277,12 +279,12 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
 
             {/* Manager */}
             <div className="space-y-2">
-              <Label htmlFor="managerId">المدير المباشر</Label>
+              <Label htmlFor="managerId">{t("hr.employees.manager")}</Label>
               <Select
                 id="managerId"
                 {...form.register("managerId")}
                 options={managerOptions}
-                placeholder="اختر المدير المباشر"
+                placeholder={t("hr.employees.selectManager")}
                 className="h-10"
               />
             </div>
@@ -290,12 +292,12 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
             {/* Status — edit only */}
             {isEdit && (
               <div className="space-y-2">
-                <Label htmlFor="status">الحالة *</Label>
+                <Label htmlFor="status">{t("hr.employees.statusLabel")}</Label>
                 <Select
                   id="status"
                   {...form.register("status", { valueAsNumber: true })}
                   options={statusOptions}
-                  placeholder="اختر الحالة"
+                  placeholder={t("hr.employees.selectStatus")}
                   className="h-10"
                 />
                 {form.formState.errors.status && (
@@ -309,11 +311,11 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
 
           {/* Notes */}
           <div className="space-y-2">
-            <Label htmlFor="notes">ملاحظات</Label>
+            <Label htmlFor="notes">{t("hr.employees.notesLabel")}</Label>
             <Textarea
               id="notes"
               {...form.register("notes")}
-              placeholder="ملاحظات إضافية (اختياري)"
+              placeholder={t("hr.employees.notesPlaceholder")}
               rows={3}
             />
           </div>
@@ -322,14 +324,14 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
           <div className="flex items-center gap-3 pt-4 border-t border-border">
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              {isEdit ? "حفظ التغييرات" : "إضافة الموظف"}
+              {isEdit ? t("hr.employees.saveChanges") : t("hr.employees.addNew")}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.push("/hr/employees")}
             >
-              إلغاء
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

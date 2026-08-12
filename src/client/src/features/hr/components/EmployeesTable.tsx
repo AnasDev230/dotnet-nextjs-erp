@@ -15,18 +15,13 @@ import {
 } from "@/components/ui";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { useDeleteEmployee } from "../hooks/useDeleteEmployee";
+import { useTranslation } from "@/hooks/use-translation";
 import { EmployeeStatus, type EmployeeListItem } from "@/types/hr";
 
 const statusBadgeVariant: Record<EmployeeStatus, "success" | "warning" | "neutral"> = {
   [EmployeeStatus.Active]: "success",
   [EmployeeStatus.OnLeave]: "warning",
   [EmployeeStatus.Terminated]: "neutral",
-};
-
-const statusLabel: Record<EmployeeStatus, string> = {
-  [EmployeeStatus.Active]: "نشط",
-  [EmployeeStatus.OnLeave]: "في إجازة",
-  [EmployeeStatus.Terminated]: "مفصول",
 };
 
 interface EmployeesTableProps {
@@ -48,6 +43,7 @@ export default function EmployeesTable({
   totalPages,
   onPageChange,
 }: EmployeesTableProps) {
+  const { t } = useTranslation();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeleteEmployee();
@@ -63,10 +59,16 @@ export default function EmployeesTable({
         setErrorMessage(
           error?.response?.data?.message ||
             error?.message ||
-            "حدث خطأ غير متوقع"
+            t("common.unexpectedError")
         );
       },
     });
+  };
+
+  const statusLabel = (status: EmployeeStatus): string => {
+    if (status === EmployeeStatus.Active) return t("hr.employees.active");
+    if (status === EmployeeStatus.OnLeave) return t("hr.employees.onLeave");
+    return t("hr.employees.terminated");
   };
 
   if (isLoading) {
@@ -75,13 +77,13 @@ export default function EmployeesTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>الرقم الوظيفي</TableHead>
-              <TableHead>الاسم</TableHead>
-              <TableHead>القسم</TableHead>
-              <TableHead>المسمى الوظيفي</TableHead>
-              <TableHead>تاريخ التعيين</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("hr.employees.employeeNoColumn")}</TableHead>
+              <TableHead>{t("hr.employees.nameColumn")}</TableHead>
+              <TableHead>{t("hr.employees.department")}</TableHead>
+              <TableHead>{t("hr.employees.jobTitleColumn")}</TableHead>
+              <TableHead>{t("hr.employees.hireDateColumn")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -106,12 +108,12 @@ export default function EmployeesTable({
         <div className="rounded-full bg-muted p-4 mb-4">
           <Users className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-1">لا يوجد موظفون</h3>
-        <p className="text-sm text-muted-foreground mb-4">لم يتم إضافة أي موظفين بعد</p>
+        <h3 className="text-lg font-semibold mb-1">{t("hr.employees.emptyTitle")}</h3>
+        <p className="text-sm text-muted-foreground mb-4">{t("hr.employees.emptyDescription")}</p>
         <Link href="/hr/employees/new">
           <Button>
             <Users className="ml-2 h-4 w-4" />
-            إضافة موظف
+            {t("hr.employees.new")}
           </Button>
         </Link>
       </div>
@@ -124,13 +126,13 @@ export default function EmployeesTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>الرقم الوظيفي</TableHead>
-              <TableHead>الاسم</TableHead>
-              <TableHead>القسم</TableHead>
-              <TableHead>المسمى الوظيفي</TableHead>
-              <TableHead>تاريخ التعيين</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("hr.employees.employeeNoColumn")}</TableHead>
+              <TableHead>{t("hr.employees.nameColumn")}</TableHead>
+              <TableHead>{t("hr.employees.department")}</TableHead>
+              <TableHead>{t("hr.employees.jobTitleColumn")}</TableHead>
+              <TableHead>{t("hr.employees.hireDateColumn")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -147,7 +149,7 @@ export default function EmployeesTable({
                 </TableCell>
                 <TableCell>
                   <Badge variant={statusBadgeVariant[employee.status]}>
-                    {statusLabel[employee.status]}
+                    {statusLabel(employee.status)}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-left">
@@ -180,7 +182,7 @@ export default function EmployeesTable({
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-4">
           <p className="text-sm text-muted-foreground">
-            عرض {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} من {totalCount}
+            {t("common.showing")} {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} {t("common.of")} {totalCount}
           </p>
           <div className="flex gap-1">
             <Button
@@ -189,7 +191,7 @@ export default function EmployeesTable({
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
             >
-              السابق
+              {t("common.previous")}
             </Button>
             <Button
               variant="outline"
@@ -197,7 +199,7 @@ export default function EmployeesTable({
               disabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
             >
-              التالي
+              {t("common.next")}
             </Button>
           </div>
         </div>
@@ -211,9 +213,9 @@ export default function EmployeesTable({
             setErrorMessage(null);
           }
         }}
-        title="حذف الموظف"
-        description="هل أنت متأكد من حذف هذا الموظف؟ لا يمكن حذف موظف يشرف على موظفين آخرين أو يدير أحد الأقسام. لا يمكن التراجع عن هذا الإجراء."
-        confirmLabel="حذف"
+        title={t("hr.employees.deleteTitle")}
+        description={t("hr.employees.deleteDescription")}
+        confirmLabel={t("common.delete")}
         variant="danger"
         isLoading={deleteMutation.isPending}
         errorMessage={errorMessage}

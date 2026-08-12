@@ -15,6 +15,7 @@ import type {
   PurchasesByPeriodItem,
   TopSupplierItem,
 } from "@/types/reports";
+import { useTranslation } from "@/hooks/use-translation";
 
 function formatCurrency(value: number): string {
   return `${value.toLocaleString("ar-SA", {
@@ -24,6 +25,7 @@ function formatCurrency(value: number): string {
 }
 
 function PurchasesReportContent() {
+  const { t } = useTranslation();
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
@@ -37,19 +39,19 @@ function PurchasesReportContent() {
   const periodColumns: ReportColumn<PurchasesByPeriodItem>[] = [
     {
       key: "period",
-      header: "الفترة",
+      header: t("reports.period"),
       render: (item) => item.period,
     },
     {
       key: "spending",
-      header: "الإنفاق",
+      header: t("reports.spending"),
       render: (item) => (
         <span className="font-medium">{formatCurrency(item.spending)}</span>
       ),
     },
     {
       key: "orderCount",
-      header: "عدد الطلبات",
+      header: t("reports.orderCount"),
       render: (item) => item.orderCount.toLocaleString("ar-SA"),
     },
   ];
@@ -57,19 +59,19 @@ function PurchasesReportContent() {
   const supplierColumns: ReportColumn<TopSupplierItem>[] = [
     {
       key: "supplierName",
-      header: "المورد",
+      header: t("reports.supplier"),
       render: (item) => item.supplierName,
     },
     {
       key: "totalAmount",
-      header: "إجمالي المبلغ",
+      header: t("reports.totalAmount"),
       render: (item) => (
         <span className="font-medium">{formatCurrency(item.totalAmount)}</span>
       ),
     },
     {
       key: "orderCount",
-      header: "عدد الطلبات",
+      header: t("reports.orderCount"),
       render: (item) => item.orderCount.toLocaleString("ar-SA"),
     },
   ];
@@ -77,11 +79,11 @@ function PurchasesReportContent() {
   if (isError) {
     return (
       <Alert variant="destructive">
-        <AlertTitle>خطأ</AlertTitle>
+        <AlertTitle>{t("reports.error")}</AlertTitle>
         <AlertDescription>
-          فشل تحميل تقرير المشتريات.
+          {t("reports.purchasesLoadFailed")}
           <Button variant="outline" size="sm" className="mr-2" onClick={() => refetch()}>
-            إعادة المحاولة
+            {t("reports.retry")}
           </Button>
         </AlertDescription>
       </Alert>
@@ -92,9 +94,9 @@ function PurchasesReportContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">تقرير المشتريات</h1>
+          <h1 className="text-2xl font-semibold">{t("reports.purchases")}</h1>
           <p className="text-muted-foreground text-sm">
-            ملخص الإنفاق وأوامر الشراء
+            {t("reports.purchasesDescription")}
           </p>
         </div>
         <ExportCsvButton onClick={() => downloadPurchasesCsv(params)} />
@@ -109,28 +111,28 @@ function PurchasesReportContent() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <ReportSummaryCard
-          title="إجمالي الإنفاق"
+          title={t("reports.totalSpending")}
           value={formatCurrency(data?.totalSpending ?? 0)}
           icon={TrendingDown}
           iconClassName="text-primary"
           isLoading={isLoading}
         />
         <ReportSummaryCard
-          title="عدد أوامر الشراء"
+          title={t("reports.totalPurchaseOrders")}
           value={(data?.totalOrders ?? 0).toLocaleString("ar-SA")}
           icon={ShoppingBag}
           iconClassName="text-blue-600"
           isLoading={isLoading}
         />
         <ReportSummaryCard
-          title="متوسط قيمة الطلب"
+          title={t("reports.averageOrderValue")}
           value={formatCurrency(data?.averageOrderValue ?? 0)}
           icon={ShoppingBag}
           iconClassName="text-violet-600"
           isLoading={isLoading}
         />
         <ReportSummaryCard
-          title="عدد الموردين"
+          title={t("reports.totalSuppliers")}
           value={(data?.totalSuppliers ?? 0).toLocaleString("ar-SA")}
           icon={Truck}
           iconClassName="text-emerald-600"
@@ -140,14 +142,14 @@ function PurchasesReportContent() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <ReportDataTable
-          title="الإنفاق حسب الفترة"
+          title={t("reports.spendingByPeriod")}
           columns={periodColumns}
           data={data?.byPeriod}
           isLoading={isLoading}
           keyAccessor={(item) => item.period}
         />
         <ReportDataTable
-          title="أعلى الموردين إسهامًا"
+          title={t("reports.topContributingSuppliers")}
           columns={supplierColumns}
           data={data?.topSuppliers}
           isLoading={isLoading}

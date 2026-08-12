@@ -14,6 +14,7 @@ import {
   TableCell,
 } from "@/components/ui";
 import type { LowStockItem } from "@/types/reports";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface LowStockAlertListProps {
   items: LowStockItem[] | undefined;
@@ -24,12 +25,14 @@ export default function LowStockAlertList({
   items,
   isLoading,
 }: LowStockAlertListProps) {
+  const { t } = useTranslation();
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <AlertTriangle className="h-5 w-5 text-amber-500" />
-          أصناف المخزون المنخفض
+          {t("reports.lowStock")}
         </CardTitle>
       </CardHeader>
       {isLoading ? (
@@ -54,7 +57,7 @@ export default function LowStockAlertList({
               <PackageCheck className="h-6 w-6 text-emerald-600" />
             </div>
             <p className="text-sm font-medium text-emerald-600">
-              جميع المنتجات بمستوى كافٍ
+              {t("dashboard.stockSufficient")}
             </p>
           </div>
         </CardContent>
@@ -62,10 +65,10 @@ export default function LowStockAlertList({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>المنتج</TableHead>
-              <TableHead>المستودع</TableHead>
-              <TableHead>الكمية</TableHead>
-              <TableHead>حد إعادة الطلب</TableHead>
+              <TableHead>{t("inventory.products.name")}</TableHead>
+              <TableHead>{t("inventory.levels.warehouse")}</TableHead>
+              <TableHead>{t("common.quantity")}</TableHead>
+              <TableHead>{t("inventory.products.reorderLevel")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>

@@ -5,10 +5,12 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui";
 import DepartmentForm from "@/features/hr/components/DepartmentForm";
 import { useDepartment } from "@/features/hr/hooks/useDepartment";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function EditDepartmentPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
+  const { t } = useTranslation();
   const { data: department, isLoading, error } = useDepartment(params.id);
 
   if (isLoading) {
@@ -27,9 +29,9 @@ export default function EditDepartmentPage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">القسم غير موجود</h1>
+            <h1 className="text-2xl font-semibold">{t("hr.departments.notFound")}</h1>
             <p className="text-muted-foreground text-sm">
-              لم يتم العثور على القسم المطلوب
+              {t("hr.departments.notFoundDescription")}
             </p>
           </div>
         </div>
@@ -45,7 +47,7 @@ export default function EditDepartmentPage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">تعديل القسم</h1>
+            <h1 className="text-2xl font-semibold">{t("hr.departments.editTitle")}</h1>
             <p className="text-muted-foreground text-sm">
               {department.code} — {department.name}
             </p>

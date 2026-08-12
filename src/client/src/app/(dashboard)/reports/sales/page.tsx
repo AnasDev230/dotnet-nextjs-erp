@@ -15,6 +15,7 @@ import type {
   SalesByPeriodItem,
   TopCustomerItem,
 } from "@/types/reports";
+import { useTranslation } from "@/hooks/use-translation";
 
 function formatCurrency(value: number): string {
   return `${value.toLocaleString("ar-SA", {
@@ -24,6 +25,7 @@ function formatCurrency(value: number): string {
 }
 
 function SalesReportContent() {
+  const { t } = useTranslation();
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
@@ -37,19 +39,19 @@ function SalesReportContent() {
   const periodColumns: ReportColumn<SalesByPeriodItem>[] = [
     {
       key: "period",
-      header: "الفترة",
+      header: t("reports.period"),
       render: (item) => item.period,
     },
     {
       key: "revenue",
-      header: "الإيراد",
+      header: t("reports.revenue"),
       render: (item) => (
         <span className="font-medium">{formatCurrency(item.revenue)}</span>
       ),
     },
     {
       key: "orderCount",
-      header: "عدد الطلبات",
+      header: t("reports.orderCount"),
       render: (item) => item.orderCount.toLocaleString("ar-SA"),
     },
   ];
@@ -57,19 +59,19 @@ function SalesReportContent() {
   const customerColumns: ReportColumn<TopCustomerItem>[] = [
     {
       key: "customerName",
-      header: "العميل",
+      header: t("reports.customer"),
       render: (item) => item.customerName,
     },
     {
       key: "totalAmount",
-      header: "إجمالي المبلغ",
+      header: t("reports.totalAmount"),
       render: (item) => (
         <span className="font-medium">{formatCurrency(item.totalAmount)}</span>
       ),
     },
     {
       key: "orderCount",
-      header: "عدد الطلبات",
+      header: t("reports.orderCount"),
       render: (item) => item.orderCount.toLocaleString("ar-SA"),
     },
   ];
@@ -77,11 +79,11 @@ function SalesReportContent() {
   if (isError) {
     return (
       <Alert variant="destructive">
-        <AlertTitle>خطأ</AlertTitle>
+        <AlertTitle>{t("reports.error")}</AlertTitle>
         <AlertDescription>
-          فشل تحميل تقرير المبيعات.
+          {t("reports.salesLoadFailed")}
           <Button variant="outline" size="sm" className="mr-2" onClick={() => refetch()}>
-            إعادة المحاولة
+            {t("reports.retry")}
           </Button>
         </AlertDescription>
       </Alert>
@@ -92,9 +94,9 @@ function SalesReportContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">تقرير المبيعات</h1>
+          <h1 className="text-2xl font-semibold">{t("reports.sales")}</h1>
           <p className="text-muted-foreground text-sm">
-            ملخص أداء المبيعات والإيرادات
+            {t("reports.salesDescription")}
           </p>
         </div>
         <ExportCsvButton onClick={() => downloadSalesCsv(params)} />
@@ -109,28 +111,28 @@ function SalesReportContent() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <ReportSummaryCard
-          title="إجمالي الإيرادات"
+          title={t("reports.totalRevenue")}
           value={formatCurrency(data?.totalRevenue ?? 0)}
           icon={TrendingUp}
           iconClassName="text-primary"
           isLoading={isLoading}
         />
         <ReportSummaryCard
-          title="عدد الطلبات"
+          title={t("reports.totalOrders")}
           value={(data?.totalOrders ?? 0).toLocaleString("ar-SA")}
           icon={ShoppingCart}
           iconClassName="text-blue-600"
           isLoading={isLoading}
         />
         <ReportSummaryCard
-          title="متوسط قيمة الطلب"
+          title={t("reports.averageOrderValue")}
           value={formatCurrency(data?.averageOrderValue ?? 0)}
           icon={ShoppingCart}
           iconClassName="text-violet-600"
           isLoading={isLoading}
         />
         <ReportSummaryCard
-          title="عدد العملاء"
+          title={t("reports.totalCustomers")}
           value={(data?.totalCustomers ?? 0).toLocaleString("ar-SA")}
           icon={Users}
           iconClassName="text-emerald-600"
@@ -140,14 +142,14 @@ function SalesReportContent() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <ReportDataTable
-          title="الإيرادات حسب الفترة"
+          title={t("reports.revenueByPeriod")}
           columns={periodColumns}
           data={data?.byPeriod}
           isLoading={isLoading}
           keyAccessor={(item) => item.period}
         />
         <ReportDataTable
-          title="أعلى العملاء إسهامًا"
+          title={t("reports.topContributingCustomers")}
           columns={customerColumns}
           data={data?.topCustomers}
           isLoading={isLoading}

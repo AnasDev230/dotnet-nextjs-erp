@@ -24,6 +24,7 @@ import { useCreateDepartment } from "../hooks/useCreateDepartment";
 import { useUpdateDepartment } from "../hooks/useUpdateDepartment";
 import { useDepartmentsForDropdown } from "../hooks/useDepartmentsForDropdown";
 import { useEmployeesForDropdown } from "../hooks/useEmployeesForDropdown";
+import { useTranslation } from "@/hooks/use-translation";
 import type { DepartmentDetail } from "@/types/hr";
 
 interface DepartmentFormProps {
@@ -33,6 +34,7 @@ interface DepartmentFormProps {
 
 export default function DepartmentForm({ mode, department }: DepartmentFormProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const isEdit = mode === "edit";
 
   const createMutation = useCreateDepartment();
@@ -57,14 +59,14 @@ export default function DepartmentForm({ mode, department }: DepartmentFormProps
   });
 
   const parentOptions = [
-    { value: "", label: "بدون قسم أب" },
+    { value: "", label: t("hr.departments.withoutParent") },
     ...(allDepartments ?? [])
       .filter((d) => d.id !== department?.id)
       .map((d) => ({ value: d.id, label: `${d.code} — ${d.name}` })),
   ];
 
   const managerOptions = [
-    { value: "", label: "بدون مدير" },
+    { value: "", label: t("hr.departments.withoutManager") },
     ...(allEmployees ?? []).map((e) => ({
       value: e.id,
       label: `${e.fullName}${e.jobTitle ? ` (${e.jobTitle})` : ""}`,
@@ -99,13 +101,13 @@ export default function DepartmentForm({ mode, department }: DepartmentFormProps
     <Card className="border-border bg-card">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg">
-          {isEdit ? "تعديل القسم" : "إضافة قسم جديد"}
+          {isEdit ? t("hr.departments.editTitle") : t("hr.departments.newTitle")}
         </CardTitle>
       </CardHeader>
       <CardContent>
         {error && (
           <Alert variant="destructive" className="mb-6">
-            <p>حدث خطأ: {(error as any)?.response?.data?.message || error.message}</p>
+            <p>{t("common.error")}: {(error as any)?.response?.data?.message || error.message}</p>
           </Alert>
         )}
 
@@ -113,11 +115,11 @@ export default function DepartmentForm({ mode, department }: DepartmentFormProps
           <div className="grid gap-4 md:grid-cols-2">
             {/* Name */}
             <div className="space-y-2">
-              <Label htmlFor="name">اسم القسم *</Label>
+              <Label htmlFor="name">{t("hr.departments.nameRequired")}</Label>
               <Input
                 id="name"
                 {...form.register("name")}
-                placeholder="أدخل اسم القسم"
+                placeholder={t("hr.departments.enterName")}
                 className="h-10"
               />
               {form.formState.errors.name && (
@@ -129,24 +131,24 @@ export default function DepartmentForm({ mode, department }: DepartmentFormProps
 
             {/* Parent Department */}
             <div className="space-y-2">
-              <Label htmlFor="parentId">القسم الأب</Label>
+              <Label htmlFor="parentId">{t("hr.departments.parentDepartment")}</Label>
               <Select
                 id="parentId"
                 {...form.register("parentId")}
                 options={parentOptions}
-                placeholder="اختر القسم الأب"
+                placeholder={t("hr.departments.selectParent")}
                 className="h-10"
               />
             </div>
 
             {/* Manager */}
             <div className="space-y-2">
-              <Label htmlFor="managerId">مدير القسم</Label>
+              <Label htmlFor="managerId">{t("hr.departments.managerLabel")}</Label>
               <Select
                 id="managerId"
                 {...form.register("managerId")}
                 options={managerOptions}
-                placeholder="اختر مدير القسم"
+                placeholder={t("hr.departments.selectManager")}
                 className="h-10"
               />
             </div>
@@ -154,11 +156,11 @@ export default function DepartmentForm({ mode, department }: DepartmentFormProps
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description">الوصف</Label>
+            <Label htmlFor="description">{t("hr.departments.descriptionLabel")}</Label>
             <Textarea
               id="description"
               {...form.register("description")}
-              placeholder="وصف القسم (اختياري)"
+              placeholder={t("hr.departments.descriptionPlaceholder")}
               rows={3}
             />
           </div>
@@ -167,7 +169,7 @@ export default function DepartmentForm({ mode, department }: DepartmentFormProps
           {isEdit && (
             <div className="flex items-center gap-3 pt-4 border-t border-border">
               <Label htmlFor="isActive" className="cursor-pointer">
-                حالة القسم
+                {t("hr.departments.statusLabel")}
               </Label>
               <button
                 id="isActive"
@@ -189,7 +191,7 @@ export default function DepartmentForm({ mode, department }: DepartmentFormProps
                 />
               </button>
               <span className="text-sm text-muted-foreground">
-                {form.watch("isActive") ? "نشط" : "غير نشط"}
+                {form.watch("isActive") ? t("common.active") : t("common.inactive")}
               </span>
             </div>
           )}
@@ -198,14 +200,14 @@ export default function DepartmentForm({ mode, department }: DepartmentFormProps
           <div className="flex items-center gap-3 pt-4 border-t border-border">
             <Button type="submit" disabled={isPending}>
               {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
-              {isEdit ? "حفظ التغييرات" : "إضافة القسم"}
+              {isEdit ? t("hr.departments.saveChanges") : t("hr.departments.addNew")}
             </Button>
             <Button
               type="button"
               variant="outline"
               onClick={() => router.push("/hr/departments")}
             >
-              إلغاء
+              {t("common.cancel")}
             </Button>
           </div>
         </form>

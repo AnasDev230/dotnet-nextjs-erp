@@ -15,6 +15,7 @@ import {
   TableCell,
 } from "@/components/ui";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/hooks/use-translation";
 
 export interface ReportColumn<T> {
   key: string;
@@ -37,9 +38,11 @@ export default function ReportDataTable<T>({
   columns,
   data,
   isLoading,
-  emptyMessage = "لا توجد بيانات",
+  emptyMessage,
   keyAccessor,
 }: ReportDataTableProps<T>) {
+  const { t } = useTranslation();
+  const emptyText = emptyMessage ?? t("common.noData");
   const skeletonColumns = useMemo(
     () => (isLoading ? columns : []),
     [isLoading, columns]
@@ -83,7 +86,7 @@ export default function ReportDataTable<T>({
                   <div className="mb-3 rounded-full bg-muted p-3">
                     <Inbox className="h-6 w-6 text-muted-foreground" />
                   </div>
-                  <p className="text-sm text-muted-foreground">{emptyMessage}</p>
+                  <p className="text-sm text-muted-foreground">{emptyText}</p>
                 </div>
               </TableCell>
             </TableRow>

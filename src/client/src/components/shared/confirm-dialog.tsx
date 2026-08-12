@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useTranslation } from "@/hooks/use-translation";
 
 // ═══════════════════════════════════════════
 // Types (UNCHANGED — backward compatible)
@@ -78,14 +79,17 @@ export function ConfirmDialog({
   onOpenChange,
   title,
   description,
-  confirmLabel = "تأكيد",
-  cancelLabel = "تراجع",
+  confirmLabel,
+  cancelLabel,
   variant = "warning",
   isLoading = false,
   onConfirm,
   errorMessage,
 }: ConfirmDialogProps) {
   const config = variantConfig[variant];
+  const { t } = useTranslation();
+  const resolvedConfirmLabel = confirmLabel ?? t("common.confirm");
+  const resolvedCancelLabel = cancelLabel ?? t("common.back");
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -140,7 +144,7 @@ export function ConfirmDialog({
               disabled={isLoading}
               className="min-w-[80px] h-9 rounded-md font-medium transition-colors duration-150"
             >
-              {cancelLabel}
+              {resolvedCancelLabel}
             </Button>
 
             {/* Confirm Button */}
@@ -154,10 +158,10 @@ export function ConfirmDialog({
               {isLoading ? (
                 <span className="flex items-center gap-2">
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  جاري التنفيذ...
+                  {t("common.executing")}
                 </span>
               ) : (
-                confirmLabel
+                resolvedConfirmLabel
               )}
             </Button>
           </div>

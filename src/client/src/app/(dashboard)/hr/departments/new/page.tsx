@@ -4,9 +4,11 @@ import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui";
 import DepartmentForm from "@/features/hr/components/DepartmentForm";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function CreateDepartmentPage() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   return (
     <div className="space-y-6">
@@ -16,8 +18,8 @@ export default function CreateDepartmentPage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">إضافة قسم جديد</h1>
-            <p className="text-muted-foreground text-sm">أدخل بيانات القسم الجديد</p>
+            <h1 className="text-2xl font-semibold">{t("hr.departments.newTitle")}</h1>
+            <p className="text-muted-foreground text-sm">{t("hr.departments.createPageDescription")}</p>
           </div>
         </div>
       </div>

@@ -7,10 +7,12 @@ import { Button } from "@/components/ui";
 import DepartmentsTable from "@/features/hr/components/DepartmentsTable";
 import DepartmentFilters from "@/features/hr/components/DepartmentFilters";
 import { useDepartments } from "@/features/hr/hooks/useDepartments";
+import { useTranslation } from "@/hooks/use-translation";
 
 function DepartmentsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const page = parseInt(searchParams.get("page") ?? "1", 10);
   const pageSize = 20;
@@ -34,12 +36,12 @@ function DepartmentsContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">الأقسام</h1>
-          <p className="text-muted-foreground text-sm">إدارة أقسام الشركة</p>
+          <h1 className="text-2xl font-semibold">{t("hr.departments.title")}</h1>
+          <p className="text-muted-foreground text-sm">{t("hr.departments.listPageDescription")}</p>
         </div>
         <Button onClick={() => router.push("/hr/departments/new")}>
           <Plus className="ml-2 h-4 w-4" />
-          قسم جديد
+          {t("hr.departments.new")}
         </Button>
       </div>
 

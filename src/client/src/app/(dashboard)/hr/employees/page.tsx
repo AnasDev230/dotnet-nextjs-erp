@@ -7,11 +7,13 @@ import { Button } from "@/components/ui";
 import EmployeesTable from "@/features/hr/components/EmployeesTable";
 import EmployeeFilters from "@/features/hr/components/EmployeeFilters";
 import { useEmployees } from "@/features/hr/hooks/useEmployees";
+import { useTranslation } from "@/hooks/use-translation";
 import { EmployeeStatus } from "@/types/hr";
 
 function EmployeesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation();
 
   const page = parseInt(searchParams.get("page") ?? "1", 10);
   const pageSize = 20;
@@ -41,12 +43,12 @@ function EmployeesContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">الموظفون</h1>
-          <p className="text-muted-foreground text-sm">إدارة موظفي الشركة</p>
+          <h1 className="text-2xl font-semibold">{t("hr.employees.title")}</h1>
+          <p className="text-muted-foreground text-sm">{t("hr.employees.listPageDescription")}</p>
         </div>
         <Button onClick={() => router.push("/hr/employees/new")}>
           <Plus className="ml-2 h-4 w-4" />
-          موظف جديد
+          {t("hr.employees.new")}
         </Button>
       </div>
 

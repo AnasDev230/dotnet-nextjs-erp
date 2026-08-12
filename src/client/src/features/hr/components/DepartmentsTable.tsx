@@ -15,6 +15,7 @@ import {
 } from "@/components/ui";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { useDeleteDepartment } from "../hooks/useDeleteDepartment";
+import { useTranslation } from "@/hooks/use-translation";
 import type { DepartmentListItem } from "@/types/hr";
 
 interface DepartmentsTableProps {
@@ -36,6 +37,7 @@ export default function DepartmentsTable({
   totalPages,
   onPageChange,
 }: DepartmentsTableProps) {
+  const { t } = useTranslation();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const deleteMutation = useDeleteDepartment();
@@ -51,7 +53,7 @@ export default function DepartmentsTable({
         setErrorMessage(
           error?.response?.data?.message ||
             error?.message ||
-            "حدث خطأ غير متوقع"
+            t("common.unexpectedError")
         );
       },
     });
@@ -63,13 +65,13 @@ export default function DepartmentsTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>الرمز</TableHead>
-              <TableHead>الاسم</TableHead>
-              <TableHead>القسم الأب</TableHead>
-              <TableHead>المدير</TableHead>
-              <TableHead>عدد الموظفين</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("common.code")}</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead>{t("hr.departments.parentDepartment")}</TableHead>
+              <TableHead>{t("hr.departments.manager")}</TableHead>
+              <TableHead>{t("hr.departments.employeeCount")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -94,12 +96,12 @@ export default function DepartmentsTable({
         <div className="rounded-full bg-muted p-4 mb-4">
           <Building2 className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-1">لا توجد أقسام</h3>
-        <p className="text-sm text-muted-foreground mb-4">لم يتم إضافة أي أقسام بعد</p>
+        <h3 className="text-lg font-semibold mb-1">{t("inventory.categories.emptyTitle")}</h3>
+        <p className="text-sm text-muted-foreground mb-4">{t("inventory.categories.emptyDescription")}</p>
         <Link href="/hr/departments/new">
           <Button>
             <Building2 className="ml-2 h-4 w-4" />
-            إضافة قسم
+            {t("hr.departments.new")}
           </Button>
         </Link>
       </div>
@@ -112,13 +114,13 @@ export default function DepartmentsTable({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>الرمز</TableHead>
-              <TableHead>الاسم</TableHead>
-              <TableHead>القسم الأب</TableHead>
-              <TableHead>المدير</TableHead>
-              <TableHead>عدد الموظفين</TableHead>
-              <TableHead>الحالة</TableHead>
-              <TableHead className="text-left">الإجراءات</TableHead>
+              <TableHead>{t("common.code")}</TableHead>
+              <TableHead>{t("common.name")}</TableHead>
+              <TableHead>{t("hr.departments.parentDepartment")}</TableHead>
+              <TableHead>{t("hr.departments.manager")}</TableHead>
+              <TableHead>{t("hr.departments.employeeCount")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead className="text-left">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -135,7 +137,7 @@ export default function DepartmentsTable({
                 <TableCell>{department.employeeCount}</TableCell>
                 <TableCell>
                   <Badge variant={department.isActive ? "success" : "neutral"}>
-                    {department.isActive ? "نشط" : "غير نشط"}
+                    {department.isActive ? t("common.active") : t("common.inactive")}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-left">
@@ -168,7 +170,7 @@ export default function DepartmentsTable({
       {totalPages > 1 && (
         <div className="flex items-center justify-between pt-4">
           <p className="text-sm text-muted-foreground">
-            عرض {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} من {totalCount}
+            {t("common.showing")} {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} {t("common.of")} {totalCount}
           </p>
           <div className="flex gap-1">
             <Button
@@ -177,7 +179,7 @@ export default function DepartmentsTable({
               disabled={page <= 1}
               onClick={() => onPageChange(page - 1)}
             >
-              السابق
+              {t("common.previous")}
             </Button>
             <Button
               variant="outline"
@@ -185,7 +187,7 @@ export default function DepartmentsTable({
               disabled={page >= totalPages}
               onClick={() => onPageChange(page + 1)}
             >
-              التالي
+              {t("common.next")}
             </Button>
           </div>
         </div>
@@ -199,9 +201,9 @@ export default function DepartmentsTable({
             setErrorMessage(null);
           }
         }}
-        title="حذف القسم"
-        description="هل أنت متأكد من حذف هذا القسم؟ لا يمكن حذف قسم يحتوي على موظفين أو أقسام فرعية. لا يمكن التراجع عن هذا الإجراء."
-        confirmLabel="حذف"
+        title={t("hr.departments.deleteTitle")}
+        description={t("hr.departments.deleteDescription")}
+        confirmLabel={t("common.delete")}
         variant="danger"
         isLoading={deleteMutation.isPending}
         errorMessage={errorMessage}

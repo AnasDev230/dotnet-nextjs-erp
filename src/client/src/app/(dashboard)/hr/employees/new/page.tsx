@@ -4,9 +4,11 @@ import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui";
 import EmployeeForm from "@/features/hr/components/EmployeeForm";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function CreateEmployeePage() {
   const router = useRouter();
+  const { t } = useTranslation();
 
   return (
     <div className="space-y-6">
@@ -16,8 +18,8 @@ export default function CreateEmployeePage() {
             <ArrowRight className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold">إضافة موظف جديد</h1>
-            <p className="text-muted-foreground text-sm">أدخل بيانات الموظف الجديد</p>
+            <h1 className="text-2xl font-semibold">{t("hr.employees.newTitle")}</h1>
+            <p className="text-muted-foreground text-sm">{t("hr.employees.createPageDescription")}</p>
           </div>
         </div>
       </div>

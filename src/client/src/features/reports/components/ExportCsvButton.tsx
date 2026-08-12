@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Download, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface ExportCsvButtonProps {
   onClick: () => Promise<void> | void;
@@ -12,9 +13,10 @@ interface ExportCsvButtonProps {
 
 export default function ExportCsvButton({
   onClick,
-  label = "تصدير CSV",
+  label,
   disabled,
 }: ExportCsvButtonProps) {
+  const { t } = useTranslation();
   const [isExporting, setIsExporting] = useState(false);
 
   const handleClick = async () => {
@@ -38,7 +40,7 @@ export default function ExportCsvButton({
       ) : (
         <Download className="ml-2 h-4 w-4" />
       )}
-      {isExporting ? "جارٍ التصدير..." : label}
+      {isExporting ? t("common.exporting") : label ?? t("common.exportCsv")}
     </Button>
   );
 }

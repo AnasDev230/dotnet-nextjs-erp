@@ -3,6 +3,7 @@
 import { forwardRef, type HTMLAttributes, type ButtonHTMLAttributes, useId } from "react";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/hooks/use-translation";
 
 interface DialogContextValue {
   open: boolean;
@@ -61,6 +62,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 export const DialogContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(
   ({ className, children, ...props }, ref) => {
     const { onClose } = useDialog();
+    const { t } = useTranslation();
     return (
       <div
         ref={ref}
@@ -75,7 +77,7 @@ export const DialogContent = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivEl
           className="absolute left-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
         >
           <X className="h-4 w-4" />
-          <span className="sr-only">إغلاق</span>
+          <span className="sr-only">{t("common.close")}</span>
         </button>
         {children}
       </div>

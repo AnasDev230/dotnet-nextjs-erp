@@ -11,6 +11,7 @@ import ExportCsvButton from "@/features/reports/components/ExportCsvButton";
 import { useEmployeesSummary } from "@/features/reports/hooks/useReports";
 import { downloadEmployeesCsv } from "@/features/reports/api/reports";
 import type { EmployeesByDepartmentItem } from "@/types/reports";
+import { useTranslation } from "@/hooks/use-translation";
 
 function formatCurrency(value: number): string {
   return `${value.toLocaleString("ar-SA", {
@@ -20,25 +21,26 @@ function formatCurrency(value: number): string {
 }
 
 function EmployeesReportContent() {
+  const { t } = useTranslation();
   const { data, isLoading, isError, refetch } = useEmployeesSummary();
 
   const departmentColumns: ReportColumn<EmployeesByDepartmentItem>[] = [
     {
       key: "departmentName",
-      header: "القسم",
+      header: t("hr.employees.department"),
       render: (item) =>
         item.departmentName || (
-          <span className="text-muted-foreground">بدون قسم</span>
+          <span className="text-muted-foreground">{t("reports.withoutDepartment")}</span>
         ),
     },
     {
       key: "employeeCount",
-      header: "عدد الموظفين",
+      header: t("hr.departments.employeeCount"),
       render: (item) => item.employeeCount.toLocaleString("ar-SA"),
     },
     {
       key: "totalSalaries",
-      header: "إجمالي الرواتب",
+      header: t("reports.totalSalaries"),
       render: (item) => (
         <span className="font-medium">{formatCurrency(item.totalSalaries)}</span>
       ),
@@ -48,11 +50,11 @@ function EmployeesReportContent() {
   if (isError) {
     return (
       <Alert variant="destructive">
-        <AlertTitle>خطأ</AlertTitle>
+        <AlertTitle>{t("reports.error")}</AlertTitle>
         <AlertDescription>
-          فشل تحميل تقرير الموظفين.
+          {t("reports.employeesLoadFailed")}
           <Button variant="outline" size="sm" className="mr-2" onClick={() => refetch()}>
-            إعادة المحاولة
+            {t("reports.retry")}
           </Button>
         </AlertDescription>
       </Alert>
@@ -63,9 +65,9 @@ function EmployeesReportContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">تقرير الموظفين</h1>
+          <h1 className="text-2xl font-semibold">{t("reports.employees")}</h1>
           <p className="text-muted-foreground text-sm">
-            ملخص الموظفين حسب القسم والحالة والرواتب
+            {t("reports.employeesDescription")}
           </p>
         </div>
         <ExportCsvButton onClick={() => downloadEmployeesCsv()} />
@@ -73,28 +75,28 @@ function EmployeesReportContent() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <ReportSummaryCard
-          title="إجمالي الموظفين"
+          title={t("reports.totalEmployees")}
           value={(data?.totalEmployees ?? 0).toLocaleString("ar-SA")}
           icon={Users}
           iconClassName="text-primary"
           isLoading={isLoading}
         />
         <ReportSummaryCard
-          title="موظفون نشطون"
+          title={t("reports.activeEmployees")}
           value={(data?.activeCount ?? 0).toLocaleString("ar-SA")}
           icon={UserCheck}
           iconClassName="text-emerald-600"
           isLoading={isLoading}
         />
         <ReportSummaryCard
-          title="في إجازة"
+          title={t("reports.onLeaveEmployees")}
           value={(data?.onLeaveCount ?? 0).toLocaleString("ar-SA")}
           icon={Briefcase}
           iconClassName="text-amber-600"
           isLoading={isLoading}
         />
         <ReportSummaryCard
-          title="موظفون منهي خدمتهم"
+          title={t("reports.terminatedEmployees")}
           value={(data?.terminatedCount ?? 0).toLocaleString("ar-SA")}
           icon={UserMinus}
           iconClassName="text-red-600"
@@ -103,16 +105,16 @@ function EmployeesReportContent() {
       </div>
 
       <ReportSummaryCard
-        title="إجمالي الرواتب الشهرية"
+        title={t("reports.totalMonthlySalaries")}
         value={formatCurrency(data?.totalSalaries ?? 0)}
         icon={Users}
         iconClassName="text-blue-600"
-        subtitle="مجموع رواتب جميع الموظفين"
+        subtitle={t("reports.totalSalariesSubtitle")}
         isLoading={isLoading}
       />
 
       <ReportDataTable
-        title="الموظفون حسب القسم"
+        title={t("reports.employeesByDepartment")}
         columns={departmentColumns}
         data={data?.byDepartment}
         isLoading={isLoading}

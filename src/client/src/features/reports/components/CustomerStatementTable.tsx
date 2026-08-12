@@ -14,6 +14,7 @@ import {
   TableCell,
 } from "@/components/ui";
 import type { StatementLineItem } from "@/types/reports";
+import { useTranslation } from "@/hooks/use-translation";
 
 function formatCurrency(value: number): string {
   return `${value.toLocaleString("ar-SA", {
@@ -35,23 +36,25 @@ export default function CustomerStatementTable({
   transactions,
   isLoading,
 }: CustomerStatementTableProps) {
+  const { t } = useTranslation();
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <FileText className="h-5 w-5 text-primary" />
-          المعاملات
+          {t("reports.transactions")}
         </CardTitle>
       </CardHeader>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>التاريخ</TableHead>
-            <TableHead>النوع</TableHead>
-            <TableHead>المرجع</TableHead>
-            <TableHead>مدين</TableHead>
-            <TableHead>دائن</TableHead>
-            <TableHead>الرصيد</TableHead>
+            <TableHead>{t("common.date")}</TableHead>
+            <TableHead>{t("common.type")}</TableHead>
+            <TableHead>{t("finance.payments.reference")}</TableHead>
+            <TableHead>{t("reports.debit")}</TableHead>
+            <TableHead>{t("reports.credit")}</TableHead>
+            <TableHead>{t("reports.runningBalance")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -73,7 +76,7 @@ export default function CustomerStatementTable({
                     <FileText className="h-6 w-6 text-muted-foreground" />
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    لا توجد معاملات لهذا العميل
+                    {t("reports.noTransactions")}
                   </p>
                 </div>
               </TableCell>
@@ -92,7 +95,7 @@ export default function CustomerStatementTable({
                         : "text-xs font-medium text-emerald-600"
                     }
                   >
-                    {transaction.type === "Invoice" ? "فاتورة" : "دفعة"}
+                    {transaction.type === "Invoice" ? t("reports.typeInvoice") : t("reports.typePayment")}
                   </span>
                 </TableCell>
                 <TableCell className="text-xs">{transaction.reference}</TableCell>

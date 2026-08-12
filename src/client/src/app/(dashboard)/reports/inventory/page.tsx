@@ -12,6 +12,7 @@ import LowStockAlertList from "@/features/reports/components/LowStockAlertList";
 import { useInventorySummary } from "@/features/reports/hooks/useReports";
 import { downloadInventoryCsv } from "@/features/reports/api/reports";
 import type { StockByWarehouseItem } from "@/types/reports";
+import { useTranslation } from "@/hooks/use-translation";
 
 function formatCurrency(value: number): string {
   return `${value.toLocaleString("ar-SA", {
@@ -21,22 +22,23 @@ function formatCurrency(value: number): string {
 }
 
 function InventoryReportContent() {
+  const { t } = useTranslation();
   const { data, isLoading, isError, refetch } = useInventorySummary();
 
   const warehouseColumns: ReportColumn<StockByWarehouseItem>[] = [
     {
       key: "warehouseName",
-      header: "المستودع",
+      header: t("reports.warehouse"),
       render: (item) => item.warehouseName,
     },
     {
       key: "productCount",
-      header: "عدد المنتجات",
+      header: t("reports.productCount"),
       render: (item) => item.productCount.toLocaleString("ar-SA"),
     },
     {
       key: "totalValue",
-      header: "القيمة الإجمالية",
+      header: t("reports.totalValue"),
       render: (item) => (
         <span className="font-medium">{formatCurrency(item.totalValue)}</span>
       ),
@@ -46,11 +48,11 @@ function InventoryReportContent() {
   if (isError) {
     return (
       <Alert variant="destructive">
-        <AlertTitle>خطأ</AlertTitle>
+        <AlertTitle>{t("reports.error")}</AlertTitle>
         <AlertDescription>
-          فشل تحميل تقرير المخزون.
+          {t("reports.inventoryLoadFailed")}
           <Button variant="outline" size="sm" className="mr-2" onClick={() => refetch()}>
-            إعادة المحاولة
+            {t("reports.retry")}
           </Button>
         </AlertDescription>
       </Alert>
@@ -61,9 +63,9 @@ function InventoryReportContent() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">تقرير المخزون</h1>
+          <h1 className="text-2xl font-semibold">{t("reports.inventory")}</h1>
           <p className="text-muted-foreground text-sm">
-            مستويات وقيم المخزون في جميع المستودعات
+            {t("reports.inventoryDescription")}
           </p>
         </div>
         <ExportCsvButton onClick={() => downloadInventoryCsv()} />
@@ -71,28 +73,28 @@ function InventoryReportContent() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <ReportSummaryCard
-          title="عدد المنتجات"
+          title={t("reports.totalProducts")}
           value={(data?.totalProducts ?? 0).toLocaleString("ar-SA")}
           icon={Package}
           iconClassName="text-primary"
           isLoading={isLoading}
         />
         <ReportSummaryCard
-          title="عدد المستودعات"
+          title={t("reports.totalWarehouses")}
           value={(data?.totalWarehouses ?? 0).toLocaleString("ar-SA")}
           icon={Warehouse}
           iconClassName="text-blue-600"
           isLoading={isLoading}
         />
         <ReportSummaryCard
-          title="قيمة المخزون الإجمالية"
+          title={t("reports.totalInventoryValue")}
           value={formatCurrency(data?.totalInventoryValue ?? 0)}
           icon={Coins}
           iconClassName="text-emerald-600"
           isLoading={isLoading}
         />
         <ReportSummaryCard
-          title="أصناف منخفضة"
+          title={t("reports.lowStockCount")}
           value={(data?.lowStockCount ?? 0).toLocaleString("ar-SA")}
           icon={AlertTriangle}
           iconClassName="text-amber-600"
@@ -101,7 +103,7 @@ function InventoryReportContent() {
       </div>
 
       <ReportDataTable
-        title="المخزون حسب المستودع"
+        title={t("reports.stockByWarehouse")}
         columns={warehouseColumns}
         data={data?.byWarehouse}
         isLoading={isLoading}

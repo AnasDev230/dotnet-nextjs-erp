@@ -4,16 +4,18 @@ import { useEffect, useRef, useState } from "react";
 import { Moon, Sun, Monitor, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useThemeStore, type Theme } from "@/stores/theme-store";
+import { useTranslation } from "@/hooks/use-translation";
 import { cn } from "@/lib/utils";
 
-const themeOptions: { value: Theme; label: string; icon: typeof Sun }[] = [
-  { value: "light", label: "فاتح", icon: Sun },
-  { value: "dark", label: "داكن", icon: Moon },
-  { value: "system", label: "النظام", icon: Monitor },
+const themeOptions: { value: Theme; labelKey: string; icon: typeof Sun }[] = [
+  { value: "light", labelKey: "theme.light", icon: Sun },
+  { value: "dark", labelKey: "theme.dark", icon: Moon },
+  { value: "system", labelKey: "theme.system", icon: Monitor },
 ];
 
 export default function ThemeToggle() {
   const { theme, setTheme, initializeTheme } = useThemeStore();
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -36,7 +38,7 @@ export default function ThemeToggle() {
       <Button
         variant="ghost"
         size="icon"
-        aria-label="تبديل المظهر"
+        aria-label={t("theme.toggleAria")}
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((prev) => !prev)}
@@ -51,7 +53,7 @@ export default function ThemeToggle() {
           role="menu"
           className="absolute left-0 top-full z-50 mt-2 w-40 rounded-lg border border-border bg-card p-1 shadow-lg"
         >
-          {themeOptions.map(({ value, label, icon: Icon }) => (
+          {themeOptions.map(({ value, labelKey, icon: Icon }) => (
             <button
               key={value}
               type="button"
@@ -66,7 +68,7 @@ export default function ThemeToggle() {
               )}
             >
               <Icon className="ml-2 h-4 w-4" />
-              <span className="flex-1 text-right">{label}</span>
+              <span className="flex-1 text-right">{t(labelKey)}</span>
               {theme === value && <Check className="h-4 w-4 text-primary" />}
             </button>
           ))}
