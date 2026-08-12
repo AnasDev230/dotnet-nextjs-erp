@@ -328,11 +328,11 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
             <>
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="hover:bg-transparent">
                     <TableHead>{t("finance.invoices.product")}</TableHead>
                     <TableHead>{t("finance.invoices.quantity")}</TableHead>
                     <TableHead>{t("finance.invoices.unitPrice")}</TableHead>
-                    <TableHead className="text-left">{t("finance.invoices.total")}</TableHead>
+                    <TableHead className="text-end">{t("finance.invoices.total")}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -344,11 +344,11 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
                           {item.productSku}
                         </div>
                       </TableCell>
-                      <TableCell>{item.quantity}</TableCell>
-                      <TableCell className="text-muted-foreground">
+                      <TableCell className="tabular-nums">{item.quantity}</TableCell>
+                      <TableCell className="text-muted-foreground tabular-nums">
                         {formatCurrency(item.unitPrice)}
                       </TableCell>
-                      <TableCell className="text-left font-medium">
+                      <TableCell className="text-end font-medium tabular-nums">
                         {formatCurrency(item.lineTotal)}
                       </TableCell>
                     </TableRow>

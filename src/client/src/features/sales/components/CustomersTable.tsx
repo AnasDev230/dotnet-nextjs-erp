@@ -84,14 +84,14 @@ export default function CustomersTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("common.code")}</TableHead>
               <TableHead>{t("common.name")}</TableHead>
               <TableHead>{t("common.type")}</TableHead>
               <TableHead>{t("sales.customers.creditLimit")}</TableHead>
               <TableHead>{t("common.status")}</TableHead>
               <TableHead>{t("common.createdAt")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -133,14 +133,14 @@ export default function CustomersTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("common.code")}</TableHead>
               <TableHead>{t("common.name")}</TableHead>
               <TableHead>{t("common.type")}</TableHead>
               <TableHead>{t("sales.customers.creditLimit")}</TableHead>
               <TableHead>{t("common.status")}</TableHead>
               <TableHead>{t("common.createdAt")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -153,7 +153,7 @@ export default function CustomersTable({
                     {t(typeLabelKey[customer.type])}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-muted-foreground">
+                <TableCell className="text-muted-foreground tabular-nums">
                   {customer.creditLimit.toLocaleString("ar-SA")} ر.س
                 </TableCell>
                 <TableCell>
@@ -164,8 +164,8 @@ export default function CustomersTable({
                 <TableCell className="text-muted-foreground text-xs">
                   {new Date(customer.createdAt).toLocaleDateString("ar-SA")}
                 </TableCell>
-                <TableCell className="text-left">
-                  <div className="flex items-center gap-1">
+                <TableCell className="text-end">
+                  <div className="flex items-center justify-end gap-1">
                     <Link href={`/sales/customers/${customer.id}/edit`}>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <Pencil className="h-4 w-4" />

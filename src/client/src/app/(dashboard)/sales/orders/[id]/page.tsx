@@ -168,12 +168,12 @@ export default function SalesOrderDetailPage() {
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="hover:bg-transparent">
                 <TableHead>{t("sales.orders.product")}</TableHead>
                 <TableHead>{t("common.quantity")}</TableHead>
                 <TableHead>{t("sales.orders.unitPrice")}</TableHead>
                 <TableHead>{t("sales.orders.discount")} %</TableHead>
-                <TableHead className="text-left">{t("sales.orders.lineTotal")}</TableHead>
+                <TableHead className="text-end">{t("sales.orders.lineTotal")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -185,14 +185,14 @@ export default function SalesOrderDetailPage() {
                       {item.productSku}
                     </div>
                   </TableCell>
-                  <TableCell>{item.quantity}</TableCell>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className="tabular-nums">{item.quantity}</TableCell>
+                  <TableCell className="text-muted-foreground tabular-nums">
                     {formatCurrency(item.unitPrice)}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="tabular-nums">
                     {item.discountPct > 0 ? `${item.discountPct}%` : "—"}
                   </TableCell>
-                  <TableCell className="text-left font-medium">
+                  <TableCell className="text-end font-medium tabular-nums">
                     {formatCurrency(item.lineTotal)}
                   </TableCell>
                 </TableRow>

@@ -71,12 +71,12 @@ export default function PaymentsList({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("finance.payments.date")}</TableHead>
               <TableHead>{t("finance.payments.amount")}</TableHead>
               <TableHead>{t("finance.payments.method")}</TableHead>
               <TableHead>{t("finance.payments.reference")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -114,12 +114,12 @@ export default function PaymentsList({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("finance.payments.date")}</TableHead>
               <TableHead>{t("finance.payments.amount")}</TableHead>
               <TableHead>{t("finance.payments.method")}</TableHead>
               <TableHead>{t("finance.payments.reference")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -128,7 +128,7 @@ export default function PaymentsList({
                 <TableCell className="text-muted-foreground text-xs">
                   {formatDate(payment.paymentDate)}
                 </TableCell>
-                <TableCell className="font-medium">
+                <TableCell className="font-medium tabular-nums">
                   {formatCurrency(payment.amount)}
                 </TableCell>
                 <TableCell>
@@ -137,7 +137,7 @@ export default function PaymentsList({
                 <TableCell className="text-muted-foreground text-xs font-mono">
                   {payment.reference || "—"}
                 </TableCell>
-                <TableCell className="text-left">
+                <TableCell className="text-end">
                   {canDelete && (
                     <Button
                       variant="ghost"

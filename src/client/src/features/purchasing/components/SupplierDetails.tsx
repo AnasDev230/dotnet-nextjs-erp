@@ -217,8 +217,8 @@ export default function SupplierDetails({ supplierId }: { supplierId: string }) 
                       {link.productSku}
                     </div>
                   </div>
-                  <div className="text-left">
-                    <div className="text-sm font-medium">
+                  <div className="text-end">
+                    <div className="text-sm font-medium tabular-nums">
                       {link.unitCost.toLocaleString("ar-SA", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,

@@ -47,7 +47,7 @@ export default function RecentInvoicesTable({
         </CardHeader>
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("sales.invoices.invoiceNumber")}</TableHead>
               <TableHead>{t("sales.orders.customer")}</TableHead>
               <TableHead>{t("sales.invoices.issueDate")}</TableHead>
@@ -95,7 +95,7 @@ export default function RecentInvoicesTable({
       </CardHeader>
       <Table>
         <TableHeader>
-          <TableRow>
+          <TableRow className="hover:bg-transparent">
             <TableHead>{t("sales.invoices.invoiceNumber")}</TableHead>
             <TableHead>{t("sales.orders.customer")}</TableHead>
             <TableHead>{t("sales.invoices.issueDate")}</TableHead>
@@ -132,10 +132,10 @@ export default function RecentInvoicesTable({
                   )}
                 </span>
               </TableCell>
-              <TableCell className="text-muted-foreground">
+              <TableCell className="text-muted-foreground tabular-nums">
                 {formatCurrency(invoice.netAmount)}
               </TableCell>
-              <TableCell className="text-muted-foreground">
+              <TableCell className="text-muted-foreground tabular-nums">
                 {formatCurrency(invoice.paidAmount)}
               </TableCell>
               <TableCell>

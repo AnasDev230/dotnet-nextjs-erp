@@ -64,7 +64,7 @@ export default function LowStockAlertList({
       ) : (
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("inventory.products.name")}</TableHead>
               <TableHead>{t("inventory.levels.warehouse")}</TableHead>
               <TableHead>{t("common.quantity")}</TableHead>
@@ -84,10 +84,10 @@ export default function LowStockAlertList({
                 <TableCell className="text-xs text-muted-foreground">
                   {item.warehouseName}
                 </TableCell>
-                <TableCell className="text-sm font-semibold text-amber-600">
+                <TableCell className="text-sm font-semibold text-amber-600 tabular-nums">
                   {item.quantityOnHand.toLocaleString("ar-SA")}
                 </TableCell>
-                <TableCell className="text-xs text-muted-foreground">
+                <TableCell className="text-xs text-muted-foreground tabular-nums">
                   {item.reorderLevel.toLocaleString("ar-SA")}
                 </TableCell>
               </TableRow>

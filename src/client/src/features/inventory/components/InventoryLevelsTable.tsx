@@ -44,16 +44,16 @@ export default function InventoryLevelsTable({
     return (
       <div className="rounded-md border border-border">
         <table className="w-full">
-          <thead className="bg-muted/50 text-muted-foreground text-xs font-medium uppercase">
+          <thead className="bg-muted/50 text-muted-foreground text-xs font-medium uppercase tracking-wider">
             <tr>
-              <th className="px-4 py-3 text-right">{t("inventory.levels.product")}</th>
-              <th className="px-4 py-3 text-right">{t("inventory.levels.warehouse")}</th>
-              <th className="px-4 py-3 text-right">{t("inventory.levels.quantity")}</th>
-              <th className="px-4 py-3 text-right">{t("inventory.levels.reserved")}</th>
-              <th className="px-4 py-3 text-right">{t("inventory.levels.available")}</th>
-              <th className="px-4 py-3 text-right">{t("inventory.levels.reorderLevel")}</th>
-              <th className="px-4 py-3 text-right">{t("inventory.products.status")}</th>
-              <th className="px-4 py-3 text-left">{t("common.actions")}</th>
+              <th className="px-4 py-3 text-start">{t("inventory.levels.product")}</th>
+              <th className="px-4 py-3 text-start">{t("inventory.levels.warehouse")}</th>
+              <th className="px-4 py-3 text-start">{t("inventory.levels.quantity")}</th>
+              <th className="px-4 py-3 text-start">{t("inventory.levels.reserved")}</th>
+              <th className="px-4 py-3 text-start">{t("inventory.levels.available")}</th>
+              <th className="px-4 py-3 text-start">{t("inventory.levels.reorderLevel")}</th>
+              <th className="px-4 py-3 text-start">{t("inventory.products.status")}</th>
+              <th className="px-4 py-3 text-end">{t("common.actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -83,16 +83,16 @@ export default function InventoryLevelsTable({
   return (
     <div className="rounded-md border border-border">
       <table className="w-full">
-        <thead className="bg-muted/50 text-muted-foreground text-xs font-medium uppercase">
+        <thead className="bg-muted/50 text-muted-foreground text-xs font-medium uppercase tracking-wider">
           <tr>
-            <th className="px-4 py-3 text-right">{t("inventory.levels.product")}</th>
-            <th className="px-4 py-3 text-right">{t("inventory.levels.warehouse")}</th>
-            <th className="px-4 py-3 text-right">{t("inventory.levels.quantity")}</th>
-            <th className="px-4 py-3 text-right">{t("inventory.levels.reserved")}</th>
-            <th className="px-4 py-3 text-right">{t("inventory.levels.available")}</th>
-            <th className="px-4 py-3 text-right">{t("inventory.levels.reorderLevel")}</th>
-            <th className="px-4 py-3 text-right">{t("inventory.products.status")}</th>
-            <th className="px-4 py-3 text-left">{t("common.actions")}</th>
+            <th className="px-4 py-3 text-start">{t("inventory.levels.product")}</th>
+            <th className="px-4 py-3 text-start">{t("inventory.levels.warehouse")}</th>
+            <th className="px-4 py-3 text-start">{t("inventory.levels.quantity")}</th>
+            <th className="px-4 py-3 text-start">{t("inventory.levels.reserved")}</th>
+            <th className="px-4 py-3 text-start">{t("inventory.levels.available")}</th>
+            <th className="px-4 py-3 text-start">{t("inventory.levels.reorderLevel")}</th>
+            <th className="px-4 py-3 text-start">{t("inventory.products.status")}</th>
+            <th className="px-4 py-3 text-end">{t("common.actions")}</th>
           </tr>
         </thead>
         <tbody>
@@ -120,12 +120,12 @@ export default function InventoryLevelsTable({
                   </div>
                 </td>
                 <td className="px-4 py-3 text-sm">{level.warehouseName}</td>
-                <td className="px-4 py-3 text-sm">{level.quantityOnHand}</td>
-                <td className="px-4 py-3 text-sm">{level.quantityReserved}</td>
-                <td className={`px-4 py-3 text-sm ${availableColor}`}>
+                <td className="px-4 py-3 text-sm tabular-nums">{level.quantityOnHand}</td>
+                <td className="px-4 py-3 text-sm tabular-nums">{level.quantityReserved}</td>
+                <td className={`px-4 py-3 text-sm tabular-nums ${availableColor}`}>
                   {level.quantityAvailable}
                 </td>
-                <td className="px-4 py-3 text-sm">{level.reorderLevel}</td>
+                <td className="px-4 py-3 text-sm tabular-nums">{level.reorderLevel}</td>
                 <td className="px-4 py-3 text-sm">
                   {level.isLowStock ? (
                     <Badge variant="destructive" className="gap-1">
@@ -138,7 +138,7 @@ export default function InventoryLevelsTable({
                     </Badge>
                   )}
                 </td>
-                <td className="px-4 py-3 text-left">
+                <td className="px-4 py-3 text-end">
                   <Button
                     variant="outline"
                     size="sm"

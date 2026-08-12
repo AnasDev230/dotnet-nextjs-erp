@@ -129,7 +129,7 @@ export default function InvoicesTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("finance.invoices.invoiceNumber")}</TableHead>
               <TableHead>{t("finance.invoices.orderNumber")}</TableHead>
               <TableHead>{t("finance.invoices.customer")}</TableHead>
@@ -138,7 +138,7 @@ export default function InvoicesTable({
               <TableHead>{t("finance.invoices.netAmount")}</TableHead>
               <TableHead>{t("finance.invoices.paid")}</TableHead>
               <TableHead>{t("common.status")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -208,7 +208,7 @@ export default function InvoicesTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("finance.invoices.invoiceNumber")}</TableHead>
               <TableHead>{t("finance.invoices.orderNumber")}</TableHead>
               <TableHead>{t("finance.invoices.customer")}</TableHead>
@@ -217,7 +217,7 @@ export default function InvoicesTable({
               <TableHead>{t("finance.invoices.netAmount")}</TableHead>
               <TableHead>{t("finance.invoices.paid")}</TableHead>
               <TableHead>{t("common.status")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -247,17 +247,17 @@ export default function InvoicesTable({
                     )}
                   </span>
                 </TableCell>
-                <TableCell className="text-muted-foreground">
+                <TableCell className="text-muted-foreground tabular-nums">
                   {formatCurrency(invoice.netAmount)}
                 </TableCell>
-                <TableCell className="text-muted-foreground">
+                <TableCell className="text-muted-foreground tabular-nums">
                   {formatCurrency(invoice.paidAmount)}
                 </TableCell>
                 <TableCell>
                   <InvoiceStatusBadge status={invoice.status} />
                 </TableCell>
-                <TableCell className="text-left">
-                  <div className="flex items-center gap-1">
+                <TableCell className="text-end">
+                  <div className="flex items-center justify-end gap-1">
                     <Link href={`/finance/invoices/${invoice.id}`}>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <Eye className="h-4 w-4" />

@@ -67,15 +67,15 @@ export default function StockAdjustmentsTable({
     return (
       <div className="rounded-md border border-border">
         <table className="w-full">
-          <thead className="bg-muted/50 text-muted-foreground text-xs font-medium uppercase">
+          <thead className="bg-muted/50 text-muted-foreground text-xs font-medium uppercase tracking-wider">
             <tr>
-              <th className="px-4 py-3 text-right">{t("inventory.adjustments.product")}</th>
-              <th className="px-4 py-3 text-right">{t("inventory.adjustments.warehouse")}</th>
-              <th className="px-4 py-3 text-right">{t("inventory.adjustments.systemQty")}</th>
-              <th className="px-4 py-3 text-right">{t("inventory.adjustments.countedQty")}</th>
-              <th className="px-4 py-3 text-right">{t("inventory.adjustments.variance")}</th>
-              <th className="px-4 py-3 text-right">{t("inventory.adjustments.reason")}</th>
-              <th className="px-4 py-3 text-right">{t("common.createdAt")}</th>
+              <th className="px-4 py-3 text-start">{t("inventory.adjustments.product")}</th>
+              <th className="px-4 py-3 text-start">{t("inventory.adjustments.warehouse")}</th>
+              <th className="px-4 py-3 text-start">{t("inventory.adjustments.systemQty")}</th>
+              <th className="px-4 py-3 text-start">{t("inventory.adjustments.countedQty")}</th>
+              <th className="px-4 py-3 text-start">{t("inventory.adjustments.variance")}</th>
+              <th className="px-4 py-3 text-start">{t("inventory.adjustments.reason")}</th>
+              <th className="px-4 py-3 text-start">{t("common.createdAt")}</th>
             </tr>
           </thead>
           <tbody>
@@ -105,15 +105,15 @@ export default function StockAdjustmentsTable({
   return (
     <div className="rounded-md border border-border">
       <table className="w-full">
-        <thead className="bg-muted/50 text-muted-foreground text-xs font-medium uppercase">
+        <thead className="bg-muted/50 text-muted-foreground text-xs font-medium uppercase tracking-wider">
           <tr>
-            <th className="px-4 py-3 text-right">{t("inventory.adjustments.product")}</th>
-            <th className="px-4 py-3 text-right">{t("inventory.adjustments.warehouse")}</th>
-            <th className="px-4 py-3 text-right">{t("inventory.adjustments.systemQty")}</th>
-            <th className="px-4 py-3 text-right">{t("inventory.adjustments.countedQty")}</th>
-            <th className="px-4 py-3 text-right">{t("inventory.adjustments.variance")}</th>
-            <th className="px-4 py-3 text-right">{t("inventory.adjustments.reason")}</th>
-            <th className="px-4 py-3 text-right">{t("common.createdAt")}</th>
+            <th className="px-4 py-3 text-start">{t("inventory.adjustments.product")}</th>
+            <th className="px-4 py-3 text-start">{t("inventory.adjustments.warehouse")}</th>
+            <th className="px-4 py-3 text-start">{t("inventory.adjustments.systemQty")}</th>
+            <th className="px-4 py-3 text-start">{t("inventory.adjustments.countedQty")}</th>
+            <th className="px-4 py-3 text-start">{t("inventory.adjustments.variance")}</th>
+            <th className="px-4 py-3 text-start">{t("inventory.adjustments.reason")}</th>
+            <th className="px-4 py-3 text-start">{t("common.createdAt")}</th>
           </tr>
         </thead>
         <tbody>
@@ -123,9 +123,9 @@ export default function StockAdjustmentsTable({
                 {adj.productName}
               </td>
               <td className="px-4 py-3 text-sm">{adj.warehouseName}</td>
-              <td className="px-4 py-3 text-sm">{adj.systemQty}</td>
-              <td className="px-4 py-3 text-sm">{adj.countedQty}</td>
-              <td className="px-4 py-3 text-sm">
+              <td className="px-4 py-3 text-sm tabular-nums">{adj.systemQty}</td>
+              <td className="px-4 py-3 text-sm tabular-nums">{adj.countedQty}</td>
+              <td className="px-4 py-3 text-sm tabular-nums">
                 <VarianceBadge variance={adj.variance} />
               </td>
               <td className="px-4 py-3 text-sm text-muted-foreground max-w-[200px] truncate">

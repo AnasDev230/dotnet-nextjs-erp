@@ -112,14 +112,14 @@ export default function SuppliersTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("common.code")}</TableHead>
               <TableHead>{t("common.name")}</TableHead>
               <TableHead>{t("purchasing.suppliers.contactPerson")}</TableHead>
               <TableHead>{t("common.phone")}</TableHead>
               <TableHead>{t("purchasing.suppliers.rating")}</TableHead>
               <TableHead>{t("common.status")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -190,14 +190,14 @@ export default function SuppliersTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("common.code")}</TableHead>
               <TableHead>{t("common.name")}</TableHead>
               <TableHead>{t("purchasing.suppliers.contactPerson")}</TableHead>
               <TableHead>{t("common.phone")}</TableHead>
               <TableHead>{t("purchasing.suppliers.rating")}</TableHead>
               <TableHead>{t("common.status")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -213,12 +213,12 @@ export default function SuppliersTable({
                 <TableCell className="text-muted-foreground">
                   {supplier.phone ?? "—"}
                 </TableCell>
-                <TableCell>{supplier.rating}</TableCell>
+                <TableCell className="tabular-nums">{supplier.rating}</TableCell>
                 <TableCell>
                   <SupplierStatusBadge status={supplier.status} />
                 </TableCell>
-                <TableCell className="text-left">
-                  <div className="flex items-center gap-1">
+                <TableCell className="text-end">
+                  <div className="flex items-center justify-end gap-1">
                     <Link href={`/purchasing/suppliers/${supplier.id}`}>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <Pencil className="h-4 w-4" />

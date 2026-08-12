@@ -68,14 +68,14 @@ export default function GoodsReceiptsTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("purchasing.receipts.grnNumber")}</TableHead>
               <TableHead>{t("purchasing.orders.poNumber")}</TableHead>
               <TableHead>{t("purchasing.orders.supplier")}</TableHead>
               <TableHead>{t("purchasing.receipts.receiptDate")}</TableHead>
               <TableHead>{t("purchasing.receipts.warehouse")}</TableHead>
               <TableHead>{t("common.status")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -119,14 +119,14 @@ export default function GoodsReceiptsTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("purchasing.receipts.grnNumber")}</TableHead>
               <TableHead>{t("purchasing.orders.poNumber")}</TableHead>
               <TableHead>{t("purchasing.orders.supplier")}</TableHead>
               <TableHead>{t("purchasing.receipts.receiptDate")}</TableHead>
               <TableHead>{t("purchasing.receipts.warehouse")}</TableHead>
               <TableHead>{t("common.status")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -148,8 +148,8 @@ export default function GoodsReceiptsTable({
                 <TableCell>
                   <GoodsReceiptStatusBadge status={receipt.status} />
                 </TableCell>
-                <TableCell className="text-left">
-                  <div className="flex items-center gap-1">
+                <TableCell className="text-end">
+                  <div className="flex items-center justify-end gap-1">
                     <Link href={`/purchasing/receipts/${receipt.id}`}>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <Eye className="h-4 w-4" />

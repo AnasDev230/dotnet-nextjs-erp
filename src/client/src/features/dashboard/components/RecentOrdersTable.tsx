@@ -47,7 +47,7 @@ export default function RecentOrdersTable({
         </CardHeader>
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("sales.orders.orderNumber")}</TableHead>
               <TableHead>{t("sales.orders.customer")}</TableHead>
               <TableHead>{t("common.date")}</TableHead>
@@ -94,7 +94,7 @@ export default function RecentOrdersTable({
       </CardHeader>
       <Table>
         <TableHeader>
-          <TableRow>
+          <TableRow className="hover:bg-transparent">
             <TableHead>{t("sales.orders.orderNumber")}</TableHead>
             <TableHead>{t("sales.orders.customer")}</TableHead>
             <TableHead>{t("common.date")}</TableHead>
@@ -117,7 +117,7 @@ export default function RecentOrdersTable({
               <TableCell className="text-xs text-muted-foreground">
                 {formatDate(order.orderDate)}
               </TableCell>
-              <TableCell className="text-muted-foreground">
+              <TableCell className="text-muted-foreground tabular-nums">
                 {formatCurrency(order.netAmount)}
               </TableCell>
               <TableCell>

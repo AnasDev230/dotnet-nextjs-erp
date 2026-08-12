@@ -246,11 +246,11 @@ export default function GoodsReceiptForm() {
                 {order && selectableLines.length > 0 ? (
                   <Table>
                     <TableHeader>
-                      <TableRow>
+                      <TableRow className="hover:bg-transparent">
                         <TableHead>{t("purchasing.orders.product")}</TableHead>
                         <TableHead>{t("purchasing.receipts.requiredQty")}</TableHead>
                         <TableHead>{t("purchasing.receipts.remainingQty")}</TableHead>
-                        <TableHead className="text-left">{t("purchasing.receipts.receivedQty")}</TableHead>
+                        <TableHead className="text-end">{t("purchasing.receipts.receivedQty")}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -268,9 +268,9 @@ export default function GoodsReceiptForm() {
                                 {item.productSku}
                               </div>
                             </TableCell>
-                            <TableCell>{item.quantity}</TableCell>
-                            <TableCell>{item.remainingQty}</TableCell>
-                            <TableCell className="text-left">
+                            <TableCell className="tabular-nums">{item.quantity}</TableCell>
+                            <TableCell className="tabular-nums">{item.remainingQty}</TableCell>
+                            <TableCell className="text-end">
                               <div className="flex items-center gap-2 justify-end">
                                 <Input
                                   type="number"

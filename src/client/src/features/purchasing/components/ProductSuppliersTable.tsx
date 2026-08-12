@@ -79,13 +79,13 @@ export default function ProductSuppliersTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("purchasing.productSuppliers.product")}</TableHead>
               <TableHead>{t("purchasing.productSuppliers.supplierSku")}</TableHead>
               <TableHead>{t("purchasing.productSuppliers.leadTimeDays")}</TableHead>
-              <TableHead className="text-left">{t("purchasing.productSuppliers.unitCost")}</TableHead>
+              <TableHead className="text-end">{t("purchasing.productSuppliers.unitCost")}</TableHead>
               <TableHead>{t("purchasing.productSuppliers.primary")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -121,13 +121,13 @@ export default function ProductSuppliersTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("purchasing.productSuppliers.product")}</TableHead>
               <TableHead>{t("purchasing.productSuppliers.supplierSku")}</TableHead>
               <TableHead>{t("purchasing.productSuppliers.leadTimeDays")}</TableHead>
-              <TableHead className="text-left">{t("purchasing.productSuppliers.unitCost")}</TableHead>
+              <TableHead className="text-end">{t("purchasing.productSuppliers.unitCost")}</TableHead>
               <TableHead>{t("purchasing.productSuppliers.primary")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -142,8 +142,8 @@ export default function ProductSuppliersTable({
                 <TableCell className="text-muted-foreground font-mono text-xs">
                   {link.supplierSku ?? "—"}
                 </TableCell>
-                <TableCell>{link.leadTimeDays} {t("common.days")}</TableCell>
-                <TableCell className="text-left font-mono text-xs">
+                <TableCell className="tabular-nums">{link.leadTimeDays} {t("common.days")}</TableCell>
+                <TableCell className="text-end font-mono text-xs tabular-nums">
                   {formatCurrency(link.unitCost)}
                 </TableCell>
                 <TableCell>
@@ -158,7 +158,7 @@ export default function ProductSuppliersTable({
                     </Badge>
                   )}
                 </TableCell>
-                <TableCell className="text-left">
+                <TableCell className="text-end">
                   <Button
                     variant="ghost"
                     size="icon"

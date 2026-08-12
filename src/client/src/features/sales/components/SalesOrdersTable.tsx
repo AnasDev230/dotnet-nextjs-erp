@@ -89,7 +89,7 @@ export default function SalesOrdersTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("sales.orders.orderNumber")}</TableHead>
               <TableHead>{t("sales.orders.customer")}</TableHead>
               <TableHead>{t("purchasing.receipts.warehouse")}</TableHead>
@@ -97,7 +97,7 @@ export default function SalesOrdersTable({
               <TableHead>{t("sales.orders.itemsCount")}</TableHead>
               <TableHead>{t("sales.orders.netAmount")}</TableHead>
               <TableHead>{t("common.status")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -141,7 +141,7 @@ export default function SalesOrdersTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("sales.orders.orderNumber")}</TableHead>
               <TableHead>{t("sales.orders.customer")}</TableHead>
               <TableHead>{t("purchasing.receipts.warehouse")}</TableHead>
@@ -149,7 +149,7 @@ export default function SalesOrdersTable({
               <TableHead>{t("sales.orders.itemsCount")}</TableHead>
               <TableHead>{t("sales.orders.netAmount")}</TableHead>
               <TableHead>{t("common.status")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -167,8 +167,8 @@ export default function SalesOrdersTable({
                     "ar-SA"
                   )}
                 </TableCell>
-                <TableCell>{order.itemsCount}</TableCell>
-                <TableCell className="text-muted-foreground">
+                <TableCell className="tabular-nums">{order.itemsCount}</TableCell>
+                <TableCell className="text-muted-foreground tabular-nums">
                   {formatCurrency(order.netAmount)}
                 </TableCell>
                 <TableCell>
@@ -176,8 +176,8 @@ export default function SalesOrdersTable({
                     {t(statusLabelKey[order.status])}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-left">
-                  <div className="flex items-center gap-1">
+                <TableCell className="text-end">
+                  <div className="flex items-center justify-end gap-1">
                     <Link href={`/sales/orders/${order.id}`}>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <Eye className="h-4 w-4" />

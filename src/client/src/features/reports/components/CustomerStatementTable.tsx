@@ -48,7 +48,7 @@ export default function CustomerStatementTable({
       </CardHeader>
       <Table>
         <TableHeader>
-          <TableRow>
+          <TableRow className="hover:bg-transparent">
             <TableHead>{t("common.date")}</TableHead>
             <TableHead>{t("common.type")}</TableHead>
             <TableHead>{t("finance.payments.reference")}</TableHead>
@@ -99,13 +99,13 @@ export default function CustomerStatementTable({
                   </span>
                 </TableCell>
                 <TableCell className="text-xs">{transaction.reference}</TableCell>
-                <TableCell className="text-xs text-muted-foreground">
+                <TableCell className="text-xs text-muted-foreground tabular-nums">
                   {transaction.debit > 0 ? formatCurrency(transaction.debit) : "—"}
                 </TableCell>
-                <TableCell className="text-xs text-muted-foreground">
+                <TableCell className="text-xs text-muted-foreground tabular-nums">
                   {transaction.credit > 0 ? formatCurrency(transaction.credit) : "—"}
                 </TableCell>
-                <TableCell className="text-xs font-semibold">
+                <TableCell className="text-xs font-semibold tabular-nums">
                   {formatCurrency(transaction.runningBalance)}
                 </TableCell>
               </TableRow>

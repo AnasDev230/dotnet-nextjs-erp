@@ -177,9 +177,9 @@ export default function GoodsReceiptDetails({
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="hover:bg-transparent">
                 <TableHead>{t("purchasing.orders.product")}</TableHead>
-                <TableHead className="text-left">{t("common.quantity")}</TableHead>
+                <TableHead className="text-end">{t("common.quantity")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -191,7 +191,7 @@ export default function GoodsReceiptDetails({
                       {item.productSku}
                     </div>
                   </TableCell>
-                  <TableCell className="text-left font-medium">
+                  <TableCell className="text-end font-medium tabular-nums">
                     {item.quantity}
                   </TableCell>
                 </TableRow>

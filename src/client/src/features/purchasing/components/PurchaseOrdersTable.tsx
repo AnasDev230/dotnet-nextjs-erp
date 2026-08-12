@@ -75,13 +75,13 @@ export default function PurchaseOrdersTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("purchasing.orders.poNumber")}</TableHead>
               <TableHead>{t("purchasing.orders.supplier")}</TableHead>
               <TableHead>{t("purchasing.orders.orderDate")}</TableHead>
               <TableHead>{t("common.status")}</TableHead>
-              <TableHead className="text-left">{t("purchasing.orders.totalAmount")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("purchasing.orders.totalAmount")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -125,13 +125,13 @@ export default function PurchaseOrdersTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("purchasing.orders.poNumber")}</TableHead>
               <TableHead>{t("purchasing.orders.supplier")}</TableHead>
               <TableHead>{t("purchasing.orders.orderDate")}</TableHead>
               <TableHead>{t("common.status")}</TableHead>
-              <TableHead className="text-left">{t("purchasing.orders.totalAmount")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("purchasing.orders.totalAmount")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -147,11 +147,11 @@ export default function PurchaseOrdersTable({
                 <TableCell>
                   <PurchaseOrderStatusBadge status={order.status} />
                 </TableCell>
-                <TableCell className="text-left font-mono text-xs">
+                <TableCell className="text-end font-mono text-xs tabular-nums">
                   {formatCurrency(order.totalAmount)}
                 </TableCell>
-                <TableCell className="text-left">
-                  <div className="flex items-center gap-1">
+                <TableCell className="text-end">
+                  <div className="flex items-center justify-end gap-1">
                     <Link href={`/purchasing/orders/${order.id}`}>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <Eye className="h-4 w-4" />

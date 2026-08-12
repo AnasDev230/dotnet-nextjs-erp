@@ -43,7 +43,10 @@ const TableHead = forwardRef<HTMLTableCellElement, ThHTMLAttributes<HTMLTableCel
   ({ className, ...props }, ref) => (
     <th
       ref={ref}
-      className={cn("h-12 px-4 text-right align-middle font-medium", className)}
+      className={cn(
+        "h-10 px-4 text-start align-middle font-medium uppercase tracking-wider",
+        className
+      )}
       {...props}
     />
   )
@@ -54,7 +57,7 @@ const TableCell = forwardRef<HTMLTableCellElement, TdHTMLAttributes<HTMLTableCel
   ({ className, ...props }, ref) => (
     <td
       ref={ref}
-      className={cn("p-4 align-middle", className)}
+      className={cn("px-4 py-3 text-sm align-middle", className)}
       {...props}
     />
   )

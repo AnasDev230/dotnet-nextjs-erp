@@ -144,13 +144,13 @@ export default function PurchaseOrderDetails({
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="hover:bg-transparent">
                 <TableHead>{t("purchasing.orders.product")}</TableHead>
                 <TableHead>{t("common.quantity")}</TableHead>
                 <TableHead>{t("purchasing.orders.receivedQty")}</TableHead>
                 <TableHead>{t("purchasing.orders.remainingQty")}</TableHead>
                 <TableHead>{t("purchasing.orders.unitPrice")}</TableHead>
-                <TableHead className="text-left">{t("purchasing.orders.lineTotal")}</TableHead>
+                <TableHead className="text-end">{t("purchasing.orders.lineTotal")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -162,13 +162,13 @@ export default function PurchaseOrderDetails({
                       {item.productSku}
                     </div>
                   </TableCell>
-                  <TableCell>{item.quantity}</TableCell>
-                  <TableCell>{item.receivedQty}</TableCell>
-                  <TableCell>{item.remainingQty}</TableCell>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className="tabular-nums">{item.quantity}</TableCell>
+                  <TableCell className="tabular-nums">{item.receivedQty}</TableCell>
+                  <TableCell className="tabular-nums">{item.remainingQty}</TableCell>
+                  <TableCell className="text-muted-foreground tabular-nums">
                     {formatCurrency(item.unitPrice, order.currency)}
                   </TableCell>
-                  <TableCell className="text-left font-medium">
+                  <TableCell className="text-end font-medium tabular-nums">
                     {formatCurrency(item.lineTotal, order.currency)}
                   </TableCell>
                 </TableRow>

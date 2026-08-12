@@ -55,7 +55,7 @@ export default function ReportDataTable<T>({
       </CardHeader>
       <Table>
         <TableHeader>
-          <TableRow>
+          <TableRow className="hover:bg-transparent">
             {columns.map((column) => (
               <TableHead key={column.key} className={column.className}>
                 {column.header}
@@ -98,7 +98,7 @@ export default function ReportDataTable<T>({
                 {columns.map((column) => (
                   <TableCell
                     key={column.key}
-                    className={cn("text-xs", column.className)}
+                    className={cn("text-xs tabular-nums", column.className)}
                   >
                     {column.render(row)}
                   </TableCell>

@@ -83,11 +83,11 @@ export default function LowStockAlert({ items, isLoading }: LowStockAlertProps) 
                 {item.sku} — {item.warehouseName}
               </p>
             </div>
-            <div className="text-left">
-              <span className="text-sm font-semibold text-amber-600">
+            <div className="text-end">
+              <span className="text-sm font-semibold text-amber-600 tabular-nums">
                 {item.quantityOnHand.toLocaleString("ar-SA")}
               </span>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-muted-foreground tabular-nums">
                 {" "}
                 / {item.reorderLevel.toLocaleString("ar-SA")}
               </span>

@@ -76,14 +76,14 @@ export default function EmployeesTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("hr.employees.employeeNoColumn")}</TableHead>
               <TableHead>{t("hr.employees.nameColumn")}</TableHead>
               <TableHead>{t("hr.employees.department")}</TableHead>
               <TableHead>{t("hr.employees.jobTitleColumn")}</TableHead>
               <TableHead>{t("hr.employees.hireDateColumn")}</TableHead>
               <TableHead>{t("common.status")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -125,14 +125,14 @@ export default function EmployeesTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("hr.employees.employeeNoColumn")}</TableHead>
               <TableHead>{t("hr.employees.nameColumn")}</TableHead>
               <TableHead>{t("hr.employees.department")}</TableHead>
               <TableHead>{t("hr.employees.jobTitleColumn")}</TableHead>
               <TableHead>{t("hr.employees.hireDateColumn")}</TableHead>
               <TableHead>{t("common.status")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -152,8 +152,8 @@ export default function EmployeesTable({
                     {statusLabel(employee.status)}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-left">
-                  <div className="flex items-center gap-1">
+                <TableCell className="text-end">
+                  <div className="flex items-center justify-end gap-1">
                     <Link href={`/hr/employees/${employee.id}/edit`}>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <Pencil className="h-4 w-4" />

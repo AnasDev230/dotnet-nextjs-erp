@@ -64,15 +64,15 @@ export default function ProductsTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("inventory.products.sku")}</TableHead>
               <TableHead>{t("common.name")}</TableHead>
               <TableHead>{t("inventory.products.category")}</TableHead>
               <TableHead>{t("inventory.products.unitOfMeasure")}</TableHead>
               <TableHead>{t("inventory.products.reorderLevel")}</TableHead>
-              <TableHead className="text-left">{t("inventory.products.salePrice")}</TableHead>
+              <TableHead className="text-end">{t("inventory.products.salePrice")}</TableHead>
               <TableHead>{t("inventory.products.status")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -114,15 +114,15 @@ export default function ProductsTable({
       <div className="rounded-lg border border-border">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="hover:bg-transparent">
               <TableHead>{t("inventory.products.sku")}</TableHead>
               <TableHead>{t("common.name")}</TableHead>
               <TableHead>{t("inventory.products.category")}</TableHead>
               <TableHead>{t("inventory.products.unitOfMeasure")}</TableHead>
               <TableHead>{t("inventory.products.reorderLevel")}</TableHead>
-              <TableHead className="text-left">{t("inventory.products.salePrice")}</TableHead>
+              <TableHead className="text-end">{t("inventory.products.salePrice")}</TableHead>
               <TableHead>{t("inventory.products.status")}</TableHead>
-              <TableHead className="text-left">{t("common.actions")}</TableHead>
+              <TableHead className="text-end">{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -134,8 +134,8 @@ export default function ProductsTable({
                   {product.categoryName ?? "—"}
                 </TableCell>
                 <TableCell>{product.unitOfMeasure}</TableCell>
-                <TableCell>{product.reorderLevel}</TableCell>
-                <TableCell className="text-left font-mono text-xs">
+                <TableCell className="tabular-nums">{product.reorderLevel}</TableCell>
+                <TableCell className="text-end font-mono text-xs tabular-nums">
                   {product.salePrice.toFixed(2)}
                 </TableCell>
                 <TableCell>
@@ -143,8 +143,8 @@ export default function ProductsTable({
                     {product.isActive ? t("common.active") : t("common.inactive")}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-left">
-                  <div className="flex items-center gap-1">
+                <TableCell className="text-end">
+                  <div className="flex items-center justify-end gap-1">
                     <Link href={`/inventory/products/${product.id}/edit`}>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <Pencil className="h-4 w-4" />
