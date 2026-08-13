@@ -6,12 +6,26 @@ import {
   updateUser,
   type FetchUsersParams,
 } from "../api/users";
-import type { CreateUserRequest, UpdateUserRequest } from "@/types/settings";
+import type {
+  CreateUserRequest,
+  PagedResult,
+  UpdateUserRequest,
+  UserListItem,
+} from "@/types/settings";
 
 export function useUsers(params: FetchUsersParams = {}) {
   return useQuery({
     queryKey: ["settings-users", params],
     queryFn: () => fetchUsers(params),
+  });
+}
+
+export function useUser(id: string) {
+  return useQuery<PagedResult<UserListItem>, Error, UserListItem | undefined>({
+    queryKey: ["settings-users", { page: 1, pageSize: 100 }],
+    queryFn: () => fetchUsers({ page: 1, pageSize: 100 }),
+    select: (data) => data.items.find((u) => u.id === id),
+    enabled: !!id,
   });
 }
 

@@ -148,7 +148,7 @@ export default function SettingsProfilePage() {
               <Shield className="h-6 w-6" />
             </div>
             <div>
-              <Badge className="rounded-md bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+              <Badge className="rounded-md bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary hover:bg-primary/10">
                 {roleLabel}
               </Badge>
               <p className="mt-1 text-xs text-muted-foreground">
