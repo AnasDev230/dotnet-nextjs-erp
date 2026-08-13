@@ -98,6 +98,31 @@ export const ar: Record<string, string> = {
   "settings.nav.users": "إدارة المستخدمين",
   "settings.nav.company": "إعدادات الشركة",
 
+  // ─── Settings Profile ───
+  "settings.profile.title": "الملف الشخصي",
+  "settings.profile.infoTitle": "معلومات الحساب",
+  "settings.profile.username": "اسم المستخدم",
+  "settings.profile.email": "البريد الإلكتروني",
+  "settings.profile.role": "الدور",
+  "settings.profile.lastLogin": "آخر دخول",
+  "settings.profile.fullName": "الاسم الكامل",
+  "settings.profile.editTitle": "تعديل الملف الشخصي",
+  "settings.profile.saveChanges": "حفظ التغييرات",
+  "settings.profile.profileUpdated": "تم تحديث الملف الشخصي بنجاح",
+  "settings.profile.changePassword": "تغيير كلمة المرور",
+  "settings.profile.currentPassword": "كلمة المرور الحالية",
+  "settings.profile.newPassword": "كلمة المرور الجديدة",
+  "settings.profile.confirmPassword": "تأكيد كلمة المرور",
+  "settings.profile.passwordChanged": "تم تغيير كلمة المرور بنجاح",
+  "settings.profile.reLoginSuggestion": "ستحتاج إلى إعادة تسجيل الدخول في جلساتك الأخرى",
+
+  // ─── Settings Roles ───
+  "settings.roles.superAdmin": "مدير النظام",
+  "settings.roles.salesManager": "مدير المبيعات",
+  "settings.roles.purchasingManager": "مدير المشتريات",
+  "settings.roles.warehouseKeeper": "أمين المستودع",
+  "settings.roles.hrManager": "مدير الموارد البشرية",
+
   // ─── Theme ───
   "theme.toggleAria": "تبديل المظهر",
   "theme.light": "فاتح",

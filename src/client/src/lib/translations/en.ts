@@ -98,6 +98,32 @@ export const en: Record<string, string> = {
   "settings.nav.users": "User Management",
   "settings.nav.company": "Company Settings",
 
+  // ─── Settings Profile ───
+  "settings.profile.title": "Profile",
+  "settings.profile.infoTitle": "Account Information",
+  "settings.profile.username": "Username",
+  "settings.profile.email": "Email",
+  "settings.profile.role": "Role",
+  "settings.profile.lastLogin": "Last Login",
+  "settings.profile.fullName": "Full Name",
+  "settings.profile.editTitle": "Edit Profile",
+  "settings.profile.saveChanges": "Save Changes",
+  "settings.profile.profileUpdated": "Profile updated successfully",
+  "settings.profile.changePassword": "Change Password",
+  "settings.profile.currentPassword": "Current Password",
+  "settings.profile.newPassword": "New Password",
+  "settings.profile.confirmPassword": "Confirm New Password",
+  "settings.profile.passwordChanged": "Password changed successfully",
+  "settings.profile.reLoginSuggestion":
+    "You will need to sign in again in your other sessions",
+
+  // ─── Settings Roles ───
+  "settings.roles.superAdmin": "Super Admin",
+  "settings.roles.salesManager": "Sales Manager",
+  "settings.roles.purchasingManager": "Purchasing Manager",
+  "settings.roles.warehouseKeeper": "Warehouse Keeper",
+  "settings.roles.hrManager": "HR Manager",
+
   // ─── Theme ───
   "theme.toggleAria": "Toggle theme",
   "theme.light": "Light",
