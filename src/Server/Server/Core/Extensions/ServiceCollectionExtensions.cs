@@ -91,6 +91,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICompanySettingsRepository, CompanySettingsRepository>();
         services.AddScoped<ICompanySettingsService, CompanySettingsService>();
         services.AddScoped<IUsersManagementService, UsersManagementService>();
+        services.AddScoped<IProfileService, ProfileService>();
 
         return services;
     }
