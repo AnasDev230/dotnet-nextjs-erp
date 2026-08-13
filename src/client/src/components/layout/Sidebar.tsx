@@ -47,7 +47,7 @@ interface SubNavItem {
 
 const navItems: NavItem[] = [
   { labelKey: "nav.dashboard", href: "/", icon: LayoutDashboard },
-  { labelKey: "nav.settings", href: "/settings", icon: Settings, disabled: true },
+  { labelKey: "nav.settings", href: "/settings", icon: Settings },
 ];
 
 const salesItems: SubNavItem[] = [
@@ -127,7 +127,9 @@ export default function Sidebar() {
 
       <nav className="flex-1 space-y-1 overflow-y-auto p-3">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive =
+            pathname === item.href ||
+            (item.href === "/settings" && pathname.startsWith("/settings"));
           const Icon = item.icon;
 
           if (item.disabled) {

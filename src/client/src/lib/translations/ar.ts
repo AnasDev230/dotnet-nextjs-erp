@@ -157,6 +157,27 @@ export const ar: Record<string, string> = {
   "settings.users.activateTitle": "تفعيل المستخدم",
   "settings.users.activateDescription": "هل أنت متأكد من تفعيل هذا المستخدم؟",
 
+  // ─── Settings Company Settings ───
+  "settings.company.title": "إعدادات الشركة",
+  "settings.company.description": "إدارة معلومات المؤسسة",
+  "settings.company.infoTitle": "معلومات المؤسسة",
+  "settings.company.nameAr": "اسم الشركة (عربي)",
+  "settings.company.nameEn": "اسم الشركة (إنجليزي)",
+  "settings.company.taxNumber": "الرقم الضريبي",
+  "settings.company.phone": "الهاتف",
+  "settings.company.email": "البريد الإلكتروني",
+  "settings.company.currency": "العملة",
+  "settings.company.address": "العنوان",
+  "settings.company.city": "المدينة",
+  "settings.company.country": "الدولة",
+  "settings.company.save": "حفظ التغييرات",
+  "settings.company.saved": "تم حفظ الإعدادات بنجاح",
+  "settings.company.currencySar": "SAR - ريال سعودي",
+  "settings.company.currencyUsd": "USD - دولار أمريكي",
+  "settings.company.currencyAed": "AED - درهم إماراتي",
+  "settings.company.currencyEgp": "EGP - جنيه مصري",
+  "settings.company.currencyKwd": "KWD - دينار كويتي",
+
   // ─── Theme ───
   "theme.toggleAria": "تبديل المظهر",
   "theme.light": "فاتح",

@@ -158,6 +158,27 @@ export const en: Record<string, string> = {
   "settings.users.activateTitle": "Activate User",
   "settings.users.activateDescription": "Are you sure you want to activate this user?",
 
+  // ─── Settings Company Settings ───
+  "settings.company.title": "Company Settings",
+  "settings.company.description": "Manage your organization information",
+  "settings.company.infoTitle": "Organization Information",
+  "settings.company.nameAr": "Company Name (Arabic)",
+  "settings.company.nameEn": "Company Name (English)",
+  "settings.company.taxNumber": "Tax Number",
+  "settings.company.phone": "Phone",
+  "settings.company.email": "Email",
+  "settings.company.currency": "Currency",
+  "settings.company.address": "Address",
+  "settings.company.city": "City",
+  "settings.company.country": "Country",
+  "settings.company.save": "Save Changes",
+  "settings.company.saved": "Settings saved successfully",
+  "settings.company.currencySar": "SAR - Saudi Riyal",
+  "settings.company.currencyUsd": "USD - US Dollar",
+  "settings.company.currencyAed": "AED - UAE Dirham",
+  "settings.company.currencyEgp": "EGP - Egyptian Pound",
+  "settings.company.currencyKwd": "KWD - Kuwaiti Dinar",
+
   // ─── Theme ───
   "theme.toggleAria": "Toggle theme",
   "theme.light": "Light",
