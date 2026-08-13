@@ -17,6 +17,8 @@ using Server.Features.Sales.Repositories;
 using Server.Features.Sales.Services;
 using Server.Features.Security.Repositories;
 using Server.Features.Security.Services;
+using Server.Features.Settings.Repositories;
+using Server.Features.Settings.Services;
 using Server.Infrastructure.Services;
 
 namespace Server.Core.Extensions;
@@ -84,6 +86,10 @@ public static class ServiceCollectionExtensions
         // Reports (read-only aggregation across Sales, Purchasing, Inventory & HR)
         services.AddScoped<IReportsRepository, ReportsRepository>();
         services.AddScoped<IReportsService, ReportsService>();
+
+        // Settings
+        services.AddScoped<ICompanySettingsRepository, CompanySettingsRepository>();
+        services.AddScoped<ICompanySettingsService, CompanySettingsService>();
 
         return services;
     }

@@ -8,6 +8,7 @@ using Server.Features.Inventory;
 using Server.Features.Purchasing.Entities;
 using Server.Features.Sales;
 using Server.Features.Security;
+using Server.Features.Settings.Entities;
 
 namespace Server.Infrastructure.Persistence;
 
@@ -37,6 +38,9 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     // HR Module
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<Employee> Employees => Set<Employee>();
+
+    // Settings Module
+    public DbSet<CompanySettings> CompanySettings => Set<CompanySettings>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
