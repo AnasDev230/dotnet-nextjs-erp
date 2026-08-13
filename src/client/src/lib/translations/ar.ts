@@ -82,15 +82,6 @@ export const ar: Record<string, string> = {
   "auth.loggingIn": "جاري تسجيل الدخول...",
   "auth.password": "كلمة المرور",
 
-  // ─── Profile ───
-  "profile.title": "الملف الشخصي",
-  "profile.description": "معلومات الحساب الشخصية",
-  "profile.userInfo": "معلومات المستخدم",
-  "profile.fullName": "الاسم الكامل",
-  "profile.roles": "الأدوار والصلاحيات",
-  "profile.changePassword": "تغيير كلمة المرور",
-  "profile.comingSoonDescription": "هذه الميزة ستتوفر قريباً",
-
   // ─── Settings ───
   "settings.title": "الإعدادات",
   "settings.description": "إعدادات النظام والحساب",
@@ -100,6 +91,7 @@ export const ar: Record<string, string> = {
 
   // ─── Settings Profile ───
   "settings.profile.title": "الملف الشخصي",
+  "settings.profile.description": "معلومات الحساب الشخصية",
   "settings.profile.infoTitle": "معلومات الحساب",
   "settings.profile.username": "اسم المستخدم",
   "settings.profile.email": "البريد الإلكتروني",
@@ -212,7 +204,6 @@ export const ar: Record<string, string> = {
   "nav.reportsEmployees": "الموظفون",
   "nav.customerStatement": "كشف حساب عميل",
   "nav.logout": "تسجيل الخروج",
-  "nav.profile": "الملف الشخصي",
   "nav.settings": "الإعدادات",
   "nav.inventoryLevels": "مستويات المخزون",
   "nav.adjustments": "التسويات",

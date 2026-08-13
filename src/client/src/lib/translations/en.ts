@@ -82,15 +82,6 @@ export const en: Record<string, string> = {
   "auth.loggingIn": "Signing in...",
   "auth.password": "Password",
 
-  // ─── Profile ───
-  "profile.title": "Profile",
-  "profile.description": "Personal account information",
-  "profile.userInfo": "User Information",
-  "profile.fullName": "Full Name",
-  "profile.roles": "Roles & Permissions",
-  "profile.changePassword": "Change Password",
-  "profile.comingSoonDescription": "This feature will be available soon",
-
   // ─── Settings ───
   "settings.title": "Settings",
   "settings.description": "System and account settings",
@@ -100,6 +91,7 @@ export const en: Record<string, string> = {
 
   // ─── Settings Profile ───
   "settings.profile.title": "Profile",
+  "settings.profile.description": "Personal account information",
   "settings.profile.infoTitle": "Account Information",
   "settings.profile.username": "Username",
   "settings.profile.email": "Email",
@@ -213,7 +205,6 @@ export const en: Record<string, string> = {
   "nav.reportsEmployees": "Employees",
   "nav.customerStatement": "Customer Statement",
   "nav.logout": "Log Out",
-  "nav.profile": "Profile",
   "nav.settings": "Settings",
   "nav.inventoryLevels": "Inventory Levels",
   "nav.adjustments": "Adjustments",

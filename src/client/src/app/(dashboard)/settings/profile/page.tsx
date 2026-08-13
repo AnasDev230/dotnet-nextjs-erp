@@ -108,7 +108,7 @@ export default function SettingsProfilePage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-semibold">{t("settings.profile.title")}</h1>
-        <p className="text-sm text-muted-foreground">{t("profile.description")}</p>
+        <p className="text-sm text-muted-foreground">{t("settings.profile.description")}</p>
       </div>
 
       {/* Account Info */}

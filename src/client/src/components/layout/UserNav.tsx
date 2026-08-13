@@ -61,12 +61,12 @@ export default function UserNav() {
       {open && (
         <div className="absolute bottom-full end-0 mb-2 w-full min-w-40 rounded-lg border border-border bg-card p-1 shadow-lg">
           <Link
-            href="/profile"
+            href="/settings/profile"
             onClick={() => setOpen(false)}
             className="flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <User className="h-4 w-4" />
-            {t("nav.profile")}
+            {t("settings.nav.profile")}
           </Link>
           <button
             onClick={handleLogout}
