@@ -91,6 +91,13 @@ export const en: Record<string, string> = {
   "profile.changePassword": "Change Password",
   "profile.comingSoonDescription": "This feature will be available soon",
 
+  // ─── Settings ───
+  "settings.title": "Settings",
+  "settings.description": "System and account settings",
+  "settings.nav.profile": "Profile",
+  "settings.nav.users": "User Management",
+  "settings.nav.company": "Company Settings",
+
   // ─── Theme ───
   "theme.toggleAria": "Toggle theme",
   "theme.light": "Light",

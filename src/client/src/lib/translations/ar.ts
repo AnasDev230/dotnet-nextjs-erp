@@ -91,6 +91,13 @@ export const ar: Record<string, string> = {
   "profile.changePassword": "تغيير كلمة المرور",
   "profile.comingSoonDescription": "هذه الميزة ستتوفر قريباً",
 
+  // ─── Settings ───
+  "settings.title": "الإعدادات",
+  "settings.description": "إعدادات النظام والحساب",
+  "settings.nav.profile": "الملف الشخصي",
+  "settings.nav.users": "إدارة المستخدمين",
+  "settings.nav.company": "إعدادات الشركة",
+
   // ─── Theme ───
   "theme.toggleAria": "تبديل المظهر",
   "theme.light": "فاتح",
