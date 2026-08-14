@@ -4,6 +4,7 @@ export const en: Record<string, string> = {
   "common.cancel": "Cancel",
   "common.delete": "Delete",
   "common.edit": "Edit",
+  "common.view": "View",
   "common.add": "Add",
   "common.search": "Search",
   "common.confirm": "Confirm",

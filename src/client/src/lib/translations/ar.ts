@@ -4,6 +4,7 @@ export const ar: Record<string, string> = {
   "common.cancel": "إلغاء",
   "common.delete": "حذف",
   "common.edit": "تعديل",
+  "common.view": "عرض",
   "common.add": "إضافة",
   "common.search": "بحث",
   "common.confirm": "تأكيد",

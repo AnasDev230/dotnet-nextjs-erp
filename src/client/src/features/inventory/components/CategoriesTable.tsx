@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Pencil, Trash2, FolderTree } from "lucide-react";
+import { Eye, Pencil, Trash2, FolderTree } from "lucide-react";
 import {
   Table,
   TableHeader,
@@ -135,6 +135,11 @@ export default function CategoriesTable({
                 </TableCell>
                 <TableCell className="text-end">
                   <div className="flex items-center justify-end gap-1">
+                    <Link href={`/inventory/categories/${category.id}`}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t("common.view")}>
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </Link>
                     <Link href={`/inventory/categories/${category.id}/edit`}>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <Pencil className="h-4 w-4" />

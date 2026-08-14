@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Pencil, Trash2, Ban, CheckCircle, Truck } from "lucide-react";
+import { Eye, Pencil, Trash2, Ban, CheckCircle, Truck } from "lucide-react";
 import {
   Table,
   TableHeader,
@@ -220,6 +220,11 @@ export default function SuppliersTable({
                 <TableCell className="text-end">
                   <div className="flex items-center justify-end gap-1">
                     <Link href={`/purchasing/suppliers/${supplier.id}`}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t("common.view")}>
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </Link>
+                    <Link href={`/purchasing/suppliers/${supplier.id}/edit`}>
                       <Button variant="ghost" size="icon" className="h-8 w-8">
                         <Pencil className="h-4 w-4" />
                       </Button>
