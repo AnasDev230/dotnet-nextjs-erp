@@ -2,11 +2,15 @@
 
 import ThemeToggle from "./ThemeToggle";
 import LanguageToggle from "./language-toggle";
+import GlobalSearch from "./global-search";
+import MobileSearchDialog from "./mobile-search-dialog";
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-40 flex h-14 items-center border-b border-border bg-background/95 px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-40 flex h-14 items-center gap-4 border-b border-border bg-background/95 px-6 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <GlobalSearch />
       <div className="ms-auto flex items-center gap-2">
+        <MobileSearchDialog />
         <ThemeToggle />
         <LanguageToggle />
       </div>
