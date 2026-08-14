@@ -12,13 +12,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useTranslation } from "@/hooks/use-translation";
+import { getDirection } from "@/lib/i18n";
 import { useGlobalSearch } from "@/features/search/hooks/useGlobalSearch";
 import { getSearchResultUrl } from "@/features/search/utils/search-utils";
 import { SearchResults } from "./search-results";
 import type { SearchResultItem } from "@/types/search";
 
 export default function MobileSearchDialog() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -62,6 +63,7 @@ export default function MobileSearchDialog() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t("search.placeholder")}
+              dir={getDirection(language)}
               autoFocus
               className="h-10 rounded-lg ps-9 pe-4"
             />

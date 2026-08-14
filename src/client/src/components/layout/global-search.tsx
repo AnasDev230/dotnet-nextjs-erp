@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useTranslation } from "@/hooks/use-translation";
+import { getDirection } from "@/lib/i18n";
 import { useGlobalSearch } from "@/features/search/hooks/useGlobalSearch";
 import { getSearchResultUrl } from "@/features/search/utils/search-utils";
 import { SearchResults } from "./search-results";
 import type { SearchResultItem } from "@/types/search";
 
 export default function GlobalSearch() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const router = useRouter();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
@@ -66,6 +67,7 @@ export default function GlobalSearch() {
           setOpen(true);
         }}
         placeholder={t("search.placeholder")}
+        dir={getDirection(language)}
         className="h-9 rounded-lg pe-20 ps-9 transition-colors"
         role="combobox"
         aria-expanded={open}

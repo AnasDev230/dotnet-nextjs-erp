@@ -905,6 +905,21 @@ export const ar: Record<string, string> = {
   "reports.totalPaidLabel": "إجمالي المدفوعات",
   "reports.outstandingBalanceLabel": "الرصيد المعلق",
 
+  // ─── Search ───
+  "search.placeholder": "ابحث في النظام...",
+  "search.noResults": "لا توجد نتائج",
+  "search.searching": "جاري البحث...",
+  "search.minChars": "اكتب حرفين على الأقل",
+  "search.category.employees": "الموظفون",
+  "search.category.customers": "العملاء",
+  "search.category.suppliers": "الموردون",
+  "search.category.products": "المنتجات",
+  "search.category.salesOrders": "أوامر البيع",
+  "search.category.purchaseOrders": "أوامر الشراء",
+  "search.category.invoices": "الفواتير",
+  "search.category.departments": "الأقسام",
+  "search.category.warehouses": "المستودعات",
+
   // ─── ConfirmDialog ───
   "confirm.submit.title": "إرسال للاعتماد",
   "confirm.submit.description": "هل أنت متأكد من إرسال هذا الأمر للاعتماد؟ لن تتمكن من تعديله بعد الإرسال.",

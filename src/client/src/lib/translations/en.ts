@@ -906,6 +906,21 @@ export const en: Record<string, string> = {
   "reports.totalPaidLabel": "Total Paid",
   "reports.outstandingBalanceLabel": "Outstanding Balance",
 
+  // ─── Search ───
+  "search.placeholder": "Search the system...",
+  "search.noResults": "No results found",
+  "search.searching": "Searching...",
+  "search.minChars": "Type at least 2 characters",
+  "search.category.employees": "Employees",
+  "search.category.customers": "Customers",
+  "search.category.suppliers": "Suppliers",
+  "search.category.products": "Products",
+  "search.category.salesOrders": "Sales Orders",
+  "search.category.purchaseOrders": "Purchase Orders",
+  "search.category.invoices": "Invoices",
+  "search.category.departments": "Departments",
+  "search.category.warehouses": "Warehouses",
+
   // ─── ConfirmDialog ───
   "confirm.submit.title": "Submit for Approval",
   "confirm.submit.description": "Are you sure you want to submit this order for approval? You will not be able to edit it after submission.",
