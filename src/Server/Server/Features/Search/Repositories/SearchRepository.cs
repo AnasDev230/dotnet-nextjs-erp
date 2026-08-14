@@ -15,7 +15,7 @@ public class SearchRepository : ISearchRepository
 
     public async Task<SearchResultResponse> SearchAsync(string query, int limitPerCategory = 5)
     {
-        var employeesTask = _context.Employees.AsNoTracking()
+        var employees = await _context.Employees.AsNoTracking()
             .Where(e => e.Status != EmployeeStatus.Terminated)
             .Where(e => e.FirstName.Contains(query) || e.LastName.Contains(query) || e.EmployeeNumber.Contains(query))
             .Take(limitPerCategory)
@@ -27,7 +27,7 @@ public class SearchRepository : ISearchRepository
                 Type = "employee",
             }).ToListAsync();
 
-        var customersTask = _context.Customers.AsNoTracking()
+        var customers = await _context.Customers.AsNoTracking()
             .Where(c => c.Name.Contains(query) || c.Code.Contains(query))
             .Take(limitPerCategory)
             .Select(c => new SearchResultItem
@@ -38,7 +38,7 @@ public class SearchRepository : ISearchRepository
                 Type = "customer",
             }).ToListAsync();
 
-        var suppliersTask = _context.Suppliers.AsNoTracking()
+        var suppliers = await _context.Suppliers.AsNoTracking()
             .Where(s => s.Name.Contains(query) || s.Code.Contains(query))
             .Take(limitPerCategory)
             .Select(s => new SearchResultItem
@@ -49,7 +49,7 @@ public class SearchRepository : ISearchRepository
                 Type = "supplier",
             }).ToListAsync();
 
-        var productsTask = _context.Products.AsNoTracking()
+        var products = await _context.Products.AsNoTracking()
             .Where(p => p.Name.Contains(query) || p.Sku.Contains(query))
             .Where(p => p.IsActive)
             .Take(limitPerCategory)
@@ -61,7 +61,7 @@ public class SearchRepository : ISearchRepository
                 Type = "product",
             }).ToListAsync();
 
-        var salesOrdersTask = _context.SalesOrders.AsNoTracking()
+        var salesOrders = await _context.SalesOrders.AsNoTracking()
             .Where(o => o.OrderNumber.Contains(query))
             .Take(limitPerCategory)
             .Select(o => new SearchResultItem
@@ -72,7 +72,7 @@ public class SearchRepository : ISearchRepository
                 Type = "salesOrder",
             }).ToListAsync();
 
-        var purchaseOrdersTask = _context.PurchaseOrders.AsNoTracking()
+        var purchaseOrders = await _context.PurchaseOrders.AsNoTracking()
             .Where(o => o.PoNumber.Contains(query))
             .Take(limitPerCategory)
             .Select(o => new SearchResultItem
@@ -83,7 +83,7 @@ public class SearchRepository : ISearchRepository
                 Type = "purchaseOrder",
             }).ToListAsync();
 
-        var invoicesTask = _context.Invoices.AsNoTracking()
+        var invoices = await _context.Invoices.AsNoTracking()
             .Where(i => i.InvoiceNumber.Contains(query))
             .Take(limitPerCategory)
             .Select(i => new SearchResultItem
@@ -94,7 +94,7 @@ public class SearchRepository : ISearchRepository
                 Type = "invoice",
             }).ToListAsync();
 
-        var departmentsTask = _context.Departments.AsNoTracking()
+        var departments = await _context.Departments.AsNoTracking()
             .Where(d => d.Name.Contains(query) || d.Code.Contains(query))
             .Where(d => d.IsActive)
             .Take(limitPerCategory)
@@ -106,7 +106,7 @@ public class SearchRepository : ISearchRepository
                 Type = "department",
             }).ToListAsync();
 
-        var warehousesTask = _context.Warehouses.AsNoTracking()
+        var warehouses = await _context.Warehouses.AsNoTracking()
             .Where(w => w.Name.Contains(query) || w.Code.Contains(query))
             .Where(w => w.IsActive)
             .Take(limitPerCategory)
@@ -118,23 +118,17 @@ public class SearchRepository : ISearchRepository
                 Type = "warehouse",
             }).ToListAsync();
 
-        await Task.WhenAll(
-            employeesTask, customersTask, suppliersTask, productsTask,
-            salesOrdersTask, purchaseOrdersTask, invoicesTask,
-            departmentsTask, warehousesTask
-        );
-
         return new SearchResultResponse
         {
-            Employees = employeesTask.Result,
-            Customers = customersTask.Result,
-            Suppliers = suppliersTask.Result,
-            Products = productsTask.Result,
-            SalesOrders = salesOrdersTask.Result,
-            PurchaseOrders = purchaseOrdersTask.Result,
-            Invoices = invoicesTask.Result,
-            Departments = departmentsTask.Result,
-            Warehouses = warehousesTask.Result
+            Employees = employees,
+            Customers = customers,
+            Suppliers = suppliers,
+            Products = products,
+            SalesOrders = salesOrders,
+            PurchaseOrders = purchaseOrders,
+            Invoices = invoices,
+            Departments = departments,
+            Warehouses = warehouses
         };
     }
 }
