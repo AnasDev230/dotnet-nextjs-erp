@@ -15,6 +15,8 @@ using Server.Features.Reports.Repositories;
 using Server.Features.Reports.Services;
 using Server.Features.Sales.Repositories;
 using Server.Features.Sales.Services;
+using Server.Features.Search.Repositories;
+using Server.Features.Search.Services;
 using Server.Features.Security.Repositories;
 using Server.Features.Security.Services;
 using Server.Features.Settings.Repositories;
@@ -92,6 +94,10 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICompanySettingsService, CompanySettingsService>();
         services.AddScoped<IUsersManagementService, UsersManagementService>();
         services.AddScoped<IProfileService, ProfileService>();
+
+        // Search (read-only cross-cutting feature searching all modules)
+        services.AddScoped<ISearchRepository, SearchRepository>();
+        services.AddScoped<ISearchService, SearchService>();
 
         return services;
     }
