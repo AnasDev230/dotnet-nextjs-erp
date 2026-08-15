@@ -965,6 +965,19 @@ export const en: Record<string, string> = {
   "confirm.activate.title": "Activate",
   "confirm.activate.description": "Are you sure you want to activate?",
 
+  // ─── Toast ───
+  "toast.created": "Created successfully",
+  "toast.updated": "Updated successfully",
+  "toast.deleted": "Deleted successfully",
+  "toast.statusChanged": "Status changed successfully",
+  "toast.saved": "Saved successfully",
+  "toast.error.generic": "An error occurred",
+  "toast.error.validation": "Validation error",
+  "toast.error.notFound": "Item not found",
+  "toast.error.unauthorized": "You are not authorized",
+  "toast.error.business": "Operation cannot be completed",
+  "toast.error.network": "Server connection error",
+
   // ─── Language ───
   "language.arabic": "العربية",
   "language.english": "English",

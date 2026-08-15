@@ -1,4 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "@/hooks/use-translation";
+import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/error-handler";
 import {
   cancelInvoice,
   createInvoice,
@@ -27,55 +30,82 @@ export function useInvoice(id: string | undefined) {
 
 export function useCreateInvoice() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const { success, error } = useToast();
+
   return useMutation({
     mutationFn: (data: CreateInvoiceRequest) => createInvoice(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      success(t("toast.created"));
     },
-    onError: () => {
-      // Backend BusinessException (e.g. order already invoiced) is exposed through
-      // mutation.error and rendered by the form's destructive Alert.
+    onError: (err) => {
+      error(
+        t("toast.error.generic"),
+        getErrorMessage(err) || t("common.unexpectedError")
+      );
     },
   });
 }
 
 export function useIssueInvoice() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const { success, error } = useToast();
+
   return useMutation({
     mutationFn: (id: string) => issueInvoice(id),
     onSuccess: (updated) => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
       queryClient.setQueryData(["invoices", updated.id], updated);
+      success(t("toast.statusChanged"));
     },
-    onError: () => {
-      // Error rendered via mutation.error in the component.
+    onError: (err) => {
+      error(
+        t("toast.error.generic"),
+        getErrorMessage(err) || t("common.unexpectedError")
+      );
     },
   });
 }
 
 export function useCancelInvoice() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const { success, error } = useToast();
+
   return useMutation({
     mutationFn: (id: string) => cancelInvoice(id),
     onSuccess: (updated) => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
       queryClient.setQueryData(["invoices", updated.id], updated);
+      success(t("toast.statusChanged"));
     },
-    onError: () => {
-      // Error rendered via mutation.error in the component.
+    onError: (err) => {
+      error(
+        t("toast.error.generic"),
+        getErrorMessage(err) || t("common.unexpectedError")
+      );
     },
   });
 }
 
 export function useDeleteInvoice() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const { success, error } = useToast();
+
   return useMutation({
     mutationFn: (id: string) => deleteInvoice(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      success(t("toast.deleted"));
     },
-    onError: () => {
-      // Error rendered via mutation.error in the component.
+    onError: (err) => {
+      error(
+        t("toast.error.generic"),
+        getErrorMessage(err) || t("common.unexpectedError")
+      );
     },
   });
 }

@@ -1,4 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "@/hooks/use-translation";
+import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/error-handler";
 import {
   deletePayment,
   fetchPaymentsForInvoice,
@@ -16,6 +19,9 @@ export function usePayments(invoiceId: string | undefined) {
 
 export function useRecordPayment() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const { success, error } = useToast();
+
   return useMutation({
     mutationFn: ({
       invoiceId,
@@ -28,24 +34,34 @@ export function useRecordPayment() {
       queryClient.invalidateQueries({ queryKey: ["payments", invoiceId] });
       queryClient.invalidateQueries({ queryKey: ["invoices", invoiceId] });
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      success(t("toast.created"));
     },
-    onError: () => {
-      // Backend BusinessException (e.g. overpayment) is exposed through
-      // mutation.error and rendered by the form's destructive Alert.
+    onError: (err) => {
+      error(
+        t("toast.error.generic"),
+        getErrorMessage(err) || t("common.unexpectedError")
+      );
     },
   });
 }
 
 export function useDeletePayment() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const { success, error } = useToast();
+
   return useMutation({
     mutationFn: (id: string) => deletePayment(id),
     onSuccess: (_updated, id) => {
       queryClient.invalidateQueries({ queryKey: ["payments"] });
       queryClient.invalidateQueries({ queryKey: ["invoices"] });
+      success(t("toast.deleted"));
     },
-    onError: () => {
-      // Error rendered via mutation.error in the component.
+    onError: (err) => {
+      error(
+        t("toast.error.generic"),
+        getErrorMessage(err) || t("common.unexpectedError")
+      );
     },
   });
 }

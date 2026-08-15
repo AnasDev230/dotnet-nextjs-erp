@@ -964,6 +964,19 @@ export const ar: Record<string, string> = {
   "confirm.activate.title": "تفعيل",
   "confirm.activate.description": "هل أنت متأكد من التفعيل؟",
 
+  // ─── Toast ───
+  "toast.created": "تمت الإضافة بنجاح",
+  "toast.updated": "تم التحديث بنجاح",
+  "toast.deleted": "تم الحذف بنجاح",
+  "toast.statusChanged": "تم تغيير الحالة بنجاح",
+  "toast.saved": "تم الحفظ بنجاح",
+  "toast.error.generic": "حدث خطأ",
+  "toast.error.validation": "خطأ في التحقق",
+  "toast.error.notFound": "العنصر غير موجود",
+  "toast.error.unauthorized": "غير مصرح لك بهذا الإجراء",
+  "toast.error.business": "لا يمكن تنفيذ العملية",
+  "toast.error.network": "خطأ في الاتصال بالخادم",
+
   // ─── Language ───
   "language.arabic": "العربية",
   "language.english": "English",

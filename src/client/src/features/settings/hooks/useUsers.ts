@@ -1,4 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "@/hooks/use-translation";
+import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/error-handler";
 import {
   createUser,
   fetchUsers,
@@ -31,31 +34,61 @@ export function useUser(id: string) {
 
 export function useCreateUser() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const { success, error } = useToast();
+
   return useMutation({
     mutationFn: (data: CreateUserRequest) => createUser(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings-users"] });
+      success(t("toast.created"));
+    },
+    onError: (err) => {
+      error(
+        t("toast.error.generic"),
+        getErrorMessage(err) || t("common.unexpectedError")
+      );
     },
   });
 }
 
 export function useUpdateUser() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const { success, error } = useToast();
+
   return useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateUserRequest }) =>
       updateUser(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings-users"] });
+      success(t("toast.updated"));
+    },
+    onError: (err) => {
+      error(
+        t("toast.error.generic"),
+        getErrorMessage(err) || t("common.unexpectedError")
+      );
     },
   });
 }
 
 export function useToggleUserActive() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const { success, error } = useToast();
+
   return useMutation({
     mutationFn: (id: string) => toggleUserActive(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["settings-users"] });
+      success(t("toast.statusChanged"));
+    },
+    onError: (err) => {
+      error(
+        t("toast.error.generic"),
+        getErrorMessage(err) || t("common.unexpectedError")
+      );
     },
   });
 }
