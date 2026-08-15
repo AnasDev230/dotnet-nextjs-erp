@@ -1,14 +1,14 @@
 export enum EmployeeStatus {
-  Active = 0,
-  OnLeave = 1,
-  Terminated = 2,
+  Active = "Active",
+  OnLeave = "OnLeave",
+  Terminated = "Terminated",
 }
 
 export enum EmploymentType {
-  FullTime = 0,
-  PartTime = 1,
-  Contract = 2,
-  Intern = 3,
+  FullTime = "FullTime",
+  PartTime = "PartTime",
+  Contract = "Contract",
+  Intern = "Intern",
 }
 
 export interface PagedResult<T> {

@@ -260,7 +260,7 @@ export default function EmployeeDetails({ employeeId }: { employeeId: string }) 
             <div className="w-full sm:w-64">
               <Select
                 value={String(selectedStatus)}
-                onChange={(e) => setSelectedStatus(Number(e.target.value) as EmployeeStatus)}
+                onChange={(e) => setSelectedStatus(e.target.value as EmployeeStatus)}
                 options={[
                   { value: String(EmployeeStatus.Active), label: t("hr.employees.active") },
                   { value: String(EmployeeStatus.OnLeave), label: t("hr.employees.onLeave") },

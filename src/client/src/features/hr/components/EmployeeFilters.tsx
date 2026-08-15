@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import { Input, Button, Select } from "@/components/ui";
 import { useDepartmentsForDropdown } from "../hooks/useDepartmentsForDropdown";
 import { useTranslation } from "@/hooks/use-translation";
+import { EmployeeStatus } from "@/types/hr";
 
 export default function EmployeeFilters() {
   const router = useRouter();
@@ -65,9 +66,9 @@ export default function EmployeeFilters() {
 
   const statusOptions = [
     { value: "all", label: t("common.allStatuses") },
-    { value: "0", label: t("hr.employees.active") },
-    { value: "1", label: t("hr.employees.onLeave") },
-    { value: "2", label: t("hr.employees.terminated") },
+    { value: EmployeeStatus.Active, label: t("hr.employees.active") },
+    { value: EmployeeStatus.OnLeave, label: t("hr.employees.onLeave") },
+    { value: EmployeeStatus.Terminated, label: t("hr.employees.terminated") },
   ];
 
   return (

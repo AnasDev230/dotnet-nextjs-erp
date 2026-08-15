@@ -25,6 +25,7 @@ import { useUpdateEmployee } from "../hooks/useUpdateEmployee";
 import { useDepartmentsForDropdown } from "../hooks/useDepartmentsForDropdown";
 import { useEmployeesForDropdown } from "../hooks/useEmployeesForDropdown";
 import { useTranslation } from "@/hooks/use-translation";
+import { EmployeeStatus, EmploymentType } from "@/types/hr";
 import type { EmployeeDetail } from "@/types/hr";
 
 interface EmployeeFormProps {
@@ -57,11 +58,11 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
       hireDate: employee?.hireDate ?? "",
       departmentId: employee?.departmentId ?? "",
       jobTitle: employee?.jobTitle ?? "",
-      employmentType: employee?.employmentType ?? 0,
+      employmentType: employee?.employmentType ?? EmploymentType.FullTime,
       salary: employee?.salary ?? 0,
       managerId: employee?.managerId ?? "",
       notes: employee?.notes ?? "",
-      status: employee?.status ?? 0,
+      status: employee?.status ?? EmployeeStatus.Active,
     },
   });
 
@@ -84,16 +85,16 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
   ];
 
   const employmentTypeOptions = [
-    { value: "0", label: t("hr.employees.fullTime") },
-    { value: "1", label: t("hr.employees.partTime") },
-    { value: "2", label: t("hr.employees.contract") },
-    { value: "3", label: t("hr.employees.intern") },
+    { value: EmploymentType.FullTime, label: t("hr.employees.fullTime") },
+    { value: EmploymentType.PartTime, label: t("hr.employees.partTime") },
+    { value: EmploymentType.Contract, label: t("hr.employees.contract") },
+    { value: EmploymentType.Intern, label: t("hr.employees.intern") },
   ];
 
   const statusOptions = [
-    { value: "0", label: t("hr.employees.active") },
-    { value: "1", label: t("hr.employees.onLeave") },
-    { value: "2", label: t("hr.employees.terminated") },
+    { value: EmployeeStatus.Active, label: t("hr.employees.active") },
+    { value: EmployeeStatus.OnLeave, label: t("hr.employees.onLeave") },
+    { value: EmployeeStatus.Terminated, label: t("hr.employees.terminated") },
   ];
 
   const onSubmit = async (data: EmployeeFormData) => {
@@ -115,7 +116,7 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
       if (isEdit && employee) {
         await updateMutation.mutateAsync({
           ...payload,
-          status: data.status ?? 0,
+          status: data.status ?? EmployeeStatus.Active,
         });
       } else {
         await createMutation.mutateAsync(payload);
@@ -246,7 +247,7 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
               <Label htmlFor="employmentType">{t("hr.employees.employmentTypeLabel")}</Label>
               <Select
                 id="employmentType"
-                {...form.register("employmentType", { valueAsNumber: true })}
+                {...form.register("employmentType")}
                 options={employmentTypeOptions}
                 placeholder={t("hr.employees.selectEmploymentType")}
                 className="h-10"
@@ -295,7 +296,7 @@ export default function EmployeeForm({ mode, employee }: EmployeeFormProps) {
                 <Label htmlFor="status">{t("hr.employees.statusLabel")}</Label>
                 <Select
                   id="status"
-                  {...form.register("status", { valueAsNumber: true })}
+                  {...form.register("status")}
                   options={statusOptions}
                   placeholder={t("hr.employees.selectStatus")}
                   className="h-10"

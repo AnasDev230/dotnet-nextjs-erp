@@ -21,8 +21,10 @@ function EmployeesContent() {
   const departmentId = searchParams.get("departmentId") ?? undefined;
   const statusParam = searchParams.get("status");
   const status =
-    statusParam === "0" || statusParam === "1" || statusParam === "2"
-      ? (Number(statusParam) as EmployeeStatus)
+    statusParam === EmployeeStatus.Active ||
+    statusParam === EmployeeStatus.OnLeave ||
+    statusParam === EmployeeStatus.Terminated
+      ? (statusParam as EmployeeStatus)
       : undefined;
 
   const { data, isLoading } = useEmployees({
