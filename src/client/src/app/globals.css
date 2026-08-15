@@ -146,6 +146,7 @@ html {
   animation: confirm-fade 0.15s ease-out;
 }
 
+
 @keyframes toast-progress {
   from {
     width: 100%;
