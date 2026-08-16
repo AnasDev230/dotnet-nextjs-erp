@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Server.Core.Common;
+using Server.Features.Audit.Entities;
 using Server.Features.Finance;
 using Server.Features.HR.Entities;
 using Server.Features.Inventory;
@@ -41,6 +42,9 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
 
     // Settings Module
     public DbSet<CompanySettings> CompanySettings => Set<CompanySettings>();
+
+    // Audit Trail
+    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
