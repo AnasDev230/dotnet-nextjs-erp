@@ -10,6 +10,7 @@ using Server.Features.Audit.Enums;
 using Server.Features.Finance;
 using Server.Features.HR.Entities;
 using Server.Features.Inventory;
+using Server.Features.Inventory.Entities;
 using Server.Features.Purchasing.Entities;
 using Server.Features.Sales;
 using Server.Features.Security;
@@ -25,6 +26,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     public DbSet<InventoryLevel> InventoryLevels => Set<InventoryLevel>();
     public DbSet<StockAdjustment> StockAdjustments => Set<StockAdjustment>();
     public DbSet<StockMovement> StockMovements => Set<StockMovement>();
+    public DbSet<StockTransfer> StockTransfers => Set<StockTransfer>();
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<SalesOrder> SalesOrders => Set<SalesOrder>();
     public DbSet<SalesOrderItem> SalesOrderItems => Set<SalesOrderItem>();
