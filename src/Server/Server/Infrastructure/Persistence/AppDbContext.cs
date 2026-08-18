@@ -1,8 +1,12 @@
+using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Server.Core.Common;
 using Server.Features.Audit.Entities;
+using Server.Features.Audit.Enums;
 using Server.Features.Finance;
 using Server.Features.HR.Entities;
 using Server.Features.Inventory;
@@ -46,8 +50,21 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     // Audit Trail
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    private readonly Guid? _currentUserId;
+    private readonly string? _currentUserName;
+    private readonly string? _currentIpAddress;
+    private readonly string? _currentUserAgent;
+
+    public AppDbContext(
+        DbContextOptions<AppDbContext> options,
+        ICurrentUserService currentUserService,
+        IHttpContextAccessor httpContextAccessor)
+        : base(options)
     {
+        _currentUserId = currentUserService.UserId;
+        _currentUserName = currentUserService.UserName;
+        _currentIpAddress = httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString();
+        _currentUserAgent = httpContextAccessor.HttpContext?.Request.Headers["User-Agent"].ToString();
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -127,14 +144,16 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
         ApplySoftDeleteFilters(builder);
     }
 
-    public override int SaveChanges()
+    public override int SaveChanges(bool acceptAllChangesOnSuccess = true)
     {
+        AddAuditEntries();
         ApplyAuditRules();
-        return base.SaveChanges();
+        return base.SaveChanges(acceptAllChangesOnSuccess);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        AddAuditEntries();
         ApplyAuditRules();
         return base.SaveChangesAsync(cancellationToken);
     }
@@ -166,6 +185,140 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
                 }
             }
         }
+    }
+
+    private void AddAuditEntries()
+    {
+        var entries = ChangeTracker.Entries()
+            .Where(e => e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted)
+            .Where(e => e.Entity is not AuditLog)  // Prevent infinite loop
+            .ToList();
+
+        foreach (var entry in entries)
+        {
+            var tableName = entry.Metadata.GetTableName() ?? entry.Entity.GetType().Name;
+
+            // Skip excluded tables
+            if (IsExcludedTable(tableName)) continue;
+
+            var auditLog = new AuditLog
+            {
+                UserId = _currentUserId,
+                UserName = _currentUserName,
+                Action = MapAction(entry.State),
+                TableName = tableName,
+                RecordId = GetRecordId(entry),
+                IpAddress = _currentIpAddress,
+                UserAgent = _currentUserAgent,
+                Timestamp = DateTime.UtcNow
+            };
+
+            // Capture values based on action type
+            switch (entry.State)
+            {
+                case EntityState.Added:
+                    auditLog.NewValues = SerializeCurrentValues(entry);
+                    break;
+                case EntityState.Modified:
+                    auditLog.OldValues = SerializeModifiedOriginalValues(entry);
+                    auditLog.NewValues = SerializeModifiedCurrentValues(entry);
+                    break;
+                case EntityState.Deleted:
+                    auditLog.OldValues = SerializeCurrentValues(entry);
+                    break;
+            }
+
+            AuditLogs.Add(auditLog);
+        }
+    }
+
+    private static AuditAction MapAction(EntityState state) => state switch
+    {
+        EntityState.Added => AuditAction.Create,
+        EntityState.Modified => AuditAction.Update,
+        EntityState.Deleted => AuditAction.Delete,
+        _ => AuditAction.Update
+    };
+
+    private static bool IsExcludedTable(string tableName)
+    {
+        var excluded = new[]
+        {
+            "audit_logs",
+            "AspNetUserTokens",
+            "RefreshTokens"
+        };
+        return excluded.Contains(tableName);
+    }
+
+    private static Guid? GetRecordId(EntityEntry entry)
+    {
+        var primaryKey = entry.Metadata.FindPrimaryKey();
+        if (primaryKey == null || primaryKey.Properties.Count == 0) return null;
+
+        var keyProperty = primaryKey.Properties[0];
+        var value = entry.Property(keyProperty.Name).CurrentValue;
+        return value is Guid guid ? guid : null;
+    }
+
+    private static bool IsSensitiveProperty(string propertyName)
+    {
+        var sensitive = new[]
+        {
+            "PasswordHash", "SecurityStamp", "ConcurrencyStamp",
+            "RowVersion", "NormalizedUserName", "NormalizedEmail"
+        };
+        return sensitive.Contains(propertyName);
+    }
+
+    private static string SerializeCurrentValues(EntityEntry entry)
+    {
+        var values = new Dictionary<string, object?>();
+
+        foreach (var property in entry.Properties)
+        {
+            var name = property.Metadata.Name;
+            if (property.Metadata.IsForeignKey()) continue;
+            if (IsSensitiveProperty(name)) continue;
+
+            values[name] = property.CurrentValue;
+        }
+
+        return JsonSerializer.Serialize(values);
+    }
+
+    private static string SerializeModifiedOriginalValues(EntityEntry entry)
+    {
+        var values = new Dictionary<string, object?>();
+
+        foreach (var property in entry.Properties)
+        {
+            var name = property.Metadata.Name;
+            if (property.Metadata.IsForeignKey()) continue;
+            if (IsSensitiveProperty(name)) continue;
+            if (!property.IsModified) continue;
+
+            values[name] = property.OriginalValue;
+        }
+
+        return JsonSerializer.Serialize(values);
+    }
+
+    private static string SerializeModifiedCurrentValues(EntityEntry entry)
+    {
+        var values = new Dictionary<string, object?>();
+
+        foreach (var property in entry.Properties)
+        {
+            var name = property.Metadata.Name;
+            if (property.Metadata.IsForeignKey()) continue;
+            if (IsSensitiveProperty(name)) continue;
+            if (!property.IsModified) continue;
+
+            values[name] = property.CurrentValue;
+        }
+
+        return JsonSerializer.Serialize(values);
     }
 
     private static void ApplySoftDeleteFilters(ModelBuilder builder)

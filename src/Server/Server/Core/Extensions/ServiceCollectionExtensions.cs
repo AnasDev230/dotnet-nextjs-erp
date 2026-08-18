@@ -1,6 +1,8 @@
 using FluentValidation;
 using Server.Core.Common;
 using Server.Core.Common.Contracts;
+using Server.Features.Audit.Repositories;
+using Server.Features.Audit.Services;
 using Server.Features.Dashboard.Repositories;
 using Server.Features.Dashboard.Services;
 using Server.Features.Finance.Repositories;
@@ -98,6 +100,10 @@ public static class ServiceCollectionExtensions
         // Search (read-only cross-cutting feature searching all modules)
         services.AddScoped<ISearchRepository, SearchRepository>();
         services.AddScoped<ISearchService, SearchService>();
+
+        // Audit Trail (read-only, SuperAdmin only)
+        services.AddScoped<IAuditLogRepository, AuditLogRepository>();
+        services.AddScoped<IAuditLogService, AuditLogService>();
 
         return services;
     }

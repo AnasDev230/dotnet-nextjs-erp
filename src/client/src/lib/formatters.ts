@@ -40,6 +40,22 @@ export function formatDate(date: string | Date, language: Language): string {
 }
 
 /**
+ * Format date + time based on language.
+ * Arabic: "25 يوليو 2026 — 10:30:25 ص"
+ * English: "Jul 25, 2026 — 10:30:25 AM"
+ */
+export function formatDateTime(date: string | Date, language: Language): string {
+  const d = new Date(date);
+  const datePart = formatDate(d, language);
+  const timePart = d.toLocaleTimeString(language === "ar" ? "ar-SA" : "en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+  return `${datePart} — ${timePart}`;
+}
+
+/**
  * Format number with thousands separator.
  */
 export function formatNumber(num: number): string {

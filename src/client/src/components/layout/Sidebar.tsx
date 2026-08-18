@@ -26,6 +26,7 @@ import {
   BarChart3,
   TrendingUp,
   FileText,
+  History,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTranslation } from "@/hooks/use-translation";
@@ -37,6 +38,7 @@ interface NavItem {
   href: string;
   icon: typeof LayoutDashboard;
   disabled?: boolean;
+  adminOnly?: boolean;
 }
 
 interface SubNavItem {
@@ -47,6 +49,7 @@ interface SubNavItem {
 
 const navItems: NavItem[] = [
   { labelKey: "nav.dashboard", href: "/", icon: LayoutDashboard },
+  { labelKey: "nav.auditLogs", href: "/audit-logs", icon: History, adminOnly: true },
   { labelKey: "nav.settings", href: "/settings", icon: Settings },
 ];
 
@@ -96,6 +99,9 @@ export default function Sidebar() {
   const router = useRouter();
   const logout = useAuthStore((state) => state.logout);
   const { t } = useTranslation();
+  const user = useAuthStore((state) => state.user);
+  const isSuperAdmin = user?.roles?.includes("SuperAdmin") ?? false;
+  const visibleNavItems = navItems.filter((item) => !item.adminOnly || isSuperAdmin);
   const isInventoryActive = pathname.startsWith("/inventory");
   const isSalesActive = pathname.startsWith("/sales");
   const isFinanceActive = pathname.startsWith("/finance");
@@ -126,7 +132,7 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-        {navItems.map((item) => {
+        {visibleNavItems.map((item) => {
           const isActive =
             pathname === item.href ||
             (item.href === "/settings" && pathname.startsWith("/settings"));
