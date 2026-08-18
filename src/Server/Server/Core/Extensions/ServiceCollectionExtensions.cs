@@ -52,6 +52,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IInventoryLevelService, InventoryLevelService>();
         services.AddScoped<IStockAdjustmentRepository, StockAdjustmentRepository>();
         services.AddScoped<IStockAdjustmentService, StockAdjustmentService>();
+        services.AddScoped<IStockTransferRepository, StockTransferRepository>();
+        services.AddScoped<IStockTransferService, StockTransferService>();
         services.AddScoped<IInventoryReservationService, InventoryReservationService>();
 
         // Sales
