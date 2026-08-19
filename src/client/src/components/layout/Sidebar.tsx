@@ -27,6 +27,7 @@ import {
   TrendingUp,
   FileText,
   History,
+  ArrowLeftRight,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTranslation } from "@/hooks/use-translation";
@@ -64,6 +65,7 @@ const inventoryItems: SubNavItem[] = [
   { labelKey: "nav.warehouses", href: "/inventory/warehouses", icon: Warehouse },
   { labelKey: "nav.inventoryLevels", href: "/inventory/levels", icon: Layers },
   { labelKey: "nav.adjustments", href: "/inventory/adjustments", icon: ClipboardCheck },
+  { labelKey: "stockTransfer.title", href: "/inventory/stock-transfers", icon: ArrowLeftRight },
 ];
 
 const financeItems: SubNavItem[] = [

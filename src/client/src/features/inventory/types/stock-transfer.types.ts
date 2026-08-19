@@ -1,10 +1,9 @@
-export enum StockTransferStatus {
-  Draft = 0,
-  Submitted = 1,
-  Approved = 2,
-  Completed = 3,
-  Cancelled = 4,
-}
+export type StockTransferStatus =
+  | "Draft"
+  | "Submitted"
+  | "Approved"
+  | "Completed"
+  | "Cancelled";
 
 export interface StockTransferListItem {
   id: string;
