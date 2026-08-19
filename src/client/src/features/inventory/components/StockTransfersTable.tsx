@@ -1,10 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeftRight } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Eye, Pencil, Trash2, XCircle, ArrowLeftRight } from "lucide-react";
 import { Badge, Button } from "@/components/ui";
+import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { useTranslation } from "@/hooks/use-translation";
+import { useToast } from "@/hooks/use-toast";
+import { getErrorMessage } from "@/lib/error-handler";
 import { formatDate } from "@/lib/formatters";
+import { cancelStockTransfer } from "../api/stock-transfers";
+import { useDeleteStockTransfer } from "../hooks/useDeleteStockTransfer";
 import type {
   StockTransferStatus,
   StockTransferListItem,
@@ -59,7 +66,7 @@ function StatusBadge({ status }: { status: StockTransferStatus }) {
 function SkeletonRow() {
   return (
     <tr className="border-b">
-      {Array.from({ length: 7 }).map((_, i) => (
+      {Array.from({ length: 8 }).map((_, i) => (
         <td key={i} className="px-4 py-3">
           <div className="h-4 bg-muted animate-pulse rounded" />
         </td>
@@ -78,6 +85,78 @@ export default function StockTransfersTable({
   onPageChange,
 }: StockTransfersTableProps) {
   const { t, language } = useTranslation();
+  const { success, error } = useToast();
+  const queryClient = useQueryClient();
+
+  const [confirmAction, setConfirmAction] = useState<
+    "cancel" | "delete" | null
+  >(null);
+  const [selectedTransferId, setSelectedTransferId] = useState<string | null>(
+    null
+  );
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const cancelMutation = useMutation({
+    mutationFn: (id: string) => cancelStockTransfer(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["stock-transfers"] });
+      success(t("stockTransfer.toast.cancelled"));
+    },
+    onError: (err) => {
+      error(
+        t("toast.error.generic"),
+        getErrorMessage(err) || t("common.unexpectedError")
+      );
+    },
+  });
+
+  const deleteMutation = useDeleteStockTransfer();
+
+  const isActionPending =
+    cancelMutation.isPending || deleteMutation.isPending;
+
+  const closeConfirm = () => {
+    setConfirmAction(null);
+    setSelectedTransferId(null);
+    setErrorMessage(null);
+  };
+
+  const handleConfirm = () => {
+    if (!selectedTransferId) return;
+    setErrorMessage(null);
+    if (confirmAction === "cancel") {
+      cancelMutation.mutate(selectedTransferId, {
+        onSuccess: closeConfirm,
+        onError: (err) =>
+          setErrorMessage(
+            getErrorMessage(err) || t("common.unexpectedError")
+          ),
+      });
+    } else if (confirmAction === "delete") {
+      deleteMutation.mutate(selectedTransferId, {
+        onSuccess: closeConfirm,
+        onError: (err) =>
+          setErrorMessage(
+            getErrorMessage(err) || t("common.unexpectedError")
+          ),
+      });
+    }
+  };
+
+  const confirmConfig = {
+    cancel: {
+      title: t("stockTransfer.confirm.cancel.title"),
+      description: t("stockTransfer.confirm.cancel.description"),
+      confirmLabel: t("common.confirm"),
+    },
+    delete: {
+      title: t("stockTransfer.confirm.delete.title"),
+      description: t("stockTransfer.confirm.delete.description"),
+      confirmLabel: t("common.delete"),
+    },
+  };
+
+  const activeConfig = confirmAction ? confirmConfig[confirmAction] : null;
 
   const headers = [
     t("stockTransfer.transferNumber"),
@@ -100,6 +179,7 @@ export default function StockTransfersTable({
                   {header}
                 </th>
               ))}
+              <th className="px-4 py-3 text-end">{t("common.actions")}</th>
             </tr>
           </thead>
           <tbody>
@@ -129,71 +209,143 @@ export default function StockTransfersTable({
   }
 
   return (
-    <div className="rounded-md border border-border">
-      <table className="w-full">
-        <thead className="bg-muted/50 text-muted-foreground text-xs font-medium uppercase tracking-wider">
-          <tr>
-            {headers.map((header) => (
-              <th key={header} className="px-4 py-3 text-start">
-                {header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {transfers.map((transfer) => (
-            <tr key={transfer.id} className="hover:bg-muted/30 border-b">
-              <td className="px-4 py-3 text-sm font-medium">
-                <Link
-                  href={`/inventory/stock-transfers/${transfer.id}`}
-                  className="text-primary hover:underline"
-                >
-                  {transfer.transferNumber}
-                </Link>
-              </td>
-              <td className="px-4 py-3 text-sm">{transfer.fromWarehouseName}</td>
-              <td className="px-4 py-3 text-sm">{transfer.toWarehouseName}</td>
-              <td className="px-4 py-3 text-sm">{transfer.productName}</td>
-              <td className="px-4 py-3 text-sm tabular-nums">
-                {transfer.quantity}
-              </td>
-              <td className="px-4 py-3 text-sm">
-                <StatusBadge status={transfer.status} />
-              </td>
-              <td className="px-4 py-3 text-sm text-muted-foreground">
-                {formatDate(transfer.createdAt, language)}
-              </td>
+    <>
+      <div className="rounded-md border border-border">
+        <table className="w-full">
+          <thead className="bg-muted/50 text-muted-foreground text-xs font-medium uppercase tracking-wider">
+            <tr>
+              {headers.map((header) => (
+                <th key={header} className="px-4 py-3 text-start">
+                  {header}
+                </th>
+              ))}
+              <th className="px-4 py-3 text-end">{t("common.actions")}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {transfers.map((transfer) => (
+              <tr key={transfer.id} className="hover:bg-muted/30 border-b">
+                <td className="px-4 py-3 text-sm font-medium">
+                  <Link
+                    href={`/inventory/stock-transfers/${transfer.id}`}
+                    className="text-primary hover:underline"
+                  >
+                    {transfer.transferNumber}
+                  </Link>
+                </td>
+                <td className="px-4 py-3 text-sm">{transfer.fromWarehouseName}</td>
+                <td className="px-4 py-3 text-sm">{transfer.toWarehouseName}</td>
+                <td className="px-4 py-3 text-sm">{transfer.productName}</td>
+                <td className="px-4 py-3 text-sm tabular-nums">
+                  {transfer.quantity}
+                </td>
+                <td className="px-4 py-3 text-sm">
+                  <StatusBadge status={transfer.status} />
+                </td>
+                <td className="px-4 py-3 text-sm text-muted-foreground">
+                  {formatDate(transfer.createdAt, language)}
+                </td>
+                <td className="px-4 py-3 text-end">
+                  <div className="flex items-center justify-end gap-1">
+                    <Link href={`/inventory/stock-transfers/${transfer.id}`}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                    </Link>
+                    {transfer.status === "Draft" && (
+                      <Link
+                        href={`/inventory/stock-transfers/${transfer.id}/edit`}
+                      >
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          title={t("common.edit")}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      </Link>
+                    )}
+                    {transfer.status === "Draft" && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive"
+                        title={t("common.delete")}
+                        disabled={isActionPending}
+                        onClick={() => {
+                          setErrorMessage(null);
+                          setSelectedTransferId(transfer.id);
+                          setConfirmAction("delete");
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                    {(transfer.status === "Submitted" ||
+                      transfer.status === "Approved") && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive"
+                        title={t("stockTransfer.confirm.cancel.title")}
+                        disabled={isActionPending}
+                        onClick={() => {
+                          setErrorMessage(null);
+                          setSelectedTransferId(transfer.id);
+                          setConfirmAction("cancel");
+                        }}
+                      >
+                        <XCircle className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-border px-4 py-3 text-sm text-muted-foreground">
-          <span>
-            {t("common.showing")} {(page - 1) * pageSize + 1}–
-            {Math.min(page * pageSize, totalCount)} {t("common.of")} {totalCount}
-          </span>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page <= 1}
-              onClick={() => onPageChange(page - 1)}
-            >
-              {t("common.previous")}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={page >= totalPages}
-              onClick={() => onPageChange(page + 1)}
-            >
-              {t("common.next")}
-            </Button>
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between border-t border-border px-4 py-3 text-sm text-muted-foreground">
+            <span>
+              {t("common.showing")} {(page - 1) * pageSize + 1}–
+              {Math.min(page * pageSize, totalCount)} {t("common.of")}{" "}
+              {totalCount}
+            </span>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page <= 1}
+                onClick={() => onPageChange(page - 1)}
+              >
+                {t("common.previous")}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page >= totalPages}
+                onClick={() => onPageChange(page + 1)}
+              >
+                {t("common.next")}
+              </Button>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+
+      <ConfirmDialog
+        open={confirmAction !== null}
+        onOpenChange={(open) => !open && closeConfirm()}
+        title={activeConfig?.title ?? ""}
+        description={activeConfig?.description ?? ""}
+        confirmLabel={activeConfig?.confirmLabel}
+        variant="danger"
+        isLoading={isActionPending}
+        errorMessage={errorMessage}
+        onConfirm={handleConfirm}
+      />
+    </>
   );
 }
