@@ -16,7 +16,7 @@ export function useUpdateSupplierInvoice() {
     onSuccess: (_data, { id }) => {
       queryClient.invalidateQueries({ queryKey: ["supplier-invoices"] });
       queryClient.invalidateQueries({ queryKey: ["supplier-invoice", id] });
-      success(t("toast.updated"));
+      success(t("supplierInvoice.toast.updated"));
     },
     onError: (err) => {
       error(

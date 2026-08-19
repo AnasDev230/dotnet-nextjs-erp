@@ -81,6 +81,11 @@ const purchasingItems: SubNavItem[] = [
     href: "/purchasing/product-suppliers",
     icon: Link2,
   },
+  {
+    labelKey: "supplierInvoice.title",
+    href: "/purchasing/supplier-invoices",
+    icon: FileText,
+  },
 ];
 
 const hrItems: SubNavItem[] = [
