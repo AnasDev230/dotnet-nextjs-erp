@@ -41,6 +41,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     public DbSet<GoodsReceipt> GoodsReceipts => Set<GoodsReceipt>();
     public DbSet<GoodsReceiptItem> GoodsReceiptItems => Set<GoodsReceiptItem>();
     public DbSet<ProductSupplier> ProductSuppliers => Set<ProductSupplier>();
+    public DbSet<SupplierInvoice> SupplierInvoices => Set<SupplierInvoice>();
+    public DbSet<PurchasePayment> PurchasePayments => Set<PurchasePayment>();
 
     // HR Module
     public DbSet<Department> Departments => Set<Department>();

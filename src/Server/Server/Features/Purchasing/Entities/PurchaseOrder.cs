@@ -19,4 +19,5 @@ public class PurchaseOrder : BaseEntity
     public Supplier Supplier { get; set; } = null!;
     public ICollection<PoItem> Items { get; set; } = new List<PoItem>();
     public ICollection<GoodsReceipt> GoodsReceipts { get; set; } = new List<GoodsReceipt>();
+    public ICollection<SupplierInvoice> SupplierInvoices { get; set; } = new List<SupplierInvoice>();
 }

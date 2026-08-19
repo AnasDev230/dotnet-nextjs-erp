@@ -17,4 +17,5 @@ public class Supplier : BaseEntity
 
     public ICollection<PurchaseOrder> PurchaseOrders { get; set; } = new List<PurchaseOrder>();
     public ICollection<ProductSupplier> ProductSuppliers { get; set; } = new List<ProductSupplier>();
+    public ICollection<SupplierInvoice> SupplierInvoices { get; set; } = new List<SupplierInvoice>();
 }
