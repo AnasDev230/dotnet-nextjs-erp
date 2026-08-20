@@ -13,6 +13,7 @@ using Server.Features.Inventory;
 using Server.Features.Inventory.Entities;
 using Server.Features.Purchasing.Entities;
 using Server.Features.Sales;
+using Server.Features.Sales.Entities;
 using Server.Features.Security;
 using Server.Features.Settings.Entities;
 
@@ -34,6 +35,10 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<Payment> Payments => Set<Payment>();
 
+    // Sales Returns
+    public DbSet<SalesReturn> SalesReturns => Set<SalesReturn>();
+    public DbSet<SalesReturnItem> SalesReturnItems => Set<SalesReturnItem>();
+
     // Purchasing Module
     public DbSet<Supplier> Suppliers => Set<Supplier>();
     public DbSet<PurchaseOrder> PurchaseOrders => Set<PurchaseOrder>();
@@ -43,6 +48,10 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     public DbSet<ProductSupplier> ProductSuppliers => Set<ProductSupplier>();
     public DbSet<SupplierInvoice> SupplierInvoices => Set<SupplierInvoice>();
     public DbSet<PurchasePayment> PurchasePayments => Set<PurchasePayment>();
+
+    // Purchase Returns
+    public DbSet<PurchaseReturn> PurchaseReturns => Set<PurchaseReturn>();
+    public DbSet<PurchaseReturnItem> PurchaseReturnItems => Set<PurchaseReturnItem>();
 
     // HR Module
     public DbSet<Department> Departments => Set<Department>();
