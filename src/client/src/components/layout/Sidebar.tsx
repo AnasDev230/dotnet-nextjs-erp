@@ -88,6 +88,7 @@ const purchasingItems: SubNavItem[] = [
     href: "/purchasing/supplier-invoices",
     icon: FileText,
   },
+  { labelKey: "nav.purchaseReturns", href: "/purchasing/returns", icon: Undo2 },
 ];
 
 const hrItems: SubNavItem[] = [
