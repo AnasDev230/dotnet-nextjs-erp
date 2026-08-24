@@ -11,6 +11,7 @@ using Server.Features.Finance;
 using Server.Features.HR.Entities;
 using Server.Features.Inventory;
 using Server.Features.Inventory.Entities;
+using Server.Features.Notifications.Entities;
 using Server.Features.Purchasing.Entities;
 using Server.Features.Sales;
 using Server.Features.Sales.Entities;
@@ -62,6 +63,9 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
 
     // Audit Trail
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+
+    // Notifications Module
+    public DbSet<Notification> Notifications => Set<Notification>();
 
     private readonly Guid? _currentUserId;
     private readonly string? _currentUserName;
