@@ -1,4 +1,6 @@
 using FluentValidation;
+using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Mvc;
 using Server.Core.Common;
 using Server.Core.Common.Contracts;
 using Server.Features.Audit.Repositories;
@@ -34,6 +36,25 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection RegisterApplicationServices(this IServiceCollection services)
     {
         services.AddValidatorsFromAssemblyContaining<Program>();
+
+        services.AddFluentValidationAutoValidation();
+
+        services.Configure<ApiBehaviorOptions>(options =>
+        {
+            options.InvalidModelStateResponseFactory = context =>
+            {
+                var errors = context.ModelState
+                    .Where(x => x.Value is { Errors.Count: > 0 })
+                    .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
+                    .ToList();
+
+                var response = ApiResponse<object>.Failure(
+                    errors.FirstOrDefault() ?? "Validation failed",
+                    errors);
+
+                return new BadRequestObjectResult(response);
+            };
+        });
 
         // HTTP Context
         services.AddHttpContextAccessor();

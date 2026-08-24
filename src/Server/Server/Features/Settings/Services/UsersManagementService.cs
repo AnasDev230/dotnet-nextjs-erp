@@ -84,9 +84,9 @@ public class UsersManagementService : IUsersManagementService
 
         var user = new ApplicationUser
         {
-            UserName = request.UserName.Trim(),
-            Email = request.Email.Trim(),
-            FullName = request.FullName.Trim(),
+            UserName = (request.UserName ?? string.Empty).Trim(),
+            Email = (request.Email ?? string.Empty).Trim(),
+            FullName = (request.FullName ?? string.Empty).Trim(),
             EmailConfirmed = true,
             IsActive = true,
             CreatedAt = DateTime.UtcNow
@@ -119,7 +119,7 @@ public class UsersManagementService : IUsersManagementService
         if (IsCurrentUser(user.Id) && oldRole == Roles.SuperAdmin && request.Role != oldRole)
             throw new BusinessException("لا يمكنك تغيير دورك الخاص أثناء تسجيل الدخول");
 
-        user.FullName = request.FullName.Trim();
+        user.FullName = (request.FullName ?? string.Empty).Trim();
         var updateResult = await _userManager.UpdateAsync(user);
         if (!updateResult.Succeeded)
             throw new BusinessException(BuildIdentityErrorMessage(updateResult, "فشل تحديث بيانات المستخدم"));

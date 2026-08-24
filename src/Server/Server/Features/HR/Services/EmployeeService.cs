@@ -61,8 +61,8 @@ public class EmployeeService : IEmployeeService
         var employee = new Employee
         {
             EmployeeNumber = await _repository.GenerateEmployeeNumberAsync(),
-            FirstName = request.FirstName.Trim(),
-            LastName = request.LastName.Trim(),
+            FirstName = (request.FirstName ?? string.Empty).Trim(),
+            LastName = (request.LastName ?? string.Empty).Trim(),
             Email = string.IsNullOrWhiteSpace(request.Email) ? null : request.Email.Trim().ToLowerInvariant(),
             Phone = request.Phone,
             HireDate = request.HireDate,
@@ -110,8 +110,8 @@ public class EmployeeService : IEmployeeService
                 throw new BusinessException("حساب المستخدم مرتبط بموظف آخر");
         }
 
-        employee.FirstName = request.FirstName.Trim();
-        employee.LastName = request.LastName.Trim();
+        employee.FirstName = (request.FirstName ?? string.Empty).Trim();
+        employee.LastName = (request.LastName ?? string.Empty).Trim();
         employee.Email = string.IsNullOrWhiteSpace(request.Email) ? null : request.Email.Trim().ToLowerInvariant();
         employee.Phone = request.Phone;
         employee.HireDate = request.HireDate;

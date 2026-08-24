@@ -52,7 +52,7 @@ public class DepartmentService : IDepartmentService
         var department = new Department
         {
             Code = await _repository.GenerateCodeAsync(),
-            Name = request.Name.Trim(),
+            Name = (request.Name ?? string.Empty).Trim(),
             ParentId = request.ParentId,
             ManagerId = request.ManagerId,
             Description = request.Description,
@@ -88,7 +88,7 @@ public class DepartmentService : IDepartmentService
         if (request.ManagerId.HasValue && !await _context.Employees.AnyAsync(e => e.Id == request.ManagerId.Value))
             throw new BusinessException("الموظف المدير غير موجود");
 
-        department.Name = request.Name.Trim();
+        department.Name = (request.Name ?? string.Empty).Trim();
         department.ParentId = request.ParentId;
         department.ManagerId = request.ManagerId;
         department.Description = request.Description;

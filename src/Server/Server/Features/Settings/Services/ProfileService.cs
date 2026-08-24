@@ -36,7 +36,7 @@ public class ProfileService : IProfileService
     {
         var user = await GetCurrentUserAsync();
 
-        user.FullName = request.FullName.Trim();
+        user.FullName = (request.FullName ?? string.Empty).Trim();
 
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)

@@ -48,7 +48,7 @@ public class SupplierService : ISupplierService
         var supplier = new Supplier
         {
             Code = await _repository.GenerateCodeAsync(),
-            Name = request.Name.Trim(),
+            Name = (request.Name ?? string.Empty).Trim(),
             ContactPerson = request.ContactPerson,
             Email = request.Email,
             Phone = request.Phone,
@@ -76,7 +76,7 @@ public class SupplierService : ISupplierService
         if (await _repository.IsNameUniqueAsync(request.Name, id))
             throw new BusinessException("اسم المورد موجود بالفعل");
 
-        supplier.Name = request.Name.Trim();
+        supplier.Name = (request.Name ?? string.Empty).Trim();
         supplier.ContactPerson = request.ContactPerson;
         supplier.Email = request.Email;
         supplier.Phone = request.Phone;

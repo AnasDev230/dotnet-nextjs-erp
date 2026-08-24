@@ -32,7 +32,7 @@ public class CompanySettingsService : ICompanySettingsService
     {
         var entity = await EnsureEntityExistsAsync();
 
-        entity.CompanyName = request.CompanyName.Trim();
+        entity.CompanyName = (request.CompanyName ?? string.Empty).Trim();
         entity.CompanyNameEn = request.CompanyNameEn?.Trim();
         entity.TaxNumber = request.TaxNumber?.Trim();
         entity.Phone = request.Phone?.Trim();
@@ -40,7 +40,7 @@ public class CompanySettingsService : ICompanySettingsService
         entity.Address = request.Address?.Trim();
         entity.City = request.City?.Trim();
         entity.Country = request.Country?.Trim();
-        entity.Currency = request.Currency.Trim().ToUpperInvariant();
+        entity.Currency = (request.Currency ?? string.Empty).Trim().ToUpperInvariant();
         entity.UpdatedBy = _currentUserService.UserId;
 
         _repository.Update(entity);
