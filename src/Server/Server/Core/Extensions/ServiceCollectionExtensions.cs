@@ -11,6 +11,8 @@ using Server.Features.HR.Repositories;
 using Server.Features.HR.Services;
 using Server.Features.Inventory.Repositories;
 using Server.Features.Inventory.Services;
+using Server.Features.Notifications.Repositories;
+using Server.Features.Notifications.Services;
 using Server.Features.Purchasing.Repositories;
 using Server.Features.Purchasing.Services;
 using Server.Features.Reports.Repositories;
@@ -114,6 +116,10 @@ public static class ServiceCollectionExtensions
         // Audit Trail (read-only, SuperAdmin only)
         services.AddScoped<IAuditLogRepository, AuditLogRepository>();
         services.AddScoped<IAuditLogService, AuditLogService>();
+
+        // Notifications
+        services.AddScoped<INotificationRepository, NotificationRepository>();
+        services.AddScoped<INotificationService, NotificationService>();
 
         return services;
     }
