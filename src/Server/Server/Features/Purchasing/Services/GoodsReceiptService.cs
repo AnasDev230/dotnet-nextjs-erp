@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Server.Core.Common;
+using Server.Core.Constants;
 using Server.Core.Exceptions;
 using Server.Features.Inventory;
 using Server.Features.Inventory.Repositories;
+using Server.Features.Notifications.Enums;
+using Server.Features.Notifications.Services;
 using Server.Features.Purchasing.Entities;
 using Server.Features.Purchasing.Enums;
 using Server.Features.Purchasing.Models;
@@ -19,6 +22,7 @@ public class GoodsReceiptService : IGoodsReceiptService
     private readonly IGoodsReceiptRepository _repository;
     private readonly IPurchaseOrderRepository _purchaseOrderRepository;
     private readonly IWarehouseRepository _warehouseRepository;
+    private readonly INotificationService _notificationService;
     private readonly AppDbContext _context;
     private readonly ICurrentUserService _currentUserService;
 
@@ -26,12 +30,14 @@ public class GoodsReceiptService : IGoodsReceiptService
         IGoodsReceiptRepository repository,
         IPurchaseOrderRepository purchaseOrderRepository,
         IWarehouseRepository warehouseRepository,
+        INotificationService notificationService,
         AppDbContext context,
         ICurrentUserService currentUserService)
     {
         _repository = repository;
         _purchaseOrderRepository = purchaseOrderRepository;
         _warehouseRepository = warehouseRepository;
+        _notificationService = notificationService;
         _context = context;
         _currentUserService = currentUserService;
     }
@@ -139,6 +145,13 @@ public class GoodsReceiptService : IGoodsReceiptService
                     CreatedBy = _currentUserService.UserId
                 });
             }
+
+            await _notificationService.CreateForRoleAsync(
+                Roles.WarehouseKeeper,
+                NotificationType.GoodsReceiptCompleted,
+                "تم استلام بضاعة جديدة",
+                $"إشعار الاستلام {grn.GrnNumber} لأمر الشراء {order.PoNumber} اكتمل",
+                grn.Id);
 
             await _repository.AddAsync(grn);
             await _context.SaveChangesAsync();

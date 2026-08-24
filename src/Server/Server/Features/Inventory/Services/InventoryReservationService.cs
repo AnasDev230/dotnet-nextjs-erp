@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Server.Core.Common;
 using Server.Core.Common.Contracts;
+using Server.Core.Constants;
 using Server.Core.Exceptions;
+using Server.Features.Notifications.Enums;
+using Server.Features.Notifications.Services;
 using Server.Infrastructure.Persistence;
 
 namespace Server.Features.Inventory.Services;
@@ -19,13 +22,16 @@ public class InventoryReservationService : IInventoryReservationService
     private const string ReleaseMovement = "SalesRelease";
 
     private readonly AppDbContext _context;
+    private readonly INotificationService _notificationService;
     private readonly ICurrentUserService _currentUserService;
 
     public InventoryReservationService(
         AppDbContext context,
+        INotificationService notificationService,
         ICurrentUserService currentUserService)
     {
         _context = context;
+        _notificationService = notificationService;
         _currentUserService = currentUserService;
     }
 
@@ -57,6 +63,26 @@ public class InventoryReservationService : IInventoryReservationService
             level.QuantityReserved += item.Quantity;
             level.LastMovement = DateTime.UtcNow;
             level.UpdatedBy = _currentUserService.UserId;
+
+            // Low-stock crossing: notify only when this reservation pushes
+            // available stock to/below the reorder level (prevents repeat alerts).
+            var availableAfter = available - item.Quantity;
+            if (available > snapshot.Product.ReorderLevel && availableAfter <= snapshot.Product.ReorderLevel)
+            {
+                await _notificationService.CreateForRoleAsync(
+                    Roles.WarehouseKeeper,
+                    NotificationType.LowStock,
+                    "تنبيه: مخزون منخفض",
+                    $"المنتج '{snapshot.Product.Name}' وصل إلى حد إعادة الطلب. المتاح: {availableAfter}",
+                    item.ProductId);
+
+                await _notificationService.CreateForRoleAsync(
+                    Roles.SuperAdmin,
+                    NotificationType.LowStock,
+                    "تنبيه: مخزون منخفض",
+                    $"المنتج '{snapshot.Product.Name}' وصل إلى حد إعادة الطلب. المتاح: {availableAfter}",
+                    item.ProductId);
+            }
 
             // 3. Audit trail
             _context.StockMovements.Add(new StockMovement

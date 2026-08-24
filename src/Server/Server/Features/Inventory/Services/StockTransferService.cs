@@ -1,10 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Server.Core.Common;
+using Server.Core.Constants;
 using Server.Core.Exceptions;
 using Server.Features.Inventory.Entities;
 using Server.Features.Inventory.Enums;
 using Server.Features.Inventory.Models;
 using Server.Features.Inventory.Repositories;
+using Server.Features.Notifications.Enums;
+using Server.Features.Notifications.Services;
 using Server.Infrastructure.Persistence;
 
 namespace Server.Features.Inventory.Services;
@@ -17,6 +20,7 @@ public class StockTransferService : IStockTransferService
     private readonly IStockTransferRepository _repository;
     private readonly IProductRepository _productRepository;
     private readonly IWarehouseRepository _warehouseRepository;
+    private readonly INotificationService _notificationService;
     private readonly AppDbContext _context;
     private readonly ICurrentUserService _currentUserService;
 
@@ -24,12 +28,14 @@ public class StockTransferService : IStockTransferService
         IStockTransferRepository repository,
         IProductRepository productRepository,
         IWarehouseRepository warehouseRepository,
+        INotificationService notificationService,
         AppDbContext context,
         ICurrentUserService currentUserService)
     {
         _repository = repository;
         _productRepository = productRepository;
         _warehouseRepository = warehouseRepository;
+        _notificationService = notificationService;
         _context = context;
         _currentUserService = currentUserService;
     }
@@ -117,6 +123,13 @@ public class StockTransferService : IStockTransferService
         transfer.ApprovedBy = _currentUserService.UserId;
         transfer.ApprovedAt = DateTime.UtcNow;
         transfer.UpdatedBy = _currentUserService.UserId;
+
+        await _notificationService.CreateForRoleAsync(
+            Roles.WarehouseKeeper,
+            NotificationType.StockTransferApproved,
+            "تم اعتماد تحويل مخزون",
+            $"طلب التحويل {transfer.TransferNumber} تم اعتماده",
+            transfer.Id);
 
         await _context.SaveChangesAsync();
     }

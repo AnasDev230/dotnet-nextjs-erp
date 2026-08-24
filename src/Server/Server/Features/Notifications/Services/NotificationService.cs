@@ -72,8 +72,8 @@ public class NotificationService : INotificationService
             {
                 UserId = userId,
                 Type = type,
-                Title = title,
-                Message = message,
+                Title = title.Length > 200 ? title[..200] : title,
+                Message = message.Length > 500 ? message[..500] : message,
                 EntityId = entityId
             };
 

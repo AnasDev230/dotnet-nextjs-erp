@@ -1,8 +1,11 @@
 using Server.Core.Common;
 using Server.Core.Common.Contracts;
+using Server.Core.Constants;
 using Server.Core.Exceptions;
 using Server.Features.Inventory;
 using Server.Features.Inventory.Repositories;
+using Server.Features.Notifications.Enums;
+using Server.Features.Notifications.Services;
 using Server.Features.Sales.Enums;
 using Server.Features.Sales.Models;
 using Server.Features.Sales.Repositories;
@@ -19,6 +22,7 @@ public class SalesOrderService : ISalesOrderService
     private readonly IWarehouseRepository _warehouseRepository;
     private readonly ITaxRateRepository _taxRateRepository;
     private readonly IInventoryReservationService _inventoryReservationService;
+    private readonly INotificationService _notificationService;
     private readonly AppDbContext _context;
     private readonly ICurrentUserService _currentUserService;
 
@@ -30,6 +34,7 @@ public class SalesOrderService : ISalesOrderService
         IWarehouseRepository warehouseRepository,
         ITaxRateRepository taxRateRepository,
         IInventoryReservationService inventoryReservationService,
+        INotificationService notificationService,
         AppDbContext context,
         ICurrentUserService currentUserService)
     {
@@ -40,6 +45,7 @@ public class SalesOrderService : ISalesOrderService
         _warehouseRepository = warehouseRepository;
         _taxRateRepository = taxRateRepository;
         _inventoryReservationService = inventoryReservationService;
+        _notificationService = notificationService;
         _context = context;
         _currentUserService = currentUserService;
     }
@@ -215,6 +221,25 @@ public class SalesOrderService : ISalesOrderService
         }
 
         CalculateAmounts(order, taxRate);
+
+        // Order is guaranteed to be in Draft here; moving it to Confirmed
+        // is the "order confirmed" business event.
+        if (request.Status == SalesOrderStatus.Confirmed)
+        {
+            await _notificationService.CreateForRoleAsync(
+                Roles.SuperAdmin,
+                NotificationType.SalesOrderConfirmed,
+                "تم تأكيد أمر بيع",
+                $"أمر البيع {order.OrderNumber} تم تأكيده بنجاح",
+                order.Id);
+
+            await _notificationService.CreateForRoleAsync(
+                Roles.SalesManager,
+                NotificationType.SalesOrderConfirmed,
+                "تم تأكيد أمر بيع",
+                $"أمر البيع {order.OrderNumber} تم تأكيده بنجاح",
+                order.Id);
+        }
 
         var reservationItems = request.Items
             .Select(i => new StockReservationItem

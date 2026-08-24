@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Server.Core.Common;
+using Server.Core.Constants;
 using Server.Core.Exceptions;
 using Server.Features.Inventory;
 using Server.Features.Inventory.Repositories;
+using Server.Features.Notifications.Enums;
+using Server.Features.Notifications.Services;
 using Server.Features.Purchasing.Entities;
 using Server.Features.Purchasing.Enums;
 using Server.Features.Purchasing.Models;
@@ -16,6 +19,7 @@ public class PurchaseOrderService : IPurchaseOrderService
     private readonly IPurchaseOrderRepository _repository;
     private readonly ISupplierRepository _supplierRepository;
     private readonly IProductRepository _productRepository;
+    private readonly INotificationService _notificationService;
     private readonly AppDbContext _context;
     private readonly ICurrentUserService _currentUserService;
 
@@ -23,12 +27,14 @@ public class PurchaseOrderService : IPurchaseOrderService
         IPurchaseOrderRepository repository,
         ISupplierRepository supplierRepository,
         IProductRepository productRepository,
+        INotificationService notificationService,
         AppDbContext context,
         ICurrentUserService currentUserService)
     {
         _repository = repository;
         _supplierRepository = supplierRepository;
         _productRepository = productRepository;
+        _notificationService = notificationService;
         _context = context;
         _currentUserService = currentUserService;
     }
@@ -170,6 +176,13 @@ public class PurchaseOrderService : IPurchaseOrderService
         order.Status = PurchaseOrderStatus.Submitted;
         order.UpdatedBy = _currentUserService.UserId;
 
+        await _notificationService.CreateForRoleAsync(
+            Roles.SuperAdmin,
+            NotificationType.PurchaseOrderSubmitted,
+            "أمر شراء بانتظار الاعتماد",
+            $"أمر الشراء {order.PoNumber} تم إرساله للاعتماد",
+            order.Id);
+
         await _context.SaveChangesAsync();
     }
 
@@ -185,6 +198,13 @@ public class PurchaseOrderService : IPurchaseOrderService
         order.ApprovedBy = _currentUserService.UserId;
         order.ApprovedAt = DateTime.UtcNow;
         order.UpdatedBy = _currentUserService.UserId;
+
+        await _notificationService.CreateForRoleAsync(
+            Roles.PurchasingManager,
+            NotificationType.PurchaseOrderApproved,
+            "تم اعتماد أمر شراء",
+            $"أمر الشراء {order.PoNumber} تم اعتماده بنجاح",
+            order.Id);
 
         await _context.SaveChangesAsync();
     }

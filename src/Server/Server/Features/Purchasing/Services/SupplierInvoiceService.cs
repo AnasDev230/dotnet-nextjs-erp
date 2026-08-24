@@ -1,5 +1,8 @@
 using Server.Core.Common;
+using Server.Core.Constants;
 using Server.Core.Exceptions;
+using Server.Features.Notifications.Enums;
+using Server.Features.Notifications.Services;
 using Server.Features.Purchasing.Entities;
 using Server.Features.Purchasing.Enums;
 using Server.Features.Purchasing.Models;
@@ -13,6 +16,7 @@ public class SupplierInvoiceService : ISupplierInvoiceService
     private readonly ISupplierInvoiceRepository _repository;
     private readonly IPurchaseOrderRepository _purchaseOrderRepository;
     private readonly ISupplierRepository _supplierRepository;
+    private readonly INotificationService _notificationService;
     private readonly AppDbContext _context;
     private readonly ICurrentUserService _currentUserService;
 
@@ -20,12 +24,14 @@ public class SupplierInvoiceService : ISupplierInvoiceService
         ISupplierInvoiceRepository repository,
         IPurchaseOrderRepository purchaseOrderRepository,
         ISupplierRepository supplierRepository,
+        INotificationService notificationService,
         AppDbContext context,
         ICurrentUserService currentUserService)
     {
         _repository = repository;
         _purchaseOrderRepository = purchaseOrderRepository;
         _supplierRepository = supplierRepository;
+        _notificationService = notificationService;
         _context = context;
         _currentUserService = currentUserService;
     }
@@ -130,6 +136,13 @@ public class SupplierInvoiceService : ISupplierInvoiceService
 
         invoice.Status = SupplierInvoiceStatus.Received;
         invoice.UpdatedBy = _currentUserService.UserId;
+
+        await _notificationService.CreateForRoleAsync(
+            Roles.PurchasingManager,
+            NotificationType.SupplierInvoiceReceived,
+            "تم استلام فاتورة مورد",
+            $"فاتورة المورد {invoice.InvoiceNumber} جاهزة للمراجعة والسداد",
+            invoice.Id);
 
         await _context.SaveChangesAsync();
     }
