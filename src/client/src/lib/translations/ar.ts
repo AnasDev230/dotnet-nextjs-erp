@@ -1222,6 +1222,17 @@ export const ar: Record<string, string> = {
   "audit.notFound": "السجل غير موجود",
   "audit.notFoundDescription": "تعذر العثور على سجل العملية المطلوب",
 
+  // ─── Notifications ───
+  "notifications.title": "التنبيهات",
+  "notifications.description": "جميع التنبيهات والإشعارات",
+  "notifications.markAllRead": "تحديد الكل كمقروء",
+  "notifications.markRead": "تحديد كمقروء",
+  "notifications.viewAll": "عرض كل التنبيهات",
+  "notifications.empty": "لا توجد تنبيهات",
+  "notifications.emptyDescription": "ستظهر التنبيهات هنا عند حدوث أحداث جديدة",
+  "notifications.filter.all": "الكل",
+  "notifications.filter.unread": "غير المقروء",
+
   // ─── Language ───
   "language.arabic": "العربية",
   "language.english": "English",

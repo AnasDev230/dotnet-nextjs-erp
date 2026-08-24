@@ -1223,6 +1223,17 @@ export const en: Record<string, string> = {
   "audit.notFound": "Entry not found",
   "audit.notFoundDescription": "The requested audit entry could not be found",
 
+  // ─── Notifications ───
+  "notifications.title": "Notifications",
+  "notifications.description": "All alerts and notifications",
+  "notifications.markAllRead": "Mark all as read",
+  "notifications.markRead": "Mark as read",
+  "notifications.viewAll": "View all notifications",
+  "notifications.empty": "No notifications",
+  "notifications.emptyDescription": "Notifications will appear here when new events occur",
+  "notifications.filter.all": "All",
+  "notifications.filter.unread": "Unread",
+
   // ─── Language ───
   "language.arabic": "العربية",
   "language.english": "English",

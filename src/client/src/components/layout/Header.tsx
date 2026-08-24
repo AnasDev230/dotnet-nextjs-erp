@@ -4,6 +4,7 @@ import ThemeToggle from "./ThemeToggle";
 import LanguageToggle from "./language-toggle";
 import GlobalSearch from "./global-search";
 import MobileSearchDialog from "./mobile-search-dialog";
+import NotificationBell from "./notification-bell";
 
 export default function Header() {
   return (
@@ -11,6 +12,7 @@ export default function Header() {
       <GlobalSearch />
       <div className="ms-auto flex items-center gap-2">
         <MobileSearchDialog />
+        <NotificationBell />
         <ThemeToggle />
         <LanguageToggle />
       </div>

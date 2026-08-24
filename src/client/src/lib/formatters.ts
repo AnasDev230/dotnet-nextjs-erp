@@ -61,3 +61,26 @@ export function formatDateTime(date: string | Date, language: Language): string 
 export function formatNumber(num: number): string {
   return num.toLocaleString("en-US");
 }
+
+/**
+ * Format relative time ("time ago") based on language.
+ * Arabic: "منذ 5 دقائق"
+ * English: "5m ago"
+ */
+export function getTimeAgo(date: string | Date, language: Language): string {
+  const diffMs = Date.now() - new Date(date).getTime();
+  const mins = Math.floor(diffMs / 60000);
+  const hours = Math.floor(diffMs / 3600000);
+  const days = Math.floor(diffMs / 86400000);
+
+  if (language === "ar") {
+    if (mins < 1) return "الآن";
+    if (mins < 60) return `منذ ${mins} دقيقة`;
+    if (hours < 24) return `منذ ${hours} ساعة`;
+    return `منذ ${days} يوم`;
+  }
+  if (mins < 1) return "Just now";
+  if (mins < 60) return `${mins}m ago`;
+  if (hours < 24) return `${hours}h ago`;
+  return `${days}d ago`;
+}
