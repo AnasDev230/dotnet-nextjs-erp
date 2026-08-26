@@ -21,9 +21,10 @@ public class UpsertInventoryLevelValidator : AbstractValidator<UpsertInventoryLe
             .WithMessage("Warehouse does not exist.");
 
         RuleFor(x => x.QuantityOnHand)
-            .GreaterThanOrEqualTo(0);
+            .GreaterThanOrEqualTo(0).WithMessage("الكمية لا يمكن أن تكون سالبة")
+            .LessThanOrEqualTo(999_999).WithMessage("الكمية تتجاوز الحد الأقصى المسموح");
 
         RuleFor(x => x.AvgCost)
-            .GreaterThanOrEqualTo(0);
+            .GreaterThanOrEqualTo(0).WithMessage("التكلفة لا يمكن أن تكون سالبة");
     }
 }

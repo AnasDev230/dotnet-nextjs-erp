@@ -37,6 +37,10 @@ public class InventoryLevelService : IInventoryLevelService
     {
         var existing = await _repository.FindByProductAndWarehouseAsync(request.ProductId, request.WarehouseId);
 
+        if (existing is not null && request.QuantityOnHand < existing.QuantityReserved)
+            throw new BusinessException(
+                $"الكمية ({request.QuantityOnHand}) أقل من الكمية المحجوزة ({existing.QuantityReserved})");
+
         if (existing is not null)
         {
             existing.QuantityOnHand = request.QuantityOnHand;

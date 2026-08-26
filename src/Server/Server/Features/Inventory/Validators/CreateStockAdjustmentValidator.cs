@@ -21,7 +21,8 @@ public class CreateStockAdjustmentValidator : AbstractValidator<CreateStockAdjus
             .WithMessage("Warehouse does not exist.");
 
         RuleFor(x => x.CountedQty)
-            .GreaterThanOrEqualTo(0);
+            .GreaterThanOrEqualTo(0).WithMessage("الكمية المعدودة لا يمكن أن تكون سالبة")
+            .LessThanOrEqualTo(999_999).WithMessage("الكمية المعدودة تتجاوز الحد الأقصى المسموح");
 
         RuleFor(x => x.Reason)
             .NotEmpty()

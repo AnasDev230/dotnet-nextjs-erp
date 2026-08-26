@@ -35,6 +35,10 @@ public class StockAdjustmentService : IStockAdjustmentService
         var level = await _levelRepository.FindByProductAndWarehouseAsync(request.ProductId, request.WarehouseId)
             ?? throw new NotFoundException(nameof(InventoryLevel), $"Product {request.ProductId} / Warehouse {request.WarehouseId}");
 
+        if (level.QuantityOnHand > 0 && request.CountedQty > level.QuantityOnHand * 10)
+            throw new BusinessException(
+                $"الكمية المعدودة ({request.CountedQty}) غير منطقية مقارنة بالمخزون الحالي ({level.QuantityOnHand})");
+
         var systemQty = level.QuantityOnHand;
 
         await using var transaction = await _context.Database.BeginTransactionAsync();
