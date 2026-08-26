@@ -29,6 +29,7 @@ import {
   History,
   ArrowLeftRight,
   Undo2,
+  FileSpreadsheet,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTranslation } from "@/hooks/use-translation";
@@ -56,6 +57,7 @@ const navItems: NavItem[] = [
 ];
 
 const salesItems: SubNavItem[] = [
+  { labelKey: "nav.quotations", href: "/sales/quotations", icon: FileSpreadsheet },
   { labelKey: "nav.orders", href: "/sales/orders", icon: ShoppingCart },
   { labelKey: "nav.customers", href: "/sales/customers", icon: Users },
   { labelKey: "nav.salesReturns", href: "/sales/returns", icon: Undo2 },
