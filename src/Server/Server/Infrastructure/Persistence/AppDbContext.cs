@@ -61,6 +61,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     // HR Module
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<Employee> Employees => Set<Employee>();
+    public DbSet<Attendance> AttendanceRecords => Set<Attendance>();
 
     // Settings Module
     public DbSet<CompanySettings> CompanySettings => Set<CompanySettings>();
