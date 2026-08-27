@@ -30,6 +30,8 @@ import {
   ArrowLeftRight,
   Undo2,
   FileSpreadsheet,
+  CalendarCheck,
+  Banknote,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
 import { useTranslation } from "@/hooks/use-translation";
@@ -96,6 +98,8 @@ const purchasingItems: SubNavItem[] = [
 const hrItems: SubNavItem[] = [
   { labelKey: "nav.departments", href: "/hr/departments", icon: Building2 },
   { labelKey: "nav.employees", href: "/hr/employees", icon: Briefcase },
+  { labelKey: "attendance.title", href: "/hr/attendance", icon: CalendarCheck },
+  { labelKey: "payroll.title", href: "/hr/payroll", icon: Banknote },
 ];
 
 const reportsItems: SubNavItem[] = [

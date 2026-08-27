@@ -63,6 +63,15 @@ export function formatNumber(num: number): string {
 }
 
 /**
+ * Format decimal work hours as "H:MM" (e.g. 7.75 → "7:45").
+ */
+export function formatWorkHours(hours: number): string {
+  const h = Math.floor(hours);
+  const m = Math.round((hours - h) * 60);
+  return `${h}:${m.toString().padStart(2, "0")}`;
+}
+
+/**
  * Format relative time ("time ago") based on language.
  * Arabic: "منذ 5 دقائق"
  * English: "5m ago"
