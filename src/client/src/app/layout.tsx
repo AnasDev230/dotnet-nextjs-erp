@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import Providers from "@/components/providers";
 import "./globals.css";
 
@@ -37,8 +36,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ar" dir="rtl" className="h-full antialiased" suppressHydrationWarning>
+      <head>
+        <script id="bunyan-boot">{PRE_PAINT_SCRIPT}</script>
+      </head>
       <body className="min-h-full flex flex-col bg-background font-sans text-foreground">
-        <Script id="bunyan-boot" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: PRE_PAINT_SCRIPT }} />
         <Providers>{children}</Providers>
       </body>
     </html>
