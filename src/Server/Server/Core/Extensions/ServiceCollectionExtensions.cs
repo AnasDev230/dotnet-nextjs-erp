@@ -121,6 +121,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDepartmentService, DepartmentService>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IEmployeeService, EmployeeService>();
+        services.AddScoped<IAttendanceRepository, AttendanceRepository>();
+        services.AddScoped<IAttendanceService, AttendanceService>();
 
         // Reports (read-only aggregation across Sales, Purchasing, Inventory & HR)
         services.AddScoped<IReportsRepository, ReportsRepository>();
