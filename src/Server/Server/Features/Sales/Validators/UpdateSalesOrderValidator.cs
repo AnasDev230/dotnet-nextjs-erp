@@ -1,33 +1,17 @@
 using FluentValidation;
-using Server.Features.Inventory.Repositories;
 using Server.Features.Sales.Models;
-using Server.Features.Sales.Repositories;
 
 namespace Server.Features.Sales.Validators;
 
 public class UpdateSalesOrderValidator : AbstractValidator<UpdateSalesOrderRequest>
 {
-    public UpdateSalesOrderValidator(
-        ICustomerRepository customerRepository,
-        IProductRepository productRepository,
-        IWarehouseRepository warehouseRepository,
-        ITaxRateRepository taxRateRepository)
+    public UpdateSalesOrderValidator()
     {
         RuleFor(x => x.CustomerId)
-            .NotEmpty().WithMessage("العميل مطلوب")
-            .MustAsync(async (id, _) => await customerRepository.ExistsByIdAsync(id))
-            .WithMessage("العميل غير موجود");
+            .NotEmpty().WithMessage("العميل مطلوب");
 
         RuleFor(x => x.WarehouseId)
-            .NotEmpty().WithMessage("المستودع مطلوب")
-            .MustAsync(async (id, _) => await warehouseRepository.ExistsByIdAsync(id))
-            .WithMessage("المستودع غير موجود")
-            .MustAsync(async (id, _) =>
-            {
-                var warehouse = await warehouseRepository.GetEntityByIdAsync(id);
-                return warehouse is not null && warehouse.IsActive;
-            })
-            .WithMessage("المستودع غير نشط");
+            .NotEmpty().WithMessage("المستودع مطلوب");
 
         RuleFor(x => x.OrderDate)
             .NotEmpty().WithMessage("تاريخ الأمر مطلوب")
@@ -48,11 +32,6 @@ public class UpdateSalesOrderValidator : AbstractValidator<UpdateSalesOrderReque
         RuleFor(x => x.DiscountPct)
             .InclusiveBetween(0, 100).WithMessage("نسبة الخصم يجب أن تكون بين 0 و 100");
 
-        RuleFor(x => x.TaxRateId)
-            .MustAsync(async (taxRateId, _) =>
-                taxRateId == null || await taxRateRepository.ExistsAsync(taxRateId.Value))
-            .WithMessage("نسبة الضريبة غير موجودة");
-
         RuleFor(x => x.Items)
             .Must(items => items.Any()).WithMessage("يجب إضافة منتج واحد على الأقل")
             .Must(items => items.Select(i => i.ProductId).Distinct().Count() == items.Count)
@@ -61,15 +40,7 @@ public class UpdateSalesOrderValidator : AbstractValidator<UpdateSalesOrderReque
         RuleForEach(x => x.Items).ChildRules(item =>
         {
             item.RuleFor(i => i.ProductId)
-                .NotEmpty().WithMessage("المنتج مطلوب")
-                .MustAsync(async (id, _) => await productRepository.ExistsAsync(id))
-                .WithMessage("المنتج غير موجود")
-                .MustAsync(async (id, _) =>
-                {
-                    var product = await productRepository.GetByIdAsync(id);
-                    return product is not null && product.IsActive;
-                })
-                .WithMessage("المنتج غير نشط");
+                .NotEmpty().WithMessage("المنتج مطلوب");
 
             item.RuleFor(i => i.Quantity)
                 .GreaterThan(0).WithMessage("الكمية يجب أن تكون أكبر من صفر");

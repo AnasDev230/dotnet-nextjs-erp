@@ -9,15 +9,21 @@ namespace Server.Features.Inventory.Services;
 public class InventoryLevelService : IInventoryLevelService
 {
     private readonly IInventoryLevelRepository _repository;
+    private readonly IProductRepository _productRepository;
+    private readonly IWarehouseRepository _warehouseRepository;
     private readonly AppDbContext _context;
     private readonly ICurrentUserService _currentUserService;
 
     public InventoryLevelService(
         IInventoryLevelRepository repository,
+        IProductRepository productRepository,
+        IWarehouseRepository warehouseRepository,
         AppDbContext context,
         ICurrentUserService currentUserService)
     {
         _repository = repository;
+        _productRepository = productRepository;
+        _warehouseRepository = warehouseRepository;
         _context = context;
         _currentUserService = currentUserService;
     }
@@ -35,6 +41,12 @@ public class InventoryLevelService : IInventoryLevelService
 
     public async Task<InventoryLevelResponse> UpsertAsync(UpsertInventoryLevelRequest request)
     {
+        if (!await _productRepository.ExistsAsync(request.ProductId))
+            throw new NotFoundException(nameof(Product), request.ProductId);
+
+        if (!await _warehouseRepository.ExistsByIdAsync(request.WarehouseId))
+            throw new NotFoundException(nameof(Warehouse), request.WarehouseId);
+
         var existing = await _repository.FindByProductAndWarehouseAsync(request.ProductId, request.WarehouseId);
 
         if (existing is not null && request.QuantityOnHand < existing.QuantityReserved)

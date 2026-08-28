@@ -6,6 +6,7 @@ using Server.Features.Inventory;
 using Server.Features.Inventory.Repositories;
 using Server.Features.Notifications.Enums;
 using Server.Features.Notifications.Services;
+using Server.Features.Sales;
 using Server.Features.Sales.Enums;
 using Server.Features.Sales.Models;
 using Server.Features.Sales.Repositories;
@@ -81,6 +82,9 @@ public class SalesOrderService : ISalesOrderService
 
         if (!warehouse.IsActive)
             throw new BusinessException("لا يمكن إنشاء أمر بيع لمستودع غير نشط");
+
+        if (request.TaxRateId.HasValue && !await _taxRateRepository.ExistsAsync(request.TaxRateId.Value))
+            throw new NotFoundException(nameof(TaxRate), request.TaxRateId.Value);
 
         // 4. Read-only availability pre-check against the selected warehouse
         await EnsureAvailabilityAsync(request.WarehouseId, request.Items);
@@ -169,6 +173,9 @@ public class SalesOrderService : ISalesOrderService
 
         if (!warehouse.IsActive)
             throw new BusinessException("لا يمكن تعديل أمر البيع لمستودع غير نشط");
+
+        if (request.TaxRateId.HasValue && !await _taxRateRepository.ExistsAsync(request.TaxRateId.Value))
+            throw new NotFoundException(nameof(TaxRate), request.TaxRateId.Value);
 
         await EnsureAvailabilityAsync(request.WarehouseId, request.Items);
 

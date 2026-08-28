@@ -1,26 +1,14 @@
 using FluentValidation;
-using Server.Features.Inventory.Repositories;
-using Server.Features.Purchasing.Entities;
-using Server.Features.Purchasing.Enums;
 using Server.Features.Purchasing.Models;
-using Server.Features.Purchasing.Repositories;
 
 namespace Server.Features.Purchasing.Validators;
 
 public class CreatePurchaseOrderValidator : AbstractValidator<CreatePurchaseOrderRequest>
 {
-    public CreatePurchaseOrderValidator(
-        ISupplierRepository supplierRepository,
-        IProductRepository productRepository)
+    public CreatePurchaseOrderValidator()
     {
         RuleFor(x => x.SupplierId)
-            .NotEmpty().WithMessage("المورد مطلوب")
-            .MustAsync(async (id, _) =>
-            {
-                var supplier = await supplierRepository.GetEntityByIdAsync(id);
-                return supplier is not null && supplier.Status == SupplierStatus.Active;
-            })
-            .WithMessage("المورد غير موجود أو غير نشط");
+            .NotEmpty().WithMessage("المورد مطلوب");
 
         RuleFor(x => x.OrderDate)
             .NotEmpty().WithMessage("تاريخ الأمر مطلوب")
@@ -40,13 +28,7 @@ public class CreatePurchaseOrderValidator : AbstractValidator<CreatePurchaseOrde
         RuleForEach(x => x.Items).ChildRules(item =>
         {
             item.RuleFor(i => i.ProductId)
-                .NotEmpty().WithMessage("المنتج مطلوب")
-                .MustAsync(async (id, _) =>
-                {
-                    var product = await productRepository.GetByIdAsync(id);
-                    return product is not null && product.IsActive;
-                })
-                .WithMessage("المنتج غير موجود أو غير نشط");
+                .NotEmpty().WithMessage("المنتج مطلوب");
 
             item.RuleFor(i => i.Quantity)
                 .GreaterThan(0).WithMessage("الكمية يجب أن تكون أكبر من صفر");

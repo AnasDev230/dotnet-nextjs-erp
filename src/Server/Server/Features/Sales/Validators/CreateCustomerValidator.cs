@@ -1,18 +1,15 @@
 using FluentValidation;
 using Server.Features.Sales.Models;
-using Server.Features.Sales.Repositories;
 
 namespace Server.Features.Sales.Validators;
 
 public class CreateCustomerValidator : AbstractValidator<CreateCustomerRequest>
 {
-    public CreateCustomerValidator(ICustomerRepository repository)
+    public CreateCustomerValidator()
     {
         RuleFor(x => x.Code)
             .NotEmpty().WithMessage("رمز العميل مطلوب")
-            .MaximumLength(50).WithMessage("الرمز يجب ألا يتجاوز 50 حرفاً")
-            .MustAsync(async (code, _) => !await repository.ExistsByCodeAsync(code))
-            .WithMessage("رمز العميل موجود مسبقاً");
+            .MaximumLength(50).WithMessage("الرمز يجب ألا يتجاوز 50 حرفاً");
 
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("اسم العميل مطلوب")

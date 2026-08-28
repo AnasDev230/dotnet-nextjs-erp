@@ -47,6 +47,9 @@ public class CategoryService : ICategoryService
         if (await _categoryRepository.ExistsByCodeAsync(request.Code))
             throw new BusinessException($"Category with code '{request.Code}' already exists.");
 
+        if (request.ParentId.HasValue && !await _categoryRepository.ExistsByIdAsync(request.ParentId.Value))
+            throw new NotFoundException(nameof(Category), request.ParentId.Value);
+
         var category = new Category
         {
             Code = request.Code,
@@ -69,6 +72,9 @@ public class CategoryService : ICategoryService
         var category = await _categoryRepository.GetEntityByIdAsync(id);
         if (category is null)
             throw new NotFoundException(nameof(Category), id);
+
+        if (request.ParentId.HasValue && !await _categoryRepository.ExistsByIdAsync(request.ParentId.Value))
+            throw new NotFoundException(nameof(Category), request.ParentId.Value);
 
         category.Name = request.Name;
         category.ParentId = request.ParentId;

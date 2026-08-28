@@ -1,18 +1,15 @@
 using FluentValidation;
 using Server.Features.Purchasing.Models;
-using Server.Features.Purchasing.Repositories;
 
 namespace Server.Features.Purchasing.Validators;
 
 public class CreateSupplierValidator : AbstractValidator<CreateSupplierRequest>
 {
-    public CreateSupplierValidator(ISupplierRepository repository)
+    public CreateSupplierValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("اسم المورد مطلوب")
-            .MaximumLength(200).WithMessage("اسم المورد يجب ألا يتجاوز 200 حرف")
-            .MustAsync(async (name, _) => !await repository.IsNameUniqueAsync(name))
-            .WithMessage("اسم المورد موجود بالفعل");
+            .MaximumLength(200).WithMessage("اسم المورد يجب ألا يتجاوز 200 حرف");
 
         RuleFor(x => x.Email)
             .EmailAddress().WithMessage("بريد إلكتروني غير صالح")
