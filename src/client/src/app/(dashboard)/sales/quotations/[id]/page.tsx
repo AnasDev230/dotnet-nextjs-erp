@@ -9,6 +9,7 @@ import {
   FileSpreadsheet,
   Loader2,
   Pencil,
+  Printer,
   Repeat,
   Send,
   ShoppingCart,
@@ -30,6 +31,8 @@ import {
   TableCell,
 } from "@/components/ui";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
+import { QuotationPrint } from "@/components/print/quotation-print";
+import { usePrint } from "@/hooks/use-print";
 import {
   useAcceptQuotation,
   useConvertQuotation,
@@ -56,6 +59,8 @@ export default function QuotationDetailPage({
   const { id } = use(params);
   const router = useRouter();
   const { t, language } = useTranslation();
+  const { handlePrint } = usePrint();
+  const [showPrint, setShowPrint] = useState(false);
 
   const { data: quotation, isLoading } = useQuotation(id);
   const sendMutation = useSendQuotation();
@@ -172,6 +177,14 @@ export default function QuotationDetailPage({
 
         {/* Conditional actions */}
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => setShowPrint(true)}
+          >
+            <Printer className="h-4 w-4" />
+            {t("common.print")}
+          </Button>
           {normalizedStatus === QuotationStatus.Draft && (
             <>
               <Button
@@ -415,6 +428,24 @@ export default function QuotationDetailPage({
           isLoading={isPendingAnyAction}
           onConfirm={handleConfirm}
         />
+      )}
+
+      {showPrint && (
+        <div className="fixed inset-0 z-50 bg-white overflow-auto">
+          <div className="no-print flex items-center justify-between p-4 border-b bg-gray-50">
+            <h3 className="font-semibold text-lg">{t("print.preview")}</h3>
+            <div className="flex gap-2">
+              <Button onClick={handlePrint} className="gap-2">
+                <Printer className="h-4 w-4" />
+                {t("print.print")}
+              </Button>
+              <Button variant="outline" onClick={() => setShowPrint(false)}>
+                {t("print.close")}
+              </Button>
+            </div>
+          </div>
+          <QuotationPrint quotation={quotation} />
+        </div>
       )}
     </div>
   );

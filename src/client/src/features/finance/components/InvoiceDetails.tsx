@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, Loader2, Send, XCircle, Wallet, AlertCircle } from "lucide-react";
+import { ArrowRight, Loader2, Send, XCircle, Wallet, AlertCircle, Printer } from "lucide-react";
 import {
   Button,
   Card,
@@ -22,6 +22,8 @@ import {
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { InvoiceStatusBadge } from "./InvoiceStatusBadge";
 import PaymentsList from "./PaymentsList";
+import { InvoicePrint } from "@/components/print/invoice-print";
+import { usePrint } from "@/hooks/use-print";
 import { useInvoice, useIssueInvoice, useCancelInvoice } from "../hooks/useInvoices";
 import { useSalesOrder } from "@/features/sales/hooks/useSalesOrder";
 import type { AxiosError } from "axios";
@@ -41,6 +43,8 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
 export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
   const router = useRouter();
   const { t, language } = useTranslation();
+  const { handlePrint } = usePrint();
+  const [showPrint, setShowPrint] = useState(false);
   const [confirmAction, setConfirmAction] = useState<"issue" | "cancel" | null>(
     null
   );
@@ -140,6 +144,14 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => setShowPrint(true)}
+          >
+            <Printer className="h-4 w-4" />
+            {t("common.print")}
+          </Button>
           {canIssue && (
             <Button
               disabled={isLoadingAction}
@@ -447,6 +459,24 @@ export default function InvoiceDetails({ invoiceId }: { invoiceId: string }) {
         errorMessage={errorMessage}
         onConfirm={handleConfirm}
       />
+
+      {showPrint && (
+        <div className="fixed inset-0 z-50 bg-white overflow-auto">
+          <div className="no-print flex items-center justify-between p-4 border-b bg-gray-50">
+            <h3 className="font-semibold text-lg">{t("print.preview")}</h3>
+            <div className="flex gap-2">
+              <Button onClick={handlePrint} className="gap-2">
+                <Printer className="h-4 w-4" />
+                {t("print.print")}
+              </Button>
+              <Button variant="outline" onClick={() => setShowPrint(false)}>
+                {t("print.close")}
+              </Button>
+            </div>
+          </div>
+          <InvoicePrint invoice={invoice} order={order} />
+        </div>
+      )}
     </div>
   );
 }

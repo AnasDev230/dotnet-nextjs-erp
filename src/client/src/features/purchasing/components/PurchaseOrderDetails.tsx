@@ -1,7 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import { ArrowRight, Loader2, AlertCircle, Printer } from "lucide-react";
 import {
   Button,
   Card,
@@ -19,6 +20,8 @@ import {
 } from "@/components/ui";
 import { PurchaseOrderStatusBadge } from "./PurchaseOrderStatusBadge";
 import { PurchaseOrderStatusActions } from "./PurchaseOrderStatusActions";
+import { PurchaseOrderPrint } from "@/components/print/purchase-order-print";
+import { usePrint } from "@/hooks/use-print";
 import { usePurchaseOrder } from "../hooks/usePurchaseOrder";
 import { formatCurrency, formatDate } from "@/lib/formatters";
 import { useTranslation } from "@/hooks/use-translation";
@@ -41,6 +44,8 @@ export default function PurchaseOrderDetails({
 }) {
   const router = useRouter();
   const { t, language } = useTranslation();
+  const { handlePrint } = usePrint();
+  const [showPrint, setShowPrint] = useState(false);
   const { data: order, isLoading, error } = usePurchaseOrder(orderId);
 
   if (isLoading) {
@@ -90,6 +95,14 @@ export default function PurchaseOrderDetails({
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => setShowPrint(true)}
+          >
+            <Printer className="h-4 w-4" />
+            {t("common.print")}
+          </Button>
           <PurchaseOrderStatusBadge status={order.status} />
         </div>
       </div>
@@ -172,6 +185,24 @@ export default function PurchaseOrderDetails({
         <div className="flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-600">
           <AlertCircle className="h-4 w-4" />
           {t("purchasing.orders.draftWarning")}
+        </div>
+      )}
+
+      {showPrint && (
+        <div className="fixed inset-0 z-50 bg-white overflow-auto">
+          <div className="no-print flex items-center justify-between p-4 border-b bg-gray-50">
+            <h3 className="font-semibold text-lg">{t("print.preview")}</h3>
+            <div className="flex gap-2">
+              <Button onClick={handlePrint} className="gap-2">
+                <Printer className="h-4 w-4" />
+                {t("print.print")}
+              </Button>
+              <Button variant="outline" onClick={() => setShowPrint(false)}>
+                {t("print.close")}
+              </Button>
+            </div>
+          </div>
+          <PurchaseOrderPrint order={order} />
         </div>
       )}
     </div>

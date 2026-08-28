@@ -174,3 +174,87 @@ html {
 .toast-enter {
   animation: toast-in 0.3s ease-out;
 }
+
+/* ═══════════════════════════════════════════ */
+/* PRINT STYLES                                */
+/* ═══════════════════════════════════════════ */
+
+@media print {
+  /* Hide everything except print content */
+  body * {
+    visibility: hidden;
+  }
+
+  #print-area,
+  #print-area * {
+    visibility: visible;
+  }
+
+  #print-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20mm;
+  }
+
+  /* Remove backgrounds and shadows */
+  * {
+    background: white !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Black text */
+  body {
+    color: #000 !important;
+    font-size: 12px;
+  }
+
+  /* Remove borders from interactive elements */
+  button, .no-print {
+    display: none !important;
+  }
+
+  /* Table styling for print */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: start;
+    font-size: 11px;
+  }
+
+  th {
+    background-color: #f5f5f5 !important;
+    font-weight: 600;
+  }
+
+  /* Page breaks */
+  .page-break-before {
+    page-break-before: always;
+  }
+
+  .page-break-after {
+    page-break-after: always;
+  }
+
+  .no-break {
+    page-break-inside: avoid;
+  }
+
+  /* Hide sidebar, header, navigation */
+  nav, header, aside, .sidebar {
+    display: none !important;
+  }
+
+  /* Remove link colors */
+  a {
+    color: #000 !important;
+    text-decoration: none !important;
+  }
+}

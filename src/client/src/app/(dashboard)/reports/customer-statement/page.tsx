@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useState } from "react";
-import { FileText, CreditCard, Landmark, User } from "lucide-react";
+import { FileText, CreditCard, Landmark, User, Printer } from "lucide-react";
 import { Alert, AlertTitle, AlertDescription, Button } from "@/components/ui";
 import ReportSummaryCard from "@/features/reports/components/ReportSummaryCard";
 import CustomerStatementTable from "@/features/reports/components/CustomerStatementTable";
@@ -11,12 +11,16 @@ import { downloadCustomerStatementCsv } from "@/features/reports/api/reports";
 import { useCustomersForDropdown } from "@/features/sales/hooks/useCustomersForDropdown";
 import { useTranslation } from "@/hooks/use-translation";
 import { formatCurrency } from "@/lib/formatters";
+import { CustomerStatementPrint } from "@/components/print/customer-statement-print";
+import { usePrint } from "@/hooks/use-print";
 
 const selectClass =
   "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:w-80";
 
 function CustomerStatementContent() {
   const { t, language } = useTranslation();
+  const { handlePrint } = usePrint();
+  const [showPrint, setShowPrint] = useState(false);
   const [customerId, setCustomerId] = useState("");
   const { data: customers } = useCustomersForDropdown();
 
@@ -38,10 +42,21 @@ function CustomerStatementContent() {
             {t("reports.customerStatementDescription")}
           </p>
         </div>
-        <ExportCsvButton
-          onClick={() => downloadCustomerStatementCsv(customerId)}
-          disabled={!customerId}
-        />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            className="gap-2"
+            disabled={!customerId || !data}
+            onClick={() => setShowPrint(true)}
+          >
+            <Printer className="h-4 w-4" />
+            {t("common.print")}
+          </Button>
+          <ExportCsvButton
+            onClick={() => downloadCustomerStatementCsv(customerId)}
+            disabled={!customerId}
+          />
+        </div>
       </div>
 
       <div>
@@ -144,6 +159,24 @@ function CustomerStatementContent() {
             isLoading={isLoading}
           />
         </>
+      )}
+
+      {showPrint && data && (
+        <div className="fixed inset-0 z-50 bg-white overflow-auto">
+          <div className="no-print flex items-center justify-between p-4 border-b bg-gray-50">
+            <h3 className="font-semibold text-lg">{t("print.preview")}</h3>
+            <div className="flex gap-2">
+              <Button onClick={handlePrint} className="gap-2">
+                <Printer className="h-4 w-4" />
+                {t("print.print")}
+              </Button>
+              <Button variant="outline" onClick={() => setShowPrint(false)}>
+                {t("print.close")}
+              </Button>
+            </div>
+          </div>
+          <CustomerStatementPrint data={data} />
+        </div>
       )}
     </div>
   );

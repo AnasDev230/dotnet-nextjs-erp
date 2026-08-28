@@ -1,12 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Loader2, ReceiptText } from "lucide-react";
+import { ArrowRight, Loader2, ReceiptText, Printer } from "lucide-react";
 import {
   Button,
   Card,
   CardContent,
 } from "@/components/ui";
+import { PaySlipPrint } from "@/components/print/pay-slip-print";
+import { usePrint } from "@/hooks/use-print";
 import { usePayrollRun, usePayrollDetail } from "../../hooks/usePayroll";
 import { useTranslation } from "@/hooks/use-translation";
 import { formatCurrency, formatNumber, formatWorkHours } from "@/lib/formatters";
@@ -25,6 +28,8 @@ interface SlipRow {
 export default function PaySlip({ runId, detailId }: PaySlipProps) {
   const router = useRouter();
   const { t, language } = useTranslation();
+  const { handlePrint } = usePrint();
+  const [showPrint, setShowPrint] = useState(false);
   const { data: run, error: runError } = usePayrollRun(runId);
   const { data: detail, isLoading } = usePayrollDetail(runId, detailId);
 
@@ -71,21 +76,33 @@ export default function PaySlip({ runId, detailId }: PaySlipProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => router.back()}>
-          <ArrowRight className="h-5 w-5" />
-        </Button>
-        <div>
-          <h1 className="flex items-center gap-2 text-2xl font-semibold">
-            <ReceiptText className="h-6 w-6" />
-            {t("payroll.paySlip")}
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            {detail
-              ? `${detail.employeeName} — ${monthYear}`
-              : monthYear}
-          </p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+            <ArrowRight className="h-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="flex items-center gap-2 text-2xl font-semibold">
+              <ReceiptText className="h-6 w-6" />
+              {t("payroll.paySlip")}
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              {detail
+                ? `${detail.employeeName} — ${monthYear}`
+                : monthYear}
+            </p>
+          </div>
         </div>
+        {detail && (
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => setShowPrint(true)}
+          >
+            <Printer className="h-4 w-4" />
+            {t("common.print")}
+          </Button>
+        )}
       </div>
 
       {runError || (!isLoading && !detail) ? (
@@ -159,6 +176,24 @@ export default function PaySlip({ runId, detailId }: PaySlipProps) {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {showPrint && detail && (
+        <div className="fixed inset-0 z-50 bg-white overflow-auto">
+          <div className="no-print flex items-center justify-between p-4 border-b bg-gray-50">
+            <h3 className="font-semibold text-lg">{t("print.preview")}</h3>
+            <div className="flex gap-2">
+              <Button onClick={handlePrint} className="gap-2">
+                <Printer className="h-4 w-4" />
+                {t("print.print")}
+              </Button>
+              <Button variant="outline" onClick={() => setShowPrint(false)}>
+                {t("print.close")}
+              </Button>
+            </div>
+          </div>
+          <PaySlipPrint detail={detail} run={run} />
+        </div>
       )}
     </div>
   );

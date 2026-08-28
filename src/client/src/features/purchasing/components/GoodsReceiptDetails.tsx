@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, Loader2, XCircle, AlertCircle } from "lucide-react";
+import { ArrowRight, Loader2, XCircle, AlertCircle, Printer } from "lucide-react";
 import {
   Button,
   Card,
@@ -25,6 +25,8 @@ import { useGoodsReceipt } from "../hooks/useGoodsReceipt";
 import { useCancelGoodsReceipt } from "../hooks/useCancelGoodsReceipt";
 import { formatDate } from "@/lib/formatters";
 import { useTranslation } from "@/hooks/use-translation";
+import { GoodsReceiptPrint } from "@/components/print/goods-receipt-print";
+import { usePrint } from "@/hooks/use-print";
 import type { AxiosError } from "axios";
 import type { ApiResponse } from "@/types/auth";
 
@@ -44,6 +46,8 @@ export default function GoodsReceiptDetails({
 }) {
   const router = useRouter();
   const { t, language } = useTranslation();
+  const { handlePrint } = usePrint();
+  const [showPrint, setShowPrint] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { data: receipt, isLoading, error } = useGoodsReceipt(receiptId);
@@ -114,6 +118,14 @@ export default function GoodsReceiptDetails({
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => setShowPrint(true)}
+          >
+            <Printer className="h-4 w-4" />
+            {t("common.print")}
+          </Button>
           {receipt.status === "Received" && (
             <Button
               variant="outline"
@@ -214,6 +226,24 @@ export default function GoodsReceiptDetails({
         errorMessage={errorMessage}
         onConfirm={handleCancel}
       />
+
+      {showPrint && (
+        <div className="fixed inset-0 z-50 bg-white overflow-auto">
+          <div className="no-print flex items-center justify-between p-4 border-b bg-gray-50">
+            <h3 className="font-semibold text-lg">{t("print.preview")}</h3>
+            <div className="flex gap-2">
+              <Button onClick={handlePrint} className="gap-2">
+                <Printer className="h-4 w-4" />
+                {t("print.print")}
+              </Button>
+              <Button variant="outline" onClick={() => setShowPrint(false)}>
+                {t("print.close")}
+              </Button>
+            </div>
+          </div>
+          <GoodsReceiptPrint receipt={receipt} />
+        </div>
+      )}
     </div>
   );
 }

@@ -13,6 +13,7 @@ import {
   Check,
   Loader2,
   ShieldX,
+  Printer,
 } from "lucide-react";
 import {
   Button,
@@ -23,6 +24,8 @@ import {
   Label,
   Alert,
 } from "@/components/ui";
+import { StockTransferPrint } from "@/components/print/stock-transfer-print";
+import { usePrint } from "@/hooks/use-print";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import type {
   StockTransferStatus,
@@ -156,6 +159,8 @@ export default function StockTransferDetails({
 }: StockTransferDetailsProps) {
   const router = useRouter();
   const { t, language } = useTranslation();
+  const { handlePrint } = usePrint();
+  const [showPrint, setShowPrint] = useState(false);
   const [confirmDialog, setConfirmDialog] = useState<ConfirmAction>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -303,6 +308,14 @@ export default function StockTransferDetails({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => setShowPrint(true)}
+          >
+            <Printer className="h-4 w-4" />
+            {t("common.print")}
+          </Button>
           {transfer.status === "Draft" && (
             <>
               <Button
@@ -476,6 +489,24 @@ export default function StockTransferDetails({
         errorMessage={errorMessage}
         onConfirm={handleConfirm}
       />
+
+      {showPrint && (
+        <div className="fixed inset-0 z-50 bg-white overflow-auto">
+          <div className="no-print flex items-center justify-between p-4 border-b bg-gray-50">
+            <h3 className="font-semibold text-lg">{t("print.preview")}</h3>
+            <div className="flex gap-2">
+              <Button onClick={handlePrint} className="gap-2">
+                <Printer className="h-4 w-4" />
+                {t("print.print")}
+              </Button>
+              <Button variant="outline" onClick={() => setShowPrint(false)}>
+                {t("print.close")}
+              </Button>
+            </div>
+          </div>
+          <StockTransferPrint transfer={transfer} />
+        </div>
+      )}
     </div>
   );
 }

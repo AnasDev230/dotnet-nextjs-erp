@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, Pencil, Loader2 } from "lucide-react";
+import { ArrowRight, Pencil, Loader2, Printer } from "lucide-react";
 import {
   Button,
   Card,
@@ -22,6 +23,8 @@ import { useSalesOrder } from "@/features/sales/hooks/useSalesOrder";
 import { useTranslation } from "@/hooks/use-translation";
 import type { SalesOrderStatus } from "@/features/sales/types/sales-order.types";
 import { formatCurrency, formatDate } from "@/lib/formatters";
+import { SalesOrderPrint } from "@/components/print/sales-order-print";
+import { usePrint } from "@/hooks/use-print";
 
 const statusBadgeVariant: Record<
   SalesOrderStatus,
@@ -57,6 +60,8 @@ export default function SalesOrderDetailPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const { t, language } = useTranslation();
+  const { handlePrint } = usePrint();
+  const [showPrint, setShowPrint] = useState(false);
   const { data: order, isLoading, error } = useSalesOrder(params.id);
 
   if (isLoading) {
@@ -99,12 +104,22 @@ export default function SalesOrderDetailPage() {
             <p className="text-muted-foreground text-sm">{t("sales.orders.details")}</p>
           </div>
         </div>
-        <Link href={`/sales/orders/${order.id}/edit`}>
-          <Button className="gap-2">
-            <Pencil className="h-4 w-4" />
-            {t("common.edit")}
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={() => setShowPrint(true)}
+          >
+            <Printer className="h-4 w-4" />
+            {t("common.print")}
           </Button>
-        </Link>
+          <Link href={`/sales/orders/${order.id}/edit`}>
+            <Button className="gap-2">
+              <Pencil className="h-4 w-4" />
+              {t("common.edit")}
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <Card className="border-border bg-card">
@@ -246,6 +261,24 @@ export default function SalesOrderDetailPage() {
           </div>
         </CardContent>
       </Card>
+
+      {showPrint && (
+        <div className="fixed inset-0 z-50 bg-white overflow-auto">
+          <div className="no-print flex items-center justify-between p-4 border-b bg-gray-50">
+            <h3 className="font-semibold text-lg">{t("print.preview")}</h3>
+            <div className="flex gap-2">
+              <Button onClick={handlePrint} className="gap-2">
+                <Printer className="h-4 w-4" />
+                {t("print.print")}
+              </Button>
+              <Button variant="outline" onClick={() => setShowPrint(false)}>
+                {t("print.close")}
+              </Button>
+            </div>
+          </div>
+          <SalesOrderPrint order={order} />
+        </div>
+      )}
     </div>
   );
 }
