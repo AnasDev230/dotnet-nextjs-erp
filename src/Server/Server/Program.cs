@@ -175,11 +175,15 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
+        var seedDemoData = app.Environment.IsDevelopment()
+            && (builder.Configuration.GetValue<bool?>("Seed:DemoData") ?? false);
+
         await DatabaseSeeder.SeedAsync(
             services.GetRequiredService<AppDbContext>(),
             services.GetRequiredService<UserManager<ApplicationUser>>(),
             services.GetRequiredService<RoleManager<ApplicationRole>>(),
-            logger);
+            logger,
+            seedDemoData);
     }
     catch (Exception ex)
     {
@@ -226,7 +230,11 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowNextJsClient");
 
-app.UseRateLimiter();
+// Rate limiting is disabled in Development so local testing is not throttled.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseRateLimiter();
+}
 
 app.UseAuthentication();
 app.UseAuthorization();

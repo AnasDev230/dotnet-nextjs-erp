@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
 import { Loader2, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +27,10 @@ export default function LoginForm() {
 
   const loginMutation = useLogin();
 
+  const isRateLimited =
+    loginMutation.error instanceof AxiosError &&
+    loginMutation.error.response?.status === 429;
+
   const onSubmit = (data: LoginFormData) => {
     loginMutation.mutate(data);
   };
@@ -35,7 +40,9 @@ export default function LoginForm() {
       {loginMutation.isError && (
         <Alert variant="destructive">
           <AlertDescription>
-            {loginMutation.error?.message || t("auth.loginFailed")}
+            {isRateLimited
+              ? t("auth.tooManyAttempts")
+              : loginMutation.error?.message || t("auth.loginFailed")}
           </AlertDescription>
         </Alert>
       )}

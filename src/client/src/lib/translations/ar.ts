@@ -80,6 +80,7 @@ export const ar: Record<string, string> = {
   "auth.loginTitle": "تسجيل الدخول",
   "auth.loginDescription": "أدخل بيانات الدخول للوصول إلى النظام",
   "auth.loginFailed": "فشل تسجيل الدخول. تحقق من البيانات.",
+  "auth.tooManyAttempts": "محاولات كثيرة جداً. يرجى الانتظار دقيقة ثم المحاولة مرة أخرى.",
   "auth.loggingIn": "جاري تسجيل الدخول...",
   "auth.password": "كلمة المرور",
 

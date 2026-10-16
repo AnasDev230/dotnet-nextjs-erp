@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "@/hooks/use-translation";
 import { useToast } from "@/hooks/use-toast";
@@ -24,7 +25,14 @@ export function useLogin() {
       router.push("/");
     },
     onError: (err) => {
-      error(t("auth.loginFailed"), getErrorMessage(err) || undefined);
+      const isRateLimited =
+        err instanceof AxiosError && err.response?.status === 429;
+      error(
+        t("auth.loginFailed"),
+        isRateLimited
+          ? t("auth.tooManyAttempts")
+          : getErrorMessage(err) || undefined
+      );
     },
   });
 }

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Server.Core.Constants;
 using Server.Features.Sales;
+using Server.Infrastructure.Persistence.DemoData;
 
 namespace Server.Infrastructure.Persistence;
 
@@ -12,7 +13,8 @@ public static class DatabaseSeeder
         AppDbContext context,
         UserManager<ApplicationUser> userManager,
         RoleManager<ApplicationRole> roleManager,
-        ILogger logger)
+        ILogger logger,
+        bool seedDemoData = false)
     {
         try
         {
@@ -20,6 +22,9 @@ public static class DatabaseSeeder
             await SeedRolesAsync(roleManager, logger);
             await SeedSuperAdminAsync(userManager, logger);
             await SeedTaxRatesAsync(context, logger);
+
+            if (seedDemoData)
+                await DemoDataSeeder.SeedAsync(context, userManager, roleManager, logger);
 
             logger.LogInformation("Database seeding completed successfully.");
         }

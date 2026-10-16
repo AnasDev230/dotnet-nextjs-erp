@@ -80,6 +80,7 @@ export const en: Record<string, string> = {
   "auth.loginTitle": "Sign In",
   "auth.loginDescription": "Enter your credentials to access the system",
   "auth.loginFailed": "Login failed. Please check your credentials.",
+  "auth.tooManyAttempts": "Too many attempts. Please wait a minute and try again.",
   "auth.loggingIn": "Signing in...",
   "auth.password": "Password",
 

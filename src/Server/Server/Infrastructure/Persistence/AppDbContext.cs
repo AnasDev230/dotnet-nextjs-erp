@@ -79,6 +79,13 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     private readonly string? _currentIpAddress;
     private readonly string? _currentUserAgent;
 
+    /// <summary>
+    /// When false, automatic audit-log generation and CreatedAt overwriting are
+    /// disabled. Used exclusively by demo/data seeding so historical timestamps
+    /// are preserved and no audit rows are produced for bulk inserts.
+    /// </summary>
+    public bool AuditEnabled { get; set; } = true;
+
     public AppDbContext(
         DbContextOptions<AppDbContext> options,
         ICurrentUserService currentUserService,
@@ -195,7 +202,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entity.CreatedAt = DateTime.UtcNow;
+                        if (AuditEnabled)
+                            entity.CreatedAt = DateTime.UtcNow;
                         break;
 
                     case EntityState.Modified:
@@ -213,6 +221,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
 
     private void AddAuditEntries()
     {
+        if (!AuditEnabled) return;
+
         var entries = ChangeTracker.Entries()
             .Where(e => e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted)
             .Where(e => e.Entity is not AuditLog)  // Prevent infinite loop
