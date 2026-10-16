@@ -43,7 +43,7 @@ export function NotificationIcon({ type, className }: NotificationIconProps) {
     <span
       className={cn(
         "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
-        config.colorClass,
+        config?.colorClass,
         className
       )}
     >

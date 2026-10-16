@@ -1,3 +1,4 @@
+using Server.Core.Common;
 using Server.Features.Audit.Entities;
 using Server.Features.Audit.Enums;
 using Server.Features.Notifications.Entities;
@@ -11,10 +12,6 @@ public partial class DemoDataSeeder
     {
         if (_users.Count == 0)
             return;
-
-        var entityPool = new Guid[_products.Count + _invoices.Count];
-        for (var i = 0; i < _products.Count; i++) entityPool[i] = _products[i].Id;
-        for (var i = 0; i < _invoices.Count; i++) entityPool[_products.Count + i] = _invoices[i].Id;
 
         foreach (var user in _users)
         {
@@ -31,7 +28,7 @@ public partial class DemoDataSeeder
                     Type = type,
                     Title = DemoDataCatalog.NotificationTitles[(int)type],
                     Message = BuildNotificationMessage(type),
-                    EntityId = entityPool.Length > 0 ? Pick(entityPool) : null,
+                    EntityId = ResolveNotificationEntityId(type),
                     IsRead = isRead,
                     ReadAt = isRead ? createdAt.AddHours(Int(1, 48)) : null,
                     CreatedAt = createdAt,
@@ -40,6 +37,21 @@ public partial class DemoDataSeeder
             }
         }
     }
+
+    private Guid? ResolveNotificationEntityId(NotificationType type) => type switch
+    {
+        NotificationType.LowStock => PickId(_products),
+        NotificationType.InvoiceDueSoon or NotificationType.InvoiceOverdue => PickId(_invoices),
+        NotificationType.PurchaseOrderSubmitted or NotificationType.PurchaseOrderApproved => PickId(_purchaseOrders),
+        NotificationType.SalesOrderConfirmed => PickId(_confirmedOrders),
+        NotificationType.GoodsReceiptCompleted => PickId(_goodsReceipts),
+        NotificationType.StockTransferApproved => PickId(_stockTransfers),
+        NotificationType.SupplierInvoiceReceived => PickId(_supplierInvoices),
+        _ => null
+    };
+
+    private Guid? PickId<T>(IReadOnlyList<T> list) where T : BaseEntity =>
+        list.Count > 0 ? Pick(list).Id : null;
 
     private string BuildNotificationMessage(NotificationType type) => type switch
     {

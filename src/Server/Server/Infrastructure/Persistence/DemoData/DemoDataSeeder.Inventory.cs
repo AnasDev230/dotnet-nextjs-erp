@@ -6,6 +6,8 @@ namespace Server.Infrastructure.Persistence.DemoData;
 
 public partial class DemoDataSeeder
 {
+    private readonly List<StockTransfer> _stockTransfers = new();
+
     private void SeedCategories()
     {
         foreach (var name in DemoDataCatalog.CategoryNames)
@@ -140,6 +142,7 @@ public partial class DemoDataSeeder
             }
 
             _context.StockTransfers.Add(transfer);
+            _stockTransfers.Add(transfer);
         }
     }
 

@@ -8,6 +8,7 @@ public partial class DemoDataSeeder
 {
     private readonly List<PurchaseOrder> _purchaseOrders = new();
     private readonly Dictionary<Guid, List<PoItem>> _poItems = new();
+    private readonly List<SupplierInvoice> _supplierInvoices = new();
 
     private Task SeedPurchasingAsync()
     {
@@ -250,6 +251,7 @@ public partial class DemoDataSeeder
             invoice.Status = ResolveSupplierInvoiceStatus(status, invoice.PaidAmount, net);
 
             _context.SupplierInvoices.Add(invoice);
+            _supplierInvoices.Add(invoice);
         }
     }
 

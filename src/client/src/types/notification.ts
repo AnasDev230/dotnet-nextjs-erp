@@ -1,14 +1,14 @@
 export enum NotificationType {
-  LowStock = 0,
-  InvoiceDueSoon = 1,
-  InvoiceOverdue = 2,
-  PurchaseOrderSubmitted = 3,
-  PurchaseOrderApproved = 4,
-  SalesOrderConfirmed = 5,
-  GoodsReceiptCompleted = 6,
-  StockTransferApproved = 7,
-  SupplierInvoiceReceived = 8,
-  System = 9,
+  LowStock = "LowStock",
+  InvoiceDueSoon = "InvoiceDueSoon",
+  InvoiceOverdue = "InvoiceOverdue",
+  PurchaseOrderSubmitted = "PurchaseOrderSubmitted",
+  PurchaseOrderApproved = "PurchaseOrderApproved",
+  SalesOrderConfirmed = "SalesOrderConfirmed",
+  GoodsReceiptCompleted = "GoodsReceiptCompleted",
+  StockTransferApproved = "StockTransferApproved",
+  SupplierInvoiceReceived = "SupplierInvoiceReceived",
+  System = "System",
 }
 
 export interface NotificationItem {

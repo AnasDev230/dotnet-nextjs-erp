@@ -13,13 +13,13 @@ export function getNotificationUrl(
 
   const urlMap: Record<NotificationType, (id: string) => string> = {
     [NotificationType.LowStock]: (id) => `/inventory/products/${id}`,
-    [NotificationType.InvoiceDueSoon]: (id) => `/sales/invoices/${id}`,
-    [NotificationType.InvoiceOverdue]: (id) => `/sales/invoices/${id}`,
+    [NotificationType.InvoiceDueSoon]: (id) => `/finance/invoices/${id}`,
+    [NotificationType.InvoiceOverdue]: (id) => `/finance/invoices/${id}`,
     [NotificationType.PurchaseOrderSubmitted]: (id) => `/purchasing/orders/${id}`,
     [NotificationType.PurchaseOrderApproved]: (id) => `/purchasing/orders/${id}`,
     [NotificationType.SalesOrderConfirmed]: (id) => `/sales/orders/${id}`,
     [NotificationType.GoodsReceiptCompleted]: (id) =>
-      `/purchasing/goods-receipts/${id}`,
+      `/purchasing/receipts/${id}`,
     [NotificationType.StockTransferApproved]: (id) =>
       `/inventory/stock-transfers/${id}`,
     [NotificationType.SupplierInvoiceReceived]: (id) =>
