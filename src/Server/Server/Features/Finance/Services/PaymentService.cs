@@ -26,6 +26,11 @@ public class PaymentService : IPaymentService
         _currentUserService = currentUserService;
     }
 
+    public async Task<PagedResult<PaymentListResponse>> GetAllAsync(
+        int page, int pageSize, string? searchTerm,
+        PaymentMethod? method, DateOnly? fromDate, DateOnly? toDate)
+        => await _paymentRepository.GetAllAsync(page, pageSize, searchTerm, method, fromDate, toDate);
+
     public async Task<PaymentResponse> CreateAsync(Guid invoiceId, CreatePaymentRequest request)
     {
         var invoice = await _invoiceRepository.GetEntityByIdAsync(invoiceId)

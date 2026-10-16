@@ -22,3 +22,17 @@ export interface PaymentListItem {
   notes: string | null;
   createdAt: string;
 }
+
+export interface PaymentList {
+  id: string;
+  invoiceId: string;
+  invoiceNumber: string;
+  customerName: string;
+  amount: number;
+  paymentMethod: PaymentMethod;
+  paymentDate: string;
+  reference: string | null;
+  notes: string | null;
+  createdAt: string;
+}
+

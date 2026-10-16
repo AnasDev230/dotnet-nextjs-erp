@@ -76,6 +76,7 @@ const inventoryItems: SubNavItem[] = [
 
 const financeItems: SubNavItem[] = [
   { labelKey: "nav.invoices", href: "/finance/invoices", icon: ReceiptText },
+  { labelKey: "nav.payments", href: "/finance/payments", icon: Banknote },
 ];
 
 const purchasingItems: SubNavItem[] = [

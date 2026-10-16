@@ -4,10 +4,19 @@ import { useToast } from "@/hooks/use-toast";
 import { getErrorMessage } from "@/lib/error-handler";
 import {
   deletePayment,
+  fetchPayments,
   fetchPaymentsForInvoice,
   recordPayment,
+  type FetchPaymentsParams,
 } from "../api/payments";
 import type { CreatePaymentRequest } from "../types/payment.types";
+
+export function usePaymentsList(filters: FetchPaymentsParams = {}) {
+  return useQuery({
+    queryKey: ["payments", "list", filters],
+    queryFn: () => fetchPayments(filters),
+  });
+}
 
 export function usePayments(invoiceId: string | undefined) {
   return useQuery({
