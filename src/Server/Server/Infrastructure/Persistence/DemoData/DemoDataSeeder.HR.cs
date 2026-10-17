@@ -5,6 +5,12 @@ namespace Server.Infrastructure.Persistence.DemoData;
 
 public partial class DemoDataSeeder
 {
+    private static readonly string[] LeaveReasons =
+    {
+        "Family vacation", "Medical treatment", "Personal matters",
+        "Family emergency", "Umrah trip", "Rest and recovery"
+    };
+
     private void SeedDepartments()
     {
         for (var i = 0; i < DemoDataCatalog.DepartmentNames.Length; i++)
@@ -139,6 +145,54 @@ public partial class DemoDataSeeder
             < 98 => AttendanceStatus.Leave,
             _ => AttendanceStatus.HalfDay
         };
+    }
+
+    private void SeedLeaveRequests()
+    {
+        foreach (var employee in _employees)
+        {
+            if (employee.Status == EmployeeStatus.Terminated)
+                continue;
+
+            if (!Chance(60))
+                continue;
+
+            var count = Int(1, 3);
+            for (var i = 0; i < count; i++)
+            {
+                var start = _now.Date.AddDays(-Int(10, 150));
+                var days = Int(1, 8);
+                var end = start.AddDays(days - 1);
+
+                var roll = Int(0, 100);
+                var status = roll < 70 ? LeaveStatus.Approved
+                    : roll < 85 ? LeaveStatus.Pending
+                    : LeaveStatus.Rejected;
+
+                var leave = new LeaveRequest
+                {
+                    EmployeeId = employee.Id,
+                    LeaveType = Pick(new[]
+                    {
+                        LeaveType.Annual, LeaveType.Annual, LeaveType.Sick,
+                        LeaveType.Emergency, LeaveType.Unpaid, LeaveType.Other
+                    }),
+                    StartDate = start,
+                    EndDate = end,
+                    DaysRequested = days,
+                    Status = status,
+                    Reason = Pick(LeaveReasons),
+                    DecisionNote = status == LeaveStatus.Rejected ? "Insufficient leave balance" : null,
+                    ApprovedBy = status == LeaveStatus.Approved ? _adminId : null,
+                    ApprovedAt = status == LeaveStatus.Approved ? start.AddDays(-1) : null,
+                    CreatedBy = OwnerId,
+                    CreatedAt = start.AddDays(-Int(2, 7))
+                };
+
+                _leaveRequests.Add(leave);
+                _context.LeaveRequests.Add(leave);
+            }
+        }
     }
 
     private void SeedPayroll()

@@ -64,6 +64,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, 
     public DbSet<Attendance> AttendanceRecords => Set<Attendance>();
     public DbSet<PayrollRun> PayrollRuns => Set<PayrollRun>();
     public DbSet<PayrollDetail> PayrollDetails => Set<PayrollDetail>();
+    public DbSet<LeaveRequest> LeaveRequests => Set<LeaveRequest>();
 
     // Settings Module
     public DbSet<CompanySettings> CompanySettings => Set<CompanySettings>();

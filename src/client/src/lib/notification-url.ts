@@ -24,6 +24,9 @@ export function getNotificationUrl(
       `/inventory/stock-transfers/${id}`,
     [NotificationType.SupplierInvoiceReceived]: (id) =>
       `/purchasing/supplier-invoices/${id}`,
+    [NotificationType.LeaveRequestSubmitted]: (id) => `/hr/leaves/${id}`,
+    [NotificationType.LeaveRequestApproved]: (id) => `/hr/leaves/${id}`,
+    [NotificationType.LeaveRequestRejected]: (id) => `/hr/leaves/${id}`,
     [NotificationType.System]: () => `/`,
   };
 

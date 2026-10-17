@@ -8,6 +8,9 @@ export enum NotificationType {
   GoodsReceiptCompleted = "GoodsReceiptCompleted",
   StockTransferApproved = "StockTransferApproved",
   SupplierInvoiceReceived = "SupplierInvoiceReceived",
+  LeaveRequestSubmitted = "LeaveRequestSubmitted",
+  LeaveRequestApproved = "LeaveRequestApproved",
+  LeaveRequestRejected = "LeaveRequestRejected",
   System = "System",
 }
 
@@ -34,5 +37,8 @@ export const NOTIFICATION_TYPE_CONFIG: Record<
   [NotificationType.GoodsReceiptCompleted]: { icon: "Package", colorClass: "text-emerald-600 bg-emerald-500/10" },
   [NotificationType.StockTransferApproved]: { icon: "ArrowLeftRight", colorClass: "text-blue-600 bg-blue-500/10" },
   [NotificationType.SupplierInvoiceReceived]: { icon: "Receipt", colorClass: "text-amber-600 bg-amber-500/10" },
+  [NotificationType.LeaveRequestSubmitted]: { icon: "FileText", colorClass: "text-blue-600 bg-blue-500/10" },
+  [NotificationType.LeaveRequestApproved]: { icon: "CheckCircle", colorClass: "text-emerald-600 bg-emerald-500/10" },
+  [NotificationType.LeaveRequestRejected]: { icon: "AlertCircle", colorClass: "text-red-600 bg-red-500/10" },
   [NotificationType.System]: { icon: "Info", colorClass: "text-slate-600 bg-slate-500/10" },
 };

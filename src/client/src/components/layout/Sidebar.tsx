@@ -31,6 +31,7 @@ import {
   Undo2,
   FileSpreadsheet,
   CalendarCheck,
+  CalendarDays,
   Banknote,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/auth-store";
@@ -100,6 +101,7 @@ const hrItems: SubNavItem[] = [
   { labelKey: "nav.departments", href: "/hr/departments", icon: Building2 },
   { labelKey: "nav.employees", href: "/hr/employees", icon: Briefcase },
   { labelKey: "attendance.title", href: "/hr/attendance", icon: CalendarCheck },
+  { labelKey: "leave.title", href: "/hr/leaves", icon: CalendarDays },
   { labelKey: "payroll.title", href: "/hr/payroll", icon: Banknote },
 ];
 

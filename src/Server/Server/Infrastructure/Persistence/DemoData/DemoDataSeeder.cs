@@ -46,6 +46,8 @@ public partial class DemoDataSeeder
     private readonly List<GoodsReceipt> _goodsReceipts = new();
     private readonly Dictionary<(Guid ProductId, Guid WarehouseId), decimal> _stock = new();
 
+    private readonly List<LeaveRequest> _leaveRequests = new();
+
     // ── Document counters ──
     private int _catCounter, _prodCounter, _whCounter, _custCounter, _supCounter;
     private int _empCounter, _soCounter, _qtCounter, _invCounter, _sretCounter;
@@ -130,6 +132,9 @@ public partial class DemoDataSeeder
 
             SeedPayroll();
             await SaveAsync("payroll");
+
+            SeedLeaveRequests();
+            await SaveAsync("leave requests");
 
             SeedNotifications();
             SeedAuditLogs();

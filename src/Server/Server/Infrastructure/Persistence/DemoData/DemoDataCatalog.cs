@@ -118,7 +118,8 @@ internal static class DemoDataCatalog
         "Low stock alert", "Invoice due soon", "Invoice overdue",
         "Purchase order submitted", "Purchase order approved",
         "Sales order confirmed", "Goods receipt completed",
-        "Stock transfer approved", "Supplier invoice received", "System notification"
+        "Stock transfer approved", "Supplier invoice received", "System notification",
+        "Leave request submitted", "Leave request approved", "Leave request rejected"
     };
 
     public static readonly string[] UserAgents =

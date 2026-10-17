@@ -11,5 +11,8 @@ public enum NotificationType : byte
     GoodsReceiptCompleted = 6,
     StockTransferApproved = 7,
     SupplierInvoiceReceived = 8,
-    System = 9
+    System = 9,
+    LeaveRequestSubmitted = 10,
+    LeaveRequestApproved = 11,
+    LeaveRequestRejected = 12
 }

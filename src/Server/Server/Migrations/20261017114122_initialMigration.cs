@@ -1336,6 +1336,45 @@ namespace Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "leave_requests",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EmployeeId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    LeaveType = table.Column<byte>(type: "tinyint", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "date", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "date", nullable: false),
+                    DaysRequested = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<byte>(type: "tinyint", nullable: false),
+                    Reason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    DecisionNote = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    ApprovedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    ApprovedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RowVersion = table.Column<byte[]>(type: "rowversion", rowVersion: true, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_leave_requests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_leave_requests_AspNetUsers_ApprovedBy",
+                        column: x => x.ApprovedBy,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
+                    table.ForeignKey(
+                        name: "FK_leave_requests_employees_EmployeeId",
+                        column: x => x.EmployeeId,
+                        principalTable: "employees",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "payroll_details",
                 columns: table => new
                 {
@@ -1627,6 +1666,26 @@ namespace Server.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_invoices_Status",
                 table: "invoices",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_leave_requests_ApprovedBy",
+                table: "leave_requests",
+                column: "ApprovedBy");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_leave_requests_EmployeeId",
+                table: "leave_requests",
+                column: "EmployeeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_leave_requests_StartDate",
+                table: "leave_requests",
+                column: "StartDate");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_leave_requests_Status",
+                table: "leave_requests",
                 column: "Status");
 
             migrationBuilder.CreateIndex(
@@ -2124,6 +2183,9 @@ namespace Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "InventoryLevels");
+
+            migrationBuilder.DropTable(
+                name: "leave_requests");
 
             migrationBuilder.DropTable(
                 name: "notifications");

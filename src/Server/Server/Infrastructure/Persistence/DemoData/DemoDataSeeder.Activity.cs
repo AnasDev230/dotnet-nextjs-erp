@@ -18,7 +18,7 @@ public partial class DemoDataSeeder
             var count = Int(8, 16);
             for (var i = 0; i < count; i++)
             {
-                var type = (NotificationType)Int(0, 10);
+                var type = (NotificationType)Int(0, 13);
                 var createdAt = DateTimeBefore(29, 1);
                 var isRead = Chance(55);
 
@@ -47,6 +47,7 @@ public partial class DemoDataSeeder
         NotificationType.GoodsReceiptCompleted => PickId(_goodsReceipts),
         NotificationType.StockTransferApproved => PickId(_stockTransfers),
         NotificationType.SupplierInvoiceReceived => PickId(_supplierInvoices),
+        NotificationType.LeaveRequestSubmitted or NotificationType.LeaveRequestApproved or NotificationType.LeaveRequestRejected => PickId(_leaveRequests),
         _ => null
     };
 
@@ -64,6 +65,9 @@ public partial class DemoDataSeeder
         NotificationType.GoodsReceiptCompleted => "A goods receipt has been completed.",
         NotificationType.StockTransferApproved => "A stock transfer has been approved.",
         NotificationType.SupplierInvoiceReceived => "A supplier invoice has been received.",
+        NotificationType.LeaveRequestSubmitted => "An employee leave request is awaiting approval.",
+        NotificationType.LeaveRequestApproved => "A leave request has been approved.",
+        NotificationType.LeaveRequestRejected => "A leave request has been rejected.",
         _ => "System notification."
     };
 

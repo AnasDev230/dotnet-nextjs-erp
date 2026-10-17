@@ -21,4 +21,6 @@ public interface IAttendanceRepository
     Task SoftDeleteAsync(Guid id, Guid userId);
     Task<AttendanceSummaryResponse> GetMonthlySummaryAsync(Guid employeeId, int year, int month);
     Task<List<Attendance>> GetByEmployeeAndMonthAsync(Guid employeeId, int year, int month);
+    Task<List<Attendance>> GetByEmployeeAndDateRangeAsync(Guid employeeId, DateTime startDate, DateTime endDate);
+    Task SoftDeleteRangeAsync(IEnumerable<Guid> ids, Guid userId);
 }

@@ -184,4 +184,28 @@ public class AttendanceRepository : IAttendanceRepository
                         && a.Date.Date <= endDate.Date)
             .ToListAsync();
     }
+
+    public async Task<List<Attendance>> GetByEmployeeAndDateRangeAsync(Guid employeeId, DateTime startDate, DateTime endDate)
+        => await _context.AttendanceRecords
+            .AsNoTracking()
+            .Where(a => a.EmployeeId == employeeId
+                        && a.Date.Date >= startDate.Date
+                        && a.Date.Date <= endDate.Date)
+            .ToListAsync();
+
+    public async Task SoftDeleteRangeAsync(IEnumerable<Guid> ids, Guid userId)
+    {
+        var idList = ids.ToList();
+        if (idList.Count == 0) return;
+
+        var records = await _context.AttendanceRecords
+            .Where(a => idList.Contains(a.Id))
+            .ToListAsync();
+
+        foreach (var record in records)
+        {
+            record.DeletedAt = DateTime.UtcNow;
+            record.UpdatedBy = userId;
+        }
+    }
 }
