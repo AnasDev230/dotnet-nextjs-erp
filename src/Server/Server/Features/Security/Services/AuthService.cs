@@ -45,7 +45,7 @@ public class AuthService : IAuthService
         var roles = await _userManager.GetRolesAsync(user);
 
         var (accessToken, expiresAt) = GenerateAccessToken(user, roles);
-        var refreshToken = await GenerateRefreshTokenAsync(user.Id);
+        var (rawRefreshToken, _) = await GenerateRefreshTokenAsync(user.Id);
 
         user.LastLogin = DateTime.UtcNow;
         await _userManager.UpdateAsync(user);
@@ -53,7 +53,7 @@ public class AuthService : IAuthService
         return new AuthResponse
         {
             AccessToken = accessToken,
-            RefreshToken = refreshToken.Token,
+            RefreshToken = rawRefreshToken,
             ExpiresAt = expiresAt,
             FullName = user.FullName,
             Email = user.Email!,
@@ -63,7 +63,7 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponse> RefreshTokenAsync(RefreshTokenRequest request)
     {
-        var storedToken = await _refreshTokenRepository.GetByTokenAsync(request.RefreshToken);
+        var storedToken = await _refreshTokenRepository.GetByTokenAsync(HashToken(request.RefreshToken));
         if (storedToken is null || !storedToken.IsActive)
             throw new BusinessException("Invalid or expired refresh token.");
 
@@ -77,7 +77,7 @@ public class AuthService : IAuthService
         var roles = await _userManager.GetRolesAsync(user);
 
         var (accessToken, expiresAt) = GenerateAccessToken(user, roles);
-        var newRefreshToken = await GenerateRefreshTokenAsync(user.Id);
+        var (rawRefreshToken, newRefreshToken) = await GenerateRefreshTokenAsync(user.Id);
         storedToken.ReplacedByToken = newRefreshToken.Token;
 
         _refreshTokenRepository.Update(storedToken);
@@ -86,7 +86,7 @@ public class AuthService : IAuthService
         return new AuthResponse
         {
             AccessToken = accessToken,
-            RefreshToken = newRefreshToken.Token,
+            RefreshToken = rawRefreshToken,
             ExpiresAt = expiresAt,
             FullName = user.FullName,
             Email = user.Email!,
@@ -96,7 +96,7 @@ public class AuthService : IAuthService
 
     public async Task RevokeTokenAsync(RevokeTokenRequest request)
     {
-        var storedToken = await _refreshTokenRepository.GetByTokenAsync(request.RefreshToken);
+        var storedToken = await _refreshTokenRepository.GetByTokenAsync(HashToken(request.RefreshToken));
         if (storedToken is null)
             throw new NotFoundException("Refresh token not found.");
 
@@ -133,15 +133,17 @@ public class AuthService : IAuthService
         return (new JwtSecurityTokenHandler().WriteToken(tokenDescriptor), expiresAt);
     }
 
-    private async Task<RefreshToken> GenerateRefreshTokenAsync(Guid userId)
+    private async Task<(string rawToken, RefreshToken token)> GenerateRefreshTokenAsync(Guid userId)
     {
         var randomBytes = new byte[64];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomBytes);
 
+        var rawToken = Convert.ToBase64String(randomBytes);
+
         var refreshToken = new RefreshToken
         {
-            Token = Convert.ToBase64String(randomBytes),
+            Token = HashToken(rawToken),
             UserId = userId,
             ExpiresAt = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays),
             CreatedAt = DateTime.UtcNow
@@ -149,6 +151,12 @@ public class AuthService : IAuthService
 
         await _refreshTokenRepository.CreateAsync(refreshToken);
 
-        return refreshToken;
+        return (rawToken, refreshToken);
+    }
+
+    private static string HashToken(string token)
+    {
+        var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(token));
+        return Convert.ToHexString(hashBytes);
     }
 }

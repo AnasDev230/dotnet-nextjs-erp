@@ -1,5 +1,5 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
-import { setAuthCookie } from "./utils";
+import { clearAuthCookie, setAuthCookie } from "./utils";
 
 const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || "https://localhost:5001/api",
@@ -33,6 +33,7 @@ apiClient.interceptors.response.use(
         if (!refreshToken) {
           localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
+          clearAuthCookie();
           if (typeof window !== "undefined") {
             window.location.href = "/login";
           }
@@ -54,6 +55,7 @@ apiClient.interceptors.response.use(
       } catch {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
+        clearAuthCookie();
         if (typeof window !== "undefined") {
           window.location.href = "/login";
         }
