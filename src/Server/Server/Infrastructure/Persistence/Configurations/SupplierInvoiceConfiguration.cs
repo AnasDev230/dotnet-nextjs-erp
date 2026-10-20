@@ -37,7 +37,9 @@ public class SupplierInvoiceConfiguration : IEntityTypeConfiguration<SupplierInv
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(e => e.SupplierId);
-        builder.HasIndex(e => e.PurchaseOrderId);
+        builder.HasIndex(e => e.PurchaseOrderId)
+            .IsUnique()
+            .HasFilter($"[Status] <> {(int)SupplierInvoiceStatus.Cancelled} AND [DeletedAt] IS NULL");
         builder.HasIndex(e => e.Status);
         builder.HasIndex(e => e.DueDate);
 

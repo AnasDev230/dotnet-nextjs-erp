@@ -133,6 +133,7 @@ public class SalesOrderRepository : ISalesOrderRepository
         // Format: SO-YYYY-XXXX (e.g., SO-2026-0001)
         var year = DateTime.UtcNow.Year;
         var lastOrder = await _context.SalesOrders
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .Where(o => o.OrderNumber.StartsWith($"SO-{year}-"))
             .OrderByDescending(o => o.OrderNumber)

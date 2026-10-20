@@ -116,6 +116,7 @@ public class GoodsReceiptRepository : IGoodsReceiptRepository
         // Format: GRN-YYYY-XXXX (e.g., GRN-2026-0001)
         var year = DateTime.UtcNow.Year;
         var lastGrn = await _context.GoodsReceipts
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .Where(gr => gr.GrnNumber.StartsWith($"GRN-{year}-"))
             .OrderByDescending(gr => gr.GrnNumber)

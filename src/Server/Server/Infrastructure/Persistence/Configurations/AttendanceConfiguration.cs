@@ -29,9 +29,10 @@ public class AttendanceConfiguration : IEntityTypeConfiguration<Attendance>
         builder.Property(e => e.Notes)
             .HasMaxLength(500);
 
-        // Unique: one attendance per employee per day
+        // Unique: one active attendance per employee per day
         builder.HasIndex(e => new { e.EmployeeId, e.Date })
-            .IsUnique();
+            .IsUnique()
+            .HasFilter("[DeletedAt] IS NULL");
 
         builder.HasOne(e => e.Employee)
             .WithMany()

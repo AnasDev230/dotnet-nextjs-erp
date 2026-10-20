@@ -16,7 +16,8 @@ public class PayrollRunConfiguration : IEntityTypeConfiguration<PayrollRun>
             .IsRequired();
 
         builder.HasIndex(e => e.RunNumber)
-            .IsUnique();
+            .IsUnique()
+            .HasFilter("[DeletedAt] IS NULL");
 
         builder.Property(e => e.Month)
             .IsRequired();
@@ -38,9 +39,10 @@ public class PayrollRunConfiguration : IEntityTypeConfiguration<PayrollRun>
         builder.Property(e => e.Notes)
             .HasMaxLength(1000);
 
-        // Unique: one payroll run per (Year, Month)
+        // Unique: one active payroll run per (Year, Month)
         builder.HasIndex(e => new { e.Year, e.Month })
-            .IsUnique();
+            .IsUnique()
+            .HasFilter("[DeletedAt] IS NULL");
 
         builder.HasIndex(e => e.Status);
 

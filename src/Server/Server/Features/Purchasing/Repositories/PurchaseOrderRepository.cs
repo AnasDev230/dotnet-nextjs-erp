@@ -127,6 +127,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
         // Format: PO-YYYY-XXXX (e.g., PO-2026-0001)
         var year = DateTime.UtcNow.Year;
         var lastPo = await _context.PurchaseOrders
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .Where(po => po.PoNumber.StartsWith($"PO-{year}-"))
             .OrderByDescending(po => po.PoNumber)

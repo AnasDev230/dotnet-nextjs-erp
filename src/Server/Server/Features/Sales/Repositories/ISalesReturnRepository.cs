@@ -16,7 +16,7 @@ public interface ISalesReturnRepository
     Task<SalesReturn?> GetEntityWithItemsByIdAsync(Guid id);
     Task<string> GenerateReturnNumberAsync();
     Task<List<SalesOrderItem>> GetOriginalOrderItemsAsync(Guid orderId);
-    Task<Dictionary<Guid, decimal>> GetReturnedQuantitiesAsync(Guid invoiceId);
+    Task<Dictionary<Guid, decimal>> GetReturnedQuantitiesAsync(Guid invoiceId, Guid? excludeReturnId = null);
     Task AddAsync(SalesReturn salesReturn);
     Task SoftDeleteAsync(Guid id, Guid userId);
 }

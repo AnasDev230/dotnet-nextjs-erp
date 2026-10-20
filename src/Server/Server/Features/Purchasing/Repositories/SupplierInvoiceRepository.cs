@@ -113,6 +113,7 @@ public class SupplierInvoiceRepository : ISupplierInvoiceRepository
         // Format: SINV-YYYY-XXXX (e.g., SINV-2026-0001)
         var year = DateTime.UtcNow.Year;
         var lastInvoice = await _context.SupplierInvoices
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .Where(inv => inv.InvoiceNumber.StartsWith($"SINV-{year}-"))
             .OrderByDescending(inv => inv.InvoiceNumber)
@@ -139,7 +140,16 @@ public class SupplierInvoiceRepository : ISupplierInvoiceRepository
         return await _context.SupplierInvoices
             .AsNoTracking()
             .AnyAsync(inv => inv.PurchaseOrderId == purchaseOrderId
+                              && inv.Status != SupplierInvoiceStatus.Cancelled
                               && (!excludeId.HasValue || inv.Id != excludeId.Value));
+    }
+
+    public async Task<bool> HasReceivedGoodsForPurchaseOrderAsync(Guid purchaseOrderId)
+    {
+        return await _context.GoodsReceipts
+            .AsNoTracking()
+            .AnyAsync(gr => gr.PurchaseOrderId == purchaseOrderId
+                            && gr.Status == GoodsReceiptStatus.Received);
     }
 
     public async Task SoftDeleteAsync(Guid id, Guid userId)

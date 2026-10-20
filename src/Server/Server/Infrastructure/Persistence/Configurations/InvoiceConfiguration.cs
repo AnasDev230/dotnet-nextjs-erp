@@ -23,9 +23,10 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.Property(e => e.OrderId)
             .IsRequired();
 
-        // One-to-One with sales_orders
+        // One active invoice per sales order; cancelled invoices can be replaced.
         builder.HasIndex(e => e.OrderId)
-            .IsUnique();
+            .IsUnique()
+            .HasFilter($"[Status] <> {(int)InvoiceStatus.Cancelled} AND [DeletedAt] IS NULL");
 
         builder.Property(e => e.CustomerId)
             .IsRequired();

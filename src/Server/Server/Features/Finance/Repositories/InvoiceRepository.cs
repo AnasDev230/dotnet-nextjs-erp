@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Server.Core.Common;
 using Server.Features.Finance.Enums;
 using Server.Features.Finance.Models;
+using Server.Features.Sales.Enums;
 using Server.Infrastructure.Persistence;
 
 namespace Server.Features.Finance.Repositories;
@@ -96,7 +97,14 @@ public class InvoiceRepository : IInvoiceRepository
     {
         return await _context.Invoices
             .AsNoTracking()
-            .FirstOrDefaultAsync(i => i.OrderId == orderId);
+            .FirstOrDefaultAsync(i => i.OrderId == orderId && i.Status != InvoiceStatus.Cancelled);
+    }
+
+    public async Task<bool> HasActiveReturnsAsync(Guid invoiceId)
+    {
+        return await _context.SalesReturns
+            .AsNoTracking()
+            .AnyAsync(r => r.InvoiceId == invoiceId && r.Status != ReturnStatus.Cancelled);
     }
 
     public async Task<Invoice?> GetEntityByIdAsync(Guid id)
@@ -111,6 +119,7 @@ public class InvoiceRepository : IInvoiceRepository
         // Format: INV-YYYY-XXXX (e.g., INV-2026-0001)
         var year = DateTime.UtcNow.Year;
         var lastInvoice = await _context.Invoices
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .Where(i => i.InvoiceNumber.StartsWith($"INV-{year}-"))
             .OrderByDescending(i => i.InvoiceNumber)

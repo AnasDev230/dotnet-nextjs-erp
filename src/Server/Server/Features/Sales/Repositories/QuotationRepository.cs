@@ -112,6 +112,7 @@ public class QuotationRepository : IQuotationRepository
     {
         var year = DateTime.UtcNow.Year;
         var lastQuotation = await _context.Quotations
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .Where(q => q.QuotationNumber.StartsWith($"QT-{year}-"))
             .OrderByDescending(q => q.QuotationNumber)

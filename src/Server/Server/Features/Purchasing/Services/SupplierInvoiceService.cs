@@ -71,7 +71,10 @@ public class SupplierInvoiceService : ISupplierInvoiceService
         if (supplier.Status != SupplierStatus.Active)
             throw new BusinessException("لا يمكن إنشاء فاتورة مورد لمورد موقوف");
 
-        // 3. Validate no existing invoice for this PO
+        if (!await _repository.HasReceivedGoodsForPurchaseOrderAsync(request.PurchaseOrderId))
+            throw new BusinessException("لا يمكن إنشاء فاتورة مورد قبل استلام أمر الشراء");
+
+        // 3. Validate no active invoice for this PO
         if (await _repository.HasInvoiceForPurchaseOrderAsync(request.PurchaseOrderId))
             throw new BusinessException("يوجد بالفعل فاتورة مورد لأمر الشراء هذا");
 

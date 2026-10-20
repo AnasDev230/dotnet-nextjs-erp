@@ -138,6 +138,7 @@ public class SalesReturnRepository : ISalesReturnRepository
         // Format: SRET-YYYY-XXXX (e.g., SRET-2026-0001)
         var year = DateTime.UtcNow.Year;
         var lastReturn = await _context.SalesReturns
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .Where(r => r.ReturnNumber.StartsWith($"SRET-{year}-"))
             .OrderByDescending(r => r.ReturnNumber)
@@ -162,12 +163,15 @@ public class SalesReturnRepository : ISalesReturnRepository
             .ToListAsync();
     }
 
-    public async Task<Dictionary<Guid, decimal>> GetReturnedQuantitiesAsync(Guid invoiceId)
+    public async Task<Dictionary<Guid, decimal>> GetReturnedQuantitiesAsync(Guid invoiceId, Guid? excludeReturnId = null)
     {
         var results = await _context.SalesReturnItems
             .AsNoTracking()
             .Where(i => i.SalesReturn.InvoiceId == invoiceId
-                        && i.SalesReturn.Status == ReturnStatus.Completed)
+                        && (i.SalesReturn.Status == ReturnStatus.Submitted
+                            || i.SalesReturn.Status == ReturnStatus.Approved
+                            || i.SalesReturn.Status == ReturnStatus.Completed)
+                        && (!excludeReturnId.HasValue || i.SalesReturn.Id != excludeReturnId.Value))
             .GroupBy(i => i.ProductId)
             .Select(g => new { ProductId = g.Key, Total = g.Sum(x => x.Quantity) })
             .ToListAsync();

@@ -120,6 +120,7 @@ public class StockTransferRepository : IStockTransferRepository
         // Format: TRF-YYYY-XXXX (e.g., TRF-2026-0001)
         var year = DateTime.UtcNow.Year;
         var lastTransfer = await _context.StockTransfers
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .Where(t => t.TransferNumber.StartsWith($"TRF-{year}-"))
             .OrderByDescending(t => t.TransferNumber)

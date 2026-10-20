@@ -139,6 +139,7 @@ public class PurchaseReturnRepository : IPurchaseReturnRepository
         // Format: PRET-YYYY-XXXX (e.g., PRET-2026-0001)
         var year = DateTime.UtcNow.Year;
         var lastReturn = await _context.PurchaseReturns
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .Where(r => r.ReturnNumber.StartsWith($"PRET-{year}-"))
             .OrderByDescending(r => r.ReturnNumber)
@@ -166,12 +167,15 @@ public class PurchaseReturnRepository : IPurchaseReturnRepository
             .FirstOrDefaultAsync(gr => gr.Id == grnId);
     }
 
-    public async Task<Dictionary<Guid, decimal>> GetReturnedQuantitiesAsync(Guid grnId)
+    public async Task<Dictionary<Guid, decimal>> GetReturnedQuantitiesAsync(Guid grnId, Guid? excludeReturnId = null)
     {
         var results = await _context.PurchaseReturnItems
             .AsNoTracking()
             .Where(i => i.PurchaseReturn.GoodsReceiptId == grnId
-                        && i.PurchaseReturn.Status == ReturnStatus.Completed)
+                        && (i.PurchaseReturn.Status == ReturnStatus.Submitted
+                            || i.PurchaseReturn.Status == ReturnStatus.Approved
+                            || i.PurchaseReturn.Status == ReturnStatus.Completed)
+                        && (!excludeReturnId.HasValue || i.PurchaseReturn.Id != excludeReturnId.Value))
             .GroupBy(i => i.ProductId)
             .Select(g => new { ProductId = g.Key, Total = g.Sum(x => x.Quantity) })
             .ToListAsync();

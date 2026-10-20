@@ -12,7 +12,7 @@ using Server.Infrastructure.Persistence;
 namespace Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261017114122_initialMigration")]
+    [Migration("20261020150251_initialMigration")]
     partial class initialMigration
     {
         /// <inheritdoc />
@@ -273,7 +273,8 @@ namespace Server.Migrations
                     b.HasIndex("IssueDate");
 
                     b.HasIndex("OrderId")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[Status] <> 4 AND [DeletedAt] IS NULL");
 
                     b.HasIndex("Status");
 
@@ -406,7 +407,8 @@ namespace Server.Migrations
                     b.HasIndex("Status");
 
                     b.HasIndex("EmployeeId", "Date")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[DeletedAt] IS NULL");
 
                     b.ToTable("attendance", (string)null);
                 });
@@ -868,12 +870,14 @@ namespace Server.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("RunNumber")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[DeletedAt] IS NULL");
 
                     b.HasIndex("Status");
 
                     b.HasIndex("Year", "Month")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[DeletedAt] IS NULL");
 
                     b.ToTable("payroll_runs", (string)null);
                 });
@@ -2079,7 +2083,9 @@ namespace Server.Migrations
                     b.HasIndex("InvoiceNumber")
                         .IsUnique();
 
-                    b.HasIndex("PurchaseOrderId");
+                    b.HasIndex("PurchaseOrderId")
+                        .IsUnique()
+                        .HasFilter("[Status] <> 4 AND [DeletedAt] IS NULL");
 
                     b.HasIndex("Status");
 

@@ -318,35 +318,7 @@ public class SalesOrderService : ISalesOrderService
     /// MidpointRounding.AwayFromZero at 2 decimal places.
     /// </summary>
     private void CalculateAmounts(SalesOrder order, decimal? taxRate)
-    {
-        // 1. Calculate each line total (round each line)
-        foreach (var item in order.Items)
-        {
-            var lineGross = item.Quantity * item.UnitPrice;
-            var lineDiscount = lineGross * (item.DiscountPct / 100m);
-            item.LineTotal = Math.Round(lineGross - lineDiscount, 2, MidpointRounding.AwayFromZero);
-        }
-
-        // 2. Subtotal = sum of line totals
-        var subtotal = order.Items.Sum(i => i.LineTotal);
-
-        // 3. Order discount
-        order.DiscountAmount = Math.Round(subtotal * (order.DiscountPct / 100m), 2, MidpointRounding.AwayFromZero);
-
-        // 4. Taxable amount
-        var taxableAmount = subtotal - order.DiscountAmount;
-
-        // 5. Tax (snapshot the rate on the order)
-        var taxPct = taxRate ?? 0m;
-        order.TaxPct = taxPct;
-        order.TaxAmount = Math.Round(taxableAmount * (taxPct / 100m), 2, MidpointRounding.AwayFromZero);
-
-        // 6. Net amount
-        order.NetAmount = taxableAmount + order.TaxAmount;
-
-        // 7. Keep TotalAmount = NetAmount for backward compatibility
-        order.TotalAmount = order.NetAmount;
-    }
+        => SalesOrderCalculator.Calculate(order, taxRate ?? 0m);
 
     /// <summary>
     /// Phase 3: Read-only availability check against a specific warehouse.

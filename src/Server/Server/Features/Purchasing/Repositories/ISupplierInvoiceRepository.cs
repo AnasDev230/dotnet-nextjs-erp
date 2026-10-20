@@ -14,5 +14,6 @@ public interface ISupplierInvoiceRepository
     Task<string> GenerateInvoiceNumberAsync();
     Task AddAsync(SupplierInvoice invoice);
     Task<bool> HasInvoiceForPurchaseOrderAsync(Guid purchaseOrderId, Guid? excludeId = null);
+    Task<bool> HasReceivedGoodsForPurchaseOrderAsync(Guid purchaseOrderId);
     Task SoftDeleteAsync(Guid id, Guid userId);
 }

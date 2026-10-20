@@ -18,8 +18,13 @@ namespace Server.Features.Inventory.Services;
 public class InventoryReservationService : IInventoryReservationService
 {
     private const string SalesOrderReference = "SalesOrder";
+    private const string InvoiceReference = "Invoice";
     private const string ReservationMovement = "SalesReservation";
     private const string ReleaseMovement = "SalesRelease";
+    private const string SaleMovement = "Sale";
+    private const string SaleReversalMovement = "SaleReversal";
+
+    private sealed record NetReservation(Guid ProductId, Guid WarehouseId, decimal Quantity);
 
     private readonly AppDbContext _context;
     private readonly INotificationService _notificationService;
@@ -103,23 +108,25 @@ public class InventoryReservationService : IInventoryReservationService
 
     public async Task ReleaseStockAsync(Guid orderId)
     {
-        var reservations = await _context.StockMovements
-            .Where(m => m.ReferenceType == SalesOrderReference
-                        && m.ReferenceId == orderId
-                        && m.MovementType == ReservationMovement)
-            .ToListAsync();
+        var reservations = await GetNetReservationsAsync(orderId);
 
         foreach (var reservation in reservations)
         {
             var level = await _context.InventoryLevels
-                .FirstOrDefaultAsync(l => l.ProductId == reservation.ProductId && l.WarehouseId == reservation.WarehouseId);
+                .FirstOrDefaultAsync(l => l.ProductId == reservation.ProductId && l.WarehouseId == reservation.WarehouseId)
+                ?? throw new BusinessException(
+                    $"Inventory level not found for product {reservation.ProductId} in warehouse {reservation.WarehouseId}.");
 
-            if (level is not null)
+            if (level.QuantityReserved < reservation.Quantity)
             {
-                level.QuantityReserved = Math.Max(0, level.QuantityReserved - reservation.Quantity);
-                level.LastMovement = DateTime.UtcNow;
-                level.UpdatedBy = _currentUserService.UserId;
+                throw new BusinessException(
+                    $"Reserved quantity is lower than the quantity to release for product {reservation.ProductId}. " +
+                    $"Reserved: {level.QuantityReserved}, To release: {reservation.Quantity}.");
             }
+
+            level.QuantityReserved -= reservation.Quantity;
+            level.LastMovement = DateTime.UtcNow;
+            level.UpdatedBy = _currentUserService.UserId;
 
             _context.StockMovements.Add(new StockMovement
             {
@@ -136,5 +143,152 @@ public class InventoryReservationService : IInventoryReservationService
         }
 
         await _context.SaveChangesAsync();
+    }
+
+    public async Task CommitReservationAsync(Guid orderId, Guid invoiceId)
+    {
+        var alreadyCommitted = await _context.StockMovements
+            .AnyAsync(m => m.ReferenceType == InvoiceReference
+                           && m.ReferenceId == invoiceId
+                           && m.MovementType == SaleMovement);
+
+        if (alreadyCommitted)
+            return;
+
+        var reservations = await GetNetReservationsAsync(orderId);
+
+        foreach (var reservation in reservations)
+        {
+            var level = await _context.InventoryLevels
+                .FirstOrDefaultAsync(l => l.ProductId == reservation.ProductId && l.WarehouseId == reservation.WarehouseId)
+                ?? throw new BusinessException(
+                    $"Inventory level not found for product {reservation.ProductId} in warehouse {reservation.WarehouseId}.");
+
+            if (level.QuantityOnHand < reservation.Quantity)
+            {
+                throw new BusinessException(
+                    $"Insufficient on-hand stock for product {reservation.ProductId}. " +
+                    $"On hand: {level.QuantityOnHand}, Required: {reservation.Quantity}.");
+            }
+
+            if (level.QuantityReserved < reservation.Quantity)
+            {
+                throw new BusinessException(
+                    $"Reserved quantity is lower than the committed quantity for product {reservation.ProductId}. " +
+                    $"Reserved: {level.QuantityReserved}, Committed: {reservation.Quantity}.");
+            }
+
+            level.QuantityOnHand -= reservation.Quantity;
+            level.QuantityReserved -= reservation.Quantity;
+            level.LastMovement = DateTime.UtcNow;
+            level.UpdatedBy = _currentUserService.UserId;
+
+            _context.StockMovements.Add(new StockMovement
+            {
+                MovementType = ReleaseMovement,
+                ReferenceType = SalesOrderReference,
+                ReferenceId = orderId,
+                ProductId = reservation.ProductId,
+                WarehouseId = reservation.WarehouseId,
+                Quantity = -reservation.Quantity,
+                MovementDate = DateTime.UtcNow,
+                Notes = $"Reservation committed for invoice {invoiceId}",
+                CreatedBy = _currentUserService.UserId,
+            });
+
+            _context.StockMovements.Add(new StockMovement
+            {
+                MovementType = SaleMovement,
+                ReferenceType = InvoiceReference,
+                ReferenceId = invoiceId,
+                ProductId = reservation.ProductId,
+                WarehouseId = reservation.WarehouseId,
+                Quantity = -reservation.Quantity,
+                UnitCost = level.AvgCost,
+                TotalCost = reservation.Quantity * level.AvgCost,
+                MovementDate = DateTime.UtcNow,
+                Notes = $"Sale for invoice {invoiceId}",
+                CreatedBy = _currentUserService.UserId,
+            });
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task RevertInvoiceStockAsync(Guid orderId, Guid invoiceId)
+    {
+        var alreadyReverted = await _context.StockMovements
+            .AnyAsync(m => m.ReferenceType == InvoiceReference
+                           && m.ReferenceId == invoiceId
+                           && m.MovementType == SaleReversalMovement);
+
+        if (alreadyReverted)
+            return;
+
+        var sales = await _context.StockMovements
+            .Where(m => m.ReferenceType == InvoiceReference
+                        && m.ReferenceId == invoiceId
+                        && m.MovementType == SaleMovement)
+            .ToListAsync();
+
+        foreach (var sale in sales)
+        {
+            var quantity = Math.Abs(sale.Quantity);
+
+            var level = await _context.InventoryLevels
+                .FirstOrDefaultAsync(l => l.ProductId == sale.ProductId && l.WarehouseId == sale.WarehouseId)
+                ?? throw new BusinessException(
+                    $"Inventory level not found for product {sale.ProductId} in warehouse {sale.WarehouseId}.");
+
+            level.QuantityOnHand += quantity;
+            level.QuantityReserved += quantity;
+            level.LastMovement = DateTime.UtcNow;
+            level.UpdatedBy = _currentUserService.UserId;
+
+            _context.StockMovements.Add(new StockMovement
+            {
+                MovementType = ReservationMovement,
+                ReferenceType = SalesOrderReference,
+                ReferenceId = orderId,
+                ProductId = sale.ProductId,
+                WarehouseId = sale.WarehouseId,
+                Quantity = quantity,
+                MovementDate = DateTime.UtcNow,
+                Notes = $"Reservation restored after invoice {invoiceId} cancellation",
+                CreatedBy = _currentUserService.UserId,
+            });
+
+            _context.StockMovements.Add(new StockMovement
+            {
+                MovementType = SaleReversalMovement,
+                ReferenceType = InvoiceReference,
+                ReferenceId = invoiceId,
+                ProductId = sale.ProductId,
+                WarehouseId = sale.WarehouseId,
+                Quantity = quantity,
+                UnitCost = sale.UnitCost,
+                TotalCost = sale.TotalCost,
+                MovementDate = DateTime.UtcNow,
+                Notes = $"Sale reversal for invoice {invoiceId}",
+                CreatedBy = _currentUserService.UserId,
+            });
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task<List<NetReservation>> GetNetReservationsAsync(Guid orderId)
+    {
+        var movements = await _context.StockMovements
+            .Where(m => m.ReferenceType == SalesOrderReference
+                        && m.ReferenceId == orderId
+                        && (m.MovementType == ReservationMovement || m.MovementType == ReleaseMovement))
+            .ToListAsync();
+
+        return movements
+            .GroupBy(m => new { m.ProductId, m.WarehouseId })
+            .Select(g => new NetReservation(g.Key.ProductId, g.Key.WarehouseId, g.Sum(m => m.Quantity)))
+            .Where(r => r.Quantity > 0)
+            .ToList();
     }
 }

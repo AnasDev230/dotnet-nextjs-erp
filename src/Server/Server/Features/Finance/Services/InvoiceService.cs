@@ -1,4 +1,6 @@
+using Microsoft.EntityFrameworkCore;
 using Server.Core.Common;
+using Server.Core.Common.Contracts;
 using Server.Core.Exceptions;
 using Server.Features.Finance.Enums;
 using Server.Features.Finance.Models;
@@ -15,6 +17,7 @@ public class InvoiceService : IInvoiceService
     private readonly IInvoiceRepository _repository;
     private readonly ISalesOrderRepository _salesOrderRepository;
     private readonly ICustomerRepository _customerRepository;
+    private readonly IInventoryReservationService _inventoryReservationService;
     private readonly AppDbContext _context;
     private readonly ICurrentUserService _currentUserService;
 
@@ -22,12 +25,14 @@ public class InvoiceService : IInvoiceService
         IInvoiceRepository repository,
         ISalesOrderRepository salesOrderRepository,
         ICustomerRepository customerRepository,
+        IInventoryReservationService inventoryReservationService,
         AppDbContext context,
         ICurrentUserService currentUserService)
     {
         _repository = repository;
         _salesOrderRepository = salesOrderRepository;
         _customerRepository = customerRepository;
+        _inventoryReservationService = inventoryReservationService;
         _context = context;
         _currentUserService = currentUserService;
     }
@@ -101,9 +106,22 @@ public class InvoiceService : IInvoiceService
         if (invoice.Status != InvoiceStatus.Draft)
             throw new BusinessException("لا يمكن إصدار الفاتورة إلا من حالة المسودة");
 
-        invoice.Status = InvoiceStatus.Issued;
-        invoice.UpdatedBy = _currentUserService.UserId;
-        await _context.SaveChangesAsync();
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            invoice.Status = InvoiceStatus.Issued;
+            invoice.UpdatedBy = _currentUserService.UserId;
+
+            await _inventoryReservationService.CommitReservationAsync(invoice.OrderId, invoice.Id);
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
 
         return await GetByIdAsync(id);
     }
@@ -119,9 +137,28 @@ public class InvoiceService : IInvoiceService
         if (invoice.Payments.Any())
             throw new BusinessException("لا يمكن إلغاء فاتورة عليها دفعات مسجلة");
 
-        invoice.Status = InvoiceStatus.Cancelled;
-        invoice.UpdatedBy = _currentUserService.UserId;
-        await _context.SaveChangesAsync();
+        if (await _repository.HasActiveReturnsAsync(invoice.Id))
+            throw new BusinessException("لا يمكن إلغاء فاتورة عليها مرتجعات غير ملغاة");
+
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            if (invoice.Status is InvoiceStatus.Issued or InvoiceStatus.PartiallyPaid)
+            {
+                await _inventoryReservationService.RevertInvoiceStockAsync(invoice.OrderId, invoice.Id);
+            }
+
+            invoice.Status = InvoiceStatus.Cancelled;
+            invoice.UpdatedBy = _currentUserService.UserId;
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
 
         return await GetByIdAsync(id);
     }

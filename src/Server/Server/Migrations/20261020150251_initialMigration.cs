@@ -1477,7 +1477,8 @@ namespace Server.Migrations
                 name: "IX_attendance_EmployeeId_Date",
                 table: "attendance",
                 columns: new[] { "EmployeeId", "Date" },
-                unique: true);
+                unique: true,
+                filter: "[DeletedAt] IS NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_attendance_Status",
@@ -1661,7 +1662,8 @@ namespace Server.Migrations
                 name: "IX_invoices_OrderId",
                 table: "invoices",
                 column: "OrderId",
-                unique: true);
+                unique: true,
+                filter: "[Status] <> 4 AND [DeletedAt] IS NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_invoices_Status",
@@ -1738,7 +1740,8 @@ namespace Server.Migrations
                 name: "IX_payroll_runs_RunNumber",
                 table: "payroll_runs",
                 column: "RunNumber",
-                unique: true);
+                unique: true,
+                filter: "[DeletedAt] IS NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_payroll_runs_Status",
@@ -1749,7 +1752,8 @@ namespace Server.Migrations
                 name: "IX_payroll_runs_Year_Month",
                 table: "payroll_runs",
                 columns: new[] { "Year", "Month" },
-                unique: true);
+                unique: true,
+                filter: "[DeletedAt] IS NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_po_items_ProductId",
@@ -2097,7 +2101,9 @@ namespace Server.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_supplier_invoices_PurchaseOrderId",
                 table: "supplier_invoices",
-                column: "PurchaseOrderId");
+                column: "PurchaseOrderId",
+                unique: true,
+                filter: "[Status] <> 4 AND [DeletedAt] IS NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_supplier_invoices_Status",

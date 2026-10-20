@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Server.Core.Common;
+using Server.Core.Common.Contracts;
 using Server.Core.Exceptions;
 using Server.Features.Inventory;
 using Server.Features.Inventory.Repositories;
@@ -17,6 +18,7 @@ public class QuotationService : IQuotationService
     private readonly ISalesOrderRepository _salesOrderRepository;
     private readonly ICustomerRepository _customerRepository;
     private readonly IProductRepository _productRepository;
+    private readonly IInventoryReservationService _inventoryReservationService;
     private readonly AppDbContext _context;
     private readonly ICurrentUserService _currentUserService;
 
@@ -25,6 +27,7 @@ public class QuotationService : IQuotationService
         ISalesOrderRepository salesOrderRepository,
         ICustomerRepository customerRepository,
         IProductRepository productRepository,
+        IInventoryReservationService inventoryReservationService,
         AppDbContext context,
         ICurrentUserService currentUserService)
     {
@@ -32,6 +35,7 @@ public class QuotationService : IQuotationService
         _salesOrderRepository = salesOrderRepository;
         _customerRepository = customerRepository;
         _productRepository = productRepository;
+        _inventoryReservationService = inventoryReservationService;
         _context = context;
         _currentUserService = currentUserService;
     }
@@ -221,7 +225,7 @@ public class QuotationService : IQuotationService
 
     public async Task<Guid> ConvertToSalesOrderAsync(Guid id, Guid? warehouseId = null)
     {
-        var quotation = await _repository.GetByIdAsync(id)
+        var quotation = await _repository.GetEntityByIdAsync(id)
             ?? throw new NotFoundException(nameof(Quotation), id);
 
         if (quotation.Status != QuotationStatus.Accepted)
@@ -233,6 +237,12 @@ public class QuotationService : IQuotationService
         if (quotation.ExpiryDate.Date < DateTime.UtcNow.Date)
             throw new BusinessException("انتهت صلاحية هذا العرض ولا يمكن تحويله");
 
+        var customer = await _customerRepository.GetEntityByIdAsync(quotation.CustomerId)
+            ?? throw new NotFoundException(nameof(Customer), quotation.CustomerId);
+
+        if (customer.Status != CustomerStatus.Active)
+            throw new BusinessException("لا يمكن تحويل عرض لعميل غير نشط");
+
         var targetWarehouseId = warehouseId
             ?? await _context.Warehouses
                 .Where(w => w.IsActive)
@@ -240,6 +250,14 @@ public class QuotationService : IQuotationService
                 .Select(w => (Guid?)w.Id)
                 .FirstOrDefaultAsync()
             ?? throw new BusinessException("لا يوجد مستودع نشط لإنشاء أمر البيع. حدد المستودع");
+
+        var warehouse = await _context.Warehouses
+            .AsNoTracking()
+            .FirstOrDefaultAsync(w => w.Id == targetWarehouseId)
+            ?? throw new NotFoundException(nameof(Warehouse), targetWarehouseId);
+
+        if (!warehouse.IsActive)
+            throw new BusinessException("لا يمكن إنشاء أمر بيع في مستودع غير نشط");
 
         await using var transaction = await _context.Database.BeginTransactionAsync();
         try
@@ -249,6 +267,18 @@ public class QuotationService : IQuotationService
             var salesOrder = BuildSalesOrderFromQuotation(quotation, targetWarehouseId, orderNumber);
 
             await _salesOrderRepository.AddAsync(salesOrder);
+            await _context.SaveChangesAsync();
+
+            await _inventoryReservationService.ReserveStockAsync(
+                salesOrder.WarehouseId,
+                salesOrder.Id,
+                salesOrder.Items
+                    .Select(i => new StockReservationItem
+                    {
+                        ProductId = i.ProductId,
+                        Quantity = i.Quantity
+                    })
+                    .ToList());
 
             quotation.Status = QuotationStatus.Converted;
             quotation.ConvertedSalesOrderId = salesOrder.Id;
@@ -258,6 +288,11 @@ public class QuotationService : IQuotationService
             await transaction.CommitAsync();
 
             return salesOrder.Id;
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            await transaction.RollbackAsync();
+            throw new BusinessException("تم تحويل هذا العرض مسبقاً أو تم تعديله. أعد المحاولة");
         }
         catch
         {
@@ -326,10 +361,18 @@ public class QuotationService : IQuotationService
             });
         }
 
-        var subtotal = salesOrder.Items.Sum(i => i.LineTotal);
+        var subtotal = SalesOrderCalculator.CalculateLineTotals(salesOrder);
+        var taxableAmount = subtotal - quotation.DiscountAmount;
+
+        salesOrder.DiscountPct = subtotal > 0
+            ? Math.Round(quotation.DiscountAmount / subtotal * 100m, 2, MidpointRounding.AwayFromZero)
+            : 0m;
         salesOrder.DiscountAmount = quotation.DiscountAmount;
+        salesOrder.TaxPct = taxableAmount > 0
+            ? Math.Round(quotation.TaxAmount / taxableAmount * 100m, 2, MidpointRounding.AwayFromZero)
+            : 0m;
         salesOrder.TaxAmount = quotation.TaxAmount;
-        salesOrder.NetAmount = subtotal - salesOrder.DiscountAmount + salesOrder.TaxAmount;
+        salesOrder.NetAmount = taxableAmount + quotation.TaxAmount;
         salesOrder.TotalAmount = salesOrder.NetAmount;
 
         return salesOrder;

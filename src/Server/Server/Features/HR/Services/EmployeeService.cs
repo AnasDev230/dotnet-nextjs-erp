@@ -121,7 +121,7 @@ public class EmployeeService : IEmployeeService
         employee.Salary = request.Salary;
         employee.ManagerId = request.ManagerId;
         employee.Status = request.Status;
-        employee.UserId = request.UserId;
+        employee.UserId = request.UserId ?? employee.UserId;
         employee.Notes = request.Notes;
         employee.UpdatedBy = _currentUserService.UserId;
 

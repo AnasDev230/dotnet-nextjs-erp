@@ -107,7 +107,7 @@ public class EmployeeRepository : IEmployeeRepository
 
     public async Task<string> GenerateEmployeeNumberAsync()
     {
-        var count = await _context.Employees.AsNoTracking().CountAsync();
+        var count = await _context.Employees.IgnoreQueryFilters().AsNoTracking().CountAsync();
         return $"EMP-{(count + 1):000}";
     }
 

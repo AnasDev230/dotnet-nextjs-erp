@@ -9,4 +9,6 @@ public interface IInventoryReservationService
 {
     Task ReserveStockAsync(Guid warehouseId, Guid orderId, IReadOnlyCollection<StockReservationItem> items);
     Task ReleaseStockAsync(Guid orderId);
+    Task CommitReservationAsync(Guid orderId, Guid invoiceId);
+    Task RevertInvoiceStockAsync(Guid orderId, Guid invoiceId);
 }

@@ -102,6 +102,9 @@ public class AttendanceService : IAttendanceService
         var dateOnly = request.Date.Date;
         var results = new List<Attendance>();
 
+        if (request.Items.GroupBy(i => i.EmployeeId).Any(g => g.Count() > 1))
+            throw new BusinessException("لا يمكن تكرار نفس الموظف في نفس اليوم");
+
         // Get all employeeIds from request
         var employeeIds = request.Items.Select(i => i.EmployeeId).Distinct().ToList();
 

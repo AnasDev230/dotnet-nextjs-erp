@@ -68,110 +68,120 @@ public class PayrollService : IPayrollService
         if (request.Year < 2000 || request.Year > 2100)
             throw new BusinessException("السنة غير صحيحة.");
 
-        // 2. Validate no existing run for same Year + Month
-        if (await _repository.ExistsRunAsync(request.Year, request.Month))
-            throw new BusinessException("يوجد مسير رواتب مسبق لهذا الشهر والسنة.");
-
-        // 3. Get all Active employees
-        var activeEmployees = await _context.Employees
-            .AsNoTracking()
-            .Where(e => e.Status == EmployeeStatus.Active)
-            .ToListAsync();
-
-        if (activeEmployees.Count == 0)
-            throw new BusinessException("لا يوجد موظفين نشطين لإنشاء مسير الرواتب.");
-
-        // 4. Create the PayrollRun first
-        var payrollRun = new PayrollRun
+        await using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+        try
         {
-            RunNumber = $"PAY-{request.Year}-{request.Month:D2}",
-            Month = request.Month,
-            Year = request.Year,
-            Status = PayrollStatus.Processing,
-            Notes = request.Notes,
-            ProcessedAt = DateTime.UtcNow,
-            CreatedBy = _currentUserService.UserId
-        };
+            // 2. Validate no existing run for same Year + Month
+            if (await _repository.ExistsRunAsync(request.Year, request.Month))
+                throw new BusinessException("يوجد مسير رواتب مسبق لهذا الشهر والسنة.");
 
-        await _repository.AddRunAsync(payrollRun);
-        await _context.SaveChangesAsync();
+            // 3. Get eligible employees (active + on leave)
+            var eligibleEmployees = await _context.Employees
+                .AsNoTracking()
+                .Where(e => e.Status == EmployeeStatus.Active || e.Status == EmployeeStatus.OnLeave)
+                .ToListAsync();
 
-        // 5. For each employee, calculate payroll
-        var details = new List<PayrollDetail>();
+            if (eligibleEmployees.Count == 0)
+                throw new BusinessException("لا يوجد موظفين مؤهلين لإنشاء مسير الرواتب.");
 
-        foreach (var emp in activeEmployees)
-        {
-            var attendanceSummary = await _attendanceRepository.GetMonthlySummaryAsync(
-                emp.Id, request.Year, request.Month);
-
-            // a. Base salary
-            var baseSalary = emp.Salary;
-
-            // b. Allowances (defaults - will be expanded later)
-            var transportAllowance = 0m;
-            var housingAllowance = 0m;
-            var otherAllowances = 0m;
-
-            // c. Overtime pay = OvertimeHours × (dailyRate / 8 × 1.5)
-            var dailyRate = baseSalary / StandardWorkingDaysPerMonth;
-            var hourlyRate = dailyRate / StandardWorkingHoursPerDay;
-            var overtimePay = Math.Round(
-                attendanceSummary.TotalOvertimeHours * hourlyRate * OvertimeMultiplier, 2);
-
-            // d. Late deduction = lateDays × (dailyRate × 10%)
-            var lateDeduction = Math.Round(
-                attendanceSummary.LateDays * dailyRate * LateDeductionRate, 2);
-
-            // e. Absent deduction = absentDays × dailyRate
-            var absentDeduction = Math.Round(
-                attendanceSummary.AbsentDays * dailyRate, 2);
-
-            // f. Insurance = 10% of base salary
-            var insuranceDeduction = Math.Round(baseSalary * InsuranceRate, 2);
-
-            // g. Totals
-            var totalEarnings = baseSalary + transportAllowance + housingAllowance + overtimePay + otherAllowances;
-            var totalDeductions = lateDeduction + absentDeduction + insuranceDeduction;
-            var netPay = totalEarnings - totalDeductions;
-
-            var detail = new PayrollDetail
+            // 4. Create the PayrollRun first
+            var payrollRun = new PayrollRun
             {
-                PayrollRunId = payrollRun.Id,
-                EmployeeId = emp.Id,
-                BaseSalary = baseSalary,
-                TransportAllowance = transportAllowance,
-                HousingAllowance = housingAllowance,
-                OvertimePay = overtimePay,
-                OtherAllowances = otherAllowances,
-                TotalEarnings = totalEarnings,
-                LateDeduction = lateDeduction,
-                AbsentDeduction = absentDeduction,
-                InsuranceDeduction = insuranceDeduction,
-                OtherDeductions = 0m,
-                TotalDeductions = totalDeductions,
-                NetPay = netPay,
-                PresentDays = attendanceSummary.PresentDays,
-                LateDays = attendanceSummary.LateDays,
-                AbsentDays = attendanceSummary.AbsentDays,
-                OvertimeHours = attendanceSummary.TotalOvertimeHours,
+                RunNumber = $"PAY-{request.Year}-{request.Month:D2}",
+                Month = request.Month,
+                Year = request.Year,
+                Status = PayrollStatus.Processing,
+                Notes = request.Notes,
+                ProcessedAt = DateTime.UtcNow,
                 CreatedBy = _currentUserService.UserId
             };
 
-            details.Add(detail);
+            await _repository.AddRunAsync(payrollRun);
+            await _context.SaveChangesAsync();
+
+            // 5. For each employee, calculate payroll
+            var details = new List<PayrollDetail>();
+
+            foreach (var emp in eligibleEmployees)
+            {
+                var attendanceSummary = await _attendanceRepository.GetMonthlySummaryAsync(
+                    emp.Id, request.Year, request.Month);
+
+                // a. Base salary
+                var baseSalary = emp.Salary;
+
+                // b. Allowances (defaults - will be expanded later)
+                var transportAllowance = 0m;
+                var housingAllowance = 0m;
+                var otherAllowances = 0m;
+
+                // c. Overtime pay = OvertimeHours × (dailyRate / 8 × 1.5)
+                var dailyRate = baseSalary / StandardWorkingDaysPerMonth;
+                var hourlyRate = dailyRate / StandardWorkingHoursPerDay;
+                var overtimePay = Math.Round(
+                    attendanceSummary.TotalOvertimeHours * hourlyRate * OvertimeMultiplier, 2);
+
+                // d. Late deduction = lateDays × (dailyRate × 10%)
+                var lateDeduction = Math.Round(
+                    attendanceSummary.LateDays * dailyRate * LateDeductionRate, 2);
+
+                // e. Absent deduction = absentDays × dailyRate
+                var absentDeduction = Math.Round(
+                    attendanceSummary.AbsentDays * dailyRate, 2);
+
+                // f. Insurance = 10% of base salary
+                var insuranceDeduction = Math.Round(baseSalary * InsuranceRate, 2);
+
+                // g. Totals
+                var totalEarnings = baseSalary + transportAllowance + housingAllowance + overtimePay + otherAllowances;
+                var totalDeductions = lateDeduction + absentDeduction + insuranceDeduction;
+                var netPay = totalEarnings - totalDeductions;
+
+                var detail = new PayrollDetail
+                {
+                    PayrollRunId = payrollRun.Id,
+                    EmployeeId = emp.Id,
+                    BaseSalary = baseSalary,
+                    TransportAllowance = transportAllowance,
+                    HousingAllowance = housingAllowance,
+                    OvertimePay = overtimePay,
+                    OtherAllowances = otherAllowances,
+                    TotalEarnings = totalEarnings,
+                    LateDeduction = lateDeduction,
+                    AbsentDeduction = absentDeduction,
+                    InsuranceDeduction = insuranceDeduction,
+                    OtherDeductions = 0m,
+                    TotalDeductions = totalDeductions,
+                    NetPay = netPay,
+                    PresentDays = attendanceSummary.PresentDays,
+                    LateDays = attendanceSummary.LateDays,
+                    AbsentDays = attendanceSummary.AbsentDays,
+                    OvertimeHours = attendanceSummary.TotalOvertimeHours,
+                    CreatedBy = _currentUserService.UserId
+                };
+
+                details.Add(detail);
+            }
+
+            // 6. Save all details
+            await _repository.AddRangeDetailsAsync(details);
+
+            // 7. Update PayrollRun totals
+            payrollRun.TotalNetAmount = details.Sum(d => d.NetPay);
+            payrollRun.EmployeeCount = details.Count;
+            payrollRun.Status = PayrollStatus.Completed;
+            payrollRun.UpdatedBy = _currentUserService.UserId;
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return await GetRunByIdAsync(payrollRun.Id);
         }
-
-        // 6. Save all details
-        await _repository.AddRangeDetailsAsync(details);
-
-        // 7. Update PayrollRun totals
-        payrollRun.TotalNetAmount = details.Sum(d => d.NetPay);
-        payrollRun.EmployeeCount = details.Count;
-        payrollRun.Status = PayrollStatus.Completed;
-        payrollRun.UpdatedBy = _currentUserService.UserId;
-
-        await _context.SaveChangesAsync();
-
-        return await GetRunByIdAsync(payrollRun.Id);
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task<PayrollRunResponse> MarkAsPaidAsync(Guid id)

@@ -16,7 +16,7 @@ public interface IPurchaseReturnRepository
     Task<PurchaseReturn?> GetEntityWithItemsByIdAsync(Guid id);
     Task<string> GenerateReturnNumberAsync();
     Task<GoodsReceipt?> GetGrnWithItemsAsync(Guid grnId);
-    Task<Dictionary<Guid, decimal>> GetReturnedQuantitiesAsync(Guid grnId);
+    Task<Dictionary<Guid, decimal>> GetReturnedQuantitiesAsync(Guid grnId, Guid? excludeReturnId = null);
     Task AddAsync(PurchaseReturn purchaseReturn);
     Task SoftDeleteAsync(Guid id, Guid userId);
 }

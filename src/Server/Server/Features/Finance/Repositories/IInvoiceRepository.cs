@@ -12,6 +12,7 @@ public interface IInvoiceRepository
         DateOnly? fromDate, DateOnly? toDate);
     Task<Invoice?> GetByIdAsync(Guid id);
     Task<Invoice?> GetByOrderIdAsync(Guid orderId);
+    Task<bool> HasActiveReturnsAsync(Guid invoiceId);
     Task<Invoice?> GetEntityByIdAsync(Guid id);
     Task<string> GenerateInvoiceNumberAsync();
     Task AddAsync(Invoice invoice);

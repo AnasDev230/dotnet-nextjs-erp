@@ -76,10 +76,15 @@ public class SalesReturnService : ISalesReturnService
         if (request.Items is null || request.Items.Count == 0)
             throw new BusinessException("يجب إضافة صنف مرتجع واحد على الأقل");
 
+        if (request.Items.GroupBy(i => i.ProductId).Any(g => g.Count() > 1))
+            throw new BusinessException("لا يمكن تكرار نفس المنتج في المرتجع");
+
         var orderItems = await _repository.GetOriginalOrderItemsAsync(invoice.OrderId);
         var returnedPerProduct = await _repository.GetReturnedQuantitiesAsync(request.InvoiceId);
 
         var totalAmount = 0m;
+        var effectivePrices = new Dictionary<Guid, decimal>();
+
         foreach (var item in request.Items)
         {
             var original = orderItems.FirstOrDefault(i => i.ProductId == item.ProductId)
@@ -92,7 +97,13 @@ public class SalesReturnService : ISalesReturnService
             if (item.Quantity > remaining)
                 throw new BusinessException($"الكمية المرتجعة تتجاوز الكمية المتبقية ({remaining})");
 
-            totalAmount += item.Quantity * item.UnitPrice;
+            var effectiveUnitPrice = Math.Round(
+                original.UnitPrice * (1m - original.DiscountPct / 100m),
+                2,
+                MidpointRounding.AwayFromZero);
+
+            effectivePrices[item.ProductId] = effectiveUnitPrice;
+            totalAmount += item.Quantity * effectiveUnitPrice;
         }
 
         // 5. Generate return number: SRET-YYYY-XXXX
@@ -110,14 +121,19 @@ public class SalesReturnService : ISalesReturnService
             TotalAmount = totalAmount,
             Status = ReturnStatus.Draft,
             CreatedBy = _currentUserService.UserId,
-            Items = request.Items.Select(i => new SalesReturnItem
+            Items = request.Items.Select(i =>
             {
-                ProductId = i.ProductId,
-                Quantity = i.Quantity,
-                UnitPrice = i.UnitPrice,
-                LineTotal = i.Quantity * i.UnitPrice,
-                Reason = i.Reason,
-                CreatedBy = _currentUserService.UserId
+                var unitPrice = effectivePrices[i.ProductId];
+
+                return new SalesReturnItem
+                {
+                    ProductId = i.ProductId,
+                    Quantity = i.Quantity,
+                    UnitPrice = unitPrice,
+                    LineTotal = i.Quantity * unitPrice,
+                    Reason = i.Reason,
+                    CreatedBy = _currentUserService.UserId
+                };
             }).ToList()
         };
 
@@ -129,11 +145,16 @@ public class SalesReturnService : ISalesReturnService
 
     public async Task SubmitAsync(Guid id)
     {
-        var salesReturn = await _repository.GetEntityByIdAsync(id)
+        var salesReturn = await _repository.GetEntityWithItemsByIdAsync(id)
             ?? throw new NotFoundException(nameof(SalesReturn), id);
 
         if (salesReturn.Status != ReturnStatus.Draft)
             throw new BusinessException("لا يمكن إرسال المرتجع إلا من حالة المسودة");
+
+        var invoice = await _invoiceRepository.GetByIdAsync(salesReturn.InvoiceId)
+            ?? throw new NotFoundException(nameof(Invoice), salesReturn.InvoiceId);
+
+        await ValidateReturnedQuantitiesAsync(salesReturn, invoice);
 
         salesReturn.Status = ReturnStatus.Submitted;
         salesReturn.UpdatedBy = _currentUserService.UserId;
@@ -165,9 +186,14 @@ public class SalesReturnService : ISalesReturnService
         if (salesReturn.Status != ReturnStatus.Approved)
             throw new BusinessException("لا يمكن إكمال المرتجع إلا من حالة الاعتماد");
 
-        await using var transaction = await _context.Database.BeginTransactionAsync();
+        var invoice = await _invoiceRepository.GetByIdAsync(salesReturn.InvoiceId)
+            ?? throw new NotFoundException(nameof(Invoice), salesReturn.InvoiceId);
+
+        await using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
         try
         {
+            await ValidateReturnedQuantitiesAsync(salesReturn, invoice);
+
             foreach (var item in salesReturn.Items)
             {
                 // 1. Increase stock in the return warehouse
@@ -219,6 +245,25 @@ public class SalesReturnService : ISalesReturnService
         {
             await transaction.RollbackAsync();
             throw;
+        }
+    }
+
+    private async Task ValidateReturnedQuantitiesAsync(SalesReturn salesReturn, Invoice invoice)
+    {
+        if (invoice.Status == InvoiceStatus.Cancelled)
+            throw new BusinessException("لا يمكن تنفيذ مرتجع على فاتورة ملغاة");
+
+        var orderItems = await _repository.GetOriginalOrderItemsAsync(invoice.OrderId);
+        var returnedPerProduct = await _repository.GetReturnedQuantitiesAsync(salesReturn.InvoiceId, salesReturn.Id);
+
+        foreach (var item in salesReturn.Items)
+        {
+            var original = orderItems.FirstOrDefault(i => i.ProductId == item.ProductId)
+                ?? throw new BusinessException("أحد أصناف المرتجع غير موجود في الفاتورة الأصلية");
+
+            var remaining = original.Quantity - returnedPerProduct.GetValueOrDefault(item.ProductId);
+            if (item.Quantity > remaining)
+                throw new BusinessException($"الكمية المرتجعة تتجاوز الكمية المتبقية ({remaining})");
         }
     }
 

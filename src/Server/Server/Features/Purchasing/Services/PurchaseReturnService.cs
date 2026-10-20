@@ -67,16 +67,25 @@ public class PurchaseReturnService : IPurchaseReturnService
         if (!warehouse.IsActive)
             throw new BusinessException("لا يمكن إرجاع بضاعة من مستودع غير نشط");
 
+        if (request.WarehouseId != grn.WarehouseId)
+            throw new BusinessException("مستودع المرتجع يجب أن يطابق مستودع الاستلام");
+
         // 4. Validate items against the received quantities in the GRN
         if (request.Items is null || request.Items.Count == 0)
             throw new BusinessException("يجب إضافة صنف مرتجع واحد على الأقل");
 
+        if (request.Items.GroupBy(i => i.ProductId).Any(g => g.Count() > 1))
+            throw new BusinessException("لا يمكن تكرار نفس المنتج في المرتجع");
+
         var returnedPerProduct = await _repository.GetReturnedQuantitiesAsync(request.GoodsReceiptId);
 
         var totalAmount = 0m;
+        var effectiveCosts = new Dictionary<Guid, decimal>();
+
         foreach (var item in request.Items)
         {
-            var received = grn.Items.Where(i => i.ProductId == item.ProductId).Sum(i => i.Quantity);
+            var receivedItems = grn.Items.Where(i => i.ProductId == item.ProductId).ToList();
+            var received = receivedItems.Sum(i => i.Quantity);
             if (received <= 0)
                 throw new BusinessException("أحد أصناف المرتجع غير موجود في الاستلام");
 
@@ -87,7 +96,13 @@ public class PurchaseReturnService : IPurchaseReturnService
             if (item.Quantity > remaining)
                 throw new BusinessException($"الكمية المرتجعة تتجاوز الكمية المتبقية ({remaining})");
 
-            totalAmount += item.Quantity * item.UnitCost;
+            var unitCost = Math.Round(
+                receivedItems.Sum(i => i.Quantity * i.PoItem.UnitPrice) / received,
+                2,
+                MidpointRounding.AwayFromZero);
+
+            effectiveCosts[item.ProductId] = unitCost;
+            totalAmount += item.Quantity * unitCost;
         }
 
         // 5. Generate return number: PRET-YYYY-XXXX
@@ -105,14 +120,19 @@ public class PurchaseReturnService : IPurchaseReturnService
             TotalAmount = totalAmount,
             Status = ReturnStatus.Draft,
             CreatedBy = _currentUserService.UserId,
-            Items = request.Items.Select(i => new PurchaseReturnItem
+            Items = request.Items.Select(i =>
             {
-                ProductId = i.ProductId,
-                Quantity = i.Quantity,
-                UnitCost = i.UnitCost,
-                LineTotal = i.Quantity * i.UnitCost,
-                Reason = i.Reason,
-                CreatedBy = _currentUserService.UserId
+                var unitCost = effectiveCosts[i.ProductId];
+
+                return new PurchaseReturnItem
+                {
+                    ProductId = i.ProductId,
+                    Quantity = i.Quantity,
+                    UnitCost = unitCost,
+                    LineTotal = i.Quantity * unitCost,
+                    Reason = i.Reason,
+                    CreatedBy = _currentUserService.UserId
+                };
             }).ToList()
         };
 
@@ -124,11 +144,16 @@ public class PurchaseReturnService : IPurchaseReturnService
 
     public async Task SubmitAsync(Guid id)
     {
-        var purchaseReturn = await _repository.GetEntityByIdAsync(id)
+        var purchaseReturn = await _repository.GetEntityWithItemsByIdAsync(id)
             ?? throw new NotFoundException(nameof(PurchaseReturn), id);
 
         if (purchaseReturn.Status != ReturnStatus.Draft)
             throw new BusinessException("لا يمكن إرسال المرتجع إلا من حالة المسودة");
+
+        var grn = await _repository.GetGrnWithItemsAsync(purchaseReturn.GoodsReceiptId)
+            ?? throw new NotFoundException(nameof(GoodsReceipt), purchaseReturn.GoodsReceiptId);
+
+        await ValidateReturnedQuantitiesAsync(purchaseReturn, grn);
 
         purchaseReturn.Status = ReturnStatus.Submitted;
         purchaseReturn.UpdatedBy = _currentUserService.UserId;
@@ -160,9 +185,14 @@ public class PurchaseReturnService : IPurchaseReturnService
         if (purchaseReturn.Status != ReturnStatus.Approved)
             throw new BusinessException("لا يمكن إكمال المرتجع إلا من حالة الاعتماد");
 
-        await using var transaction = await _context.Database.BeginTransactionAsync();
+        var grn = await _repository.GetGrnWithItemsAsync(purchaseReturn.GoodsReceiptId)
+            ?? throw new NotFoundException(nameof(GoodsReceipt), purchaseReturn.GoodsReceiptId);
+
+        await using var transaction = await _context.Database.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
         try
         {
+            await ValidateReturnedQuantitiesAsync(purchaseReturn, grn);
+
             foreach (var item in purchaseReturn.Items)
             {
                 // 1. Validate sufficient stock, then decrease
@@ -207,6 +237,31 @@ public class PurchaseReturnService : IPurchaseReturnService
         {
             await transaction.RollbackAsync();
             throw;
+        }
+    }
+
+    private async Task ValidateReturnedQuantitiesAsync(PurchaseReturn purchaseReturn, GoodsReceipt grn)
+    {
+        if (grn.Status == GoodsReceiptStatus.Cancelled)
+            throw new BusinessException("لا يمكن تنفيذ مرتجع على استلام ملغي");
+
+        if (purchaseReturn.WarehouseId != grn.WarehouseId)
+            throw new BusinessException("مستودع المرتجع يجب أن يطابق مستودع الاستلام");
+
+        var returnedPerProduct = await _repository.GetReturnedQuantitiesAsync(purchaseReturn.GoodsReceiptId, purchaseReturn.Id);
+
+        foreach (var item in purchaseReturn.Items)
+        {
+            var received = grn.Items
+                .Where(i => i.ProductId == item.ProductId)
+                .Sum(i => i.Quantity);
+
+            if (received <= 0)
+                throw new BusinessException("أحد أصناف المرتجع غير موجود في الاستلام");
+
+            var remaining = received - returnedPerProduct.GetValueOrDefault(item.ProductId);
+            if (item.Quantity > remaining)
+                throw new BusinessException($"الكمية المرتجعة تتجاوز الكمية المتبقية ({remaining})");
         }
     }
 
